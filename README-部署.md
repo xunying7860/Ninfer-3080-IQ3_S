@@ -25,21 +25,26 @@ LIBPATH=/data/ninfer-fusion-kvmem/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cu
 
 **绝不全局 `export LD_LIBRARY_PATH`**：宿主 `head/ls` 会加载 bundle 里的新 glibc ⇒ `symbol lookup error ... GLIBC_PRIVATE`（rc=127）。
 
-## 3. 起服务（GPU0）
+## 3. 起服务（GPU0，**当前已常驻**）
+
+**现状（2026-10-08 23:2x 起）**：本引擎以 `ninfer-fusion.service` **常驻 GPU0**（18084，enabled）；
+生产 `ninfer.service` 与 `ninfer-watchdog.service` **已停并 disable**（启动时不会再抢 GPU0）。
 
 ```bash
-# 1) 让出 GPU0（必须先停 watchdog，否则它探活失败会把生产 ninfer 拉起来抢卡）
-sudo systemctl stop ninfer-watchdog ninfer
-nvidia-smi --query-gpu=index,memory.used --format=csv,noheader   # 判据：GPU0 ~21 MiB
+# 一侧到另一侧的一切切换都走这个脚本（先停 watchdog 是硬要求）
+sudo bash /data/ninfer-fusion-kvmem/scripts/switch-gpu0.sh fusion   # 新引擎占 GPU0（生产停+禁自启）
+sudo bash /data/ninfer-fusion-kvmem/scripts/switch-gpu0.sh ninfer   # 生产 ninfer 占 GPU0（新引擎停+禁自启）
+sudo bash /data/ninfer-fusion-kvmem/scripts/switch-gpu0.sh status   # 只读：两侧服务状态 + 端口 + 显存
 
-# 2) 起（默认档 = 调优后：rk4v4/256K/不开 KVMem/draft7；端口 18084）
+# 单次手动起（前台）
 cd /data/ninfer-fusion-kvmem && ./run.sh
 #   回落到基线档：      DRAFT=3 ./run.sh
 #   换 prefill 优先档：  DRAFT=7 CHUNK=2048 DSS=2 EXTRA="--prefill-cublas" ./run.sh
 
-# 3) 判就绪：日志出现 listening on http://0.0.0.0:18084，且 GET /v1/models 返回 200（端口在听 ≠ 可服务）
-# 4) 收工：Ctrl-C / kill，然后 sudo systemctl start ninfer ninfer-watchdog
+# 判就绪：GET /v1/models 返回 200（端口在听 ≠ 可服务）；systemd 日志：logs/ninfer-fusion.log
 ```
+
+**为什么必须先停 watchdog**：它会真请求探活，失败即 `systemctl restart ninfer` ⇒ 不先停它，两边会为 GPU0 互相顶。
 
 `run.sh` 可用环境变量覆盖：`DRAFT` `CHUNK` `DSS` `HOSTKV` `EXTRA` `PORT` `GPU` `MODEL`。
 

@@ -1,0 +1,26 @@
+[Unit]
+Description=NInfer 融合引擎（ninfer-fusion-kvmem · KVMem 环能力）· GPU0 · 端口 18084
+Documentation=file:/data/ninfer-fusion-kvmem/README-部署.md
+After=network-online.target gpu-clocks.service
+Wants=network-online.target gpu-clocks.service
+
+[Service]
+Type=simple
+User=xunying
+WorkingDirectory=/data/ninfer-fusion-kvmem
+ExecStart=/data/ninfer-fusion-kvmem/run.sh
+# 与 ninfer.service / strata.service 对齐
+LimitMEMLOCK=infinity
+LimitNOFILE=1048576
+Restart=on-failure
+RestartSec=15
+# 冷启约 2 min（权重 11.3 GiB + 路由标定），禁用启动超时避免误判卡死
+TimeoutStartSec=0
+TimeoutStopSec=120
+# SIGTERM 给主进程，随后整组 SIGKILL，保证 loader 子进程不残留
+KillMode=mixed
+StandardOutput=append:/data/ninfer-fusion-kvmem/logs/ninfer-fusion.log
+StandardError=append:/data/ninfer-fusion-kvmem/logs/ninfer-fusion.log
+
+[Install]
+WantedBy=multi-user.target
