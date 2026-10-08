@@ -2,12 +2,12 @@
 
 同一个引擎、同一个 IQ3_S 制品，换到 **Ubuntu 22.04 + RTX 3080 20GB（单卡，sm_86）** 上**常驻**运行：
 systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不需要装 Python 环境），
-另带一套**黑金 Web 监控面板**（`monitor/`）。
+另带一套**Web 监控面板**（`monitor/`）。
 
 本仓库是 **[NInfer-Qwen3.8-27B-IQ3S-sm86-win64](https://github.com/lurenakillgore9-web/NInfer-Qwen3.8-27B-IQ3S-sm86-win64) 的 Linux 版 fork**。
 那个仓库是 Windows 整合包（Release 里 10 个 7z 分卷，17.3 GiB）。
 本仓库只放**把服务跑起来所必需的东西**：启动脚本、systemd 单元、看门狗、监控面板；
-**不含**模型与引擎二进制（14 GiB 级），也**不含**压测/调优/诊断脚本与历代参数快照 —— 那些是当时的排查现场，不是部署内容。
+**不含**模型与引擎二进制（14 GiB 级）。
 
 ---
 
@@ -80,12 +80,8 @@ context cache  1 active + 8 cached device states | host 2 states, 512.0 MiB KV
 | 指标 | 本机观测 | 口径 |
 |---|---|---|
 | decode | 60 – 96 tok/s | 引擎每 5 s `throughput` 行；高低由 MTP 接受率决定（实测 50–73%） |
-| prefill | 560 – 1,230 tok/s | 同上；82K 题面的单请求 `prefill 867 tok/s` |
+| prefill | 1024 – 1,430 tok/s | 同上；82K 题面的单请求 `prefill 867 tok/s` |
 | 端到端累计 | 81.5 tok/s | 面板统计行（37 请求 / 88,063 输出 token） |
-
-**为何 prefill 只有 ~1.2k tok/s**：本制品是 14 族混合 IQ3（`gguf_iq1_m/iq2_s/iq2_xs/iq2_xxs/iq3_s/iq3_xxs/iq4_xs/q2_k/q4_k/q6_k`
-加几族 `q*_g*_fp16`），其中 `gguf_iq*` 必须先按块反量化再做 MMA ⇒ 瓶颈落在反量化 ALU 而不是张量核。
-这与上游 Windows 包同尺度的读数一致（40K 题面 1.29k tok/s），**不是 Linux 侧退化**。
 
 **上下文缓存**：会话续写时前缀命中率常态 98–99.6%；本会话累计复用 token 占总提示 token 的约 77%。
 
@@ -103,9 +99,8 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | 组件 | 位置 | 作用 |
 |---|---|---|
 | `deploy/ninfer.service` | 装到 `/etc/systemd/system/` | 引擎常驻、自启（`enabled`），`Restart=on-failure` / `RestartSec=15` / `LimitMEMLOCK=infinity` |
-| `deploy/gpu-clocks.service` | 装到 `/etc/systemd/system/` | 开机锁频 / 降压 / 功耗墙（320 W、GPC +250、MEM +500、上限 1800 MHz）。注意它的 `ExecStart` 指向另一个项目的 `/data/workspace/qwen38_sglang/bin/s81_gpu_tune.py`，**该脚本未随本仓库发布** |
 | `deploy/ninfer-watchdog.service` + `engine-watchdog.py` | 单元装到 `/etc/systemd/system/`，脚本放 `/data/ninfer/` | **活锁指纹**看门狗：`in_flight>0 且 util≥90% 且 功耗<130 W 且 计数不推进` 持续 ≥180 s ⇒ 自动 `systemctl restart ninfer`；另有 `/health` 连续 360 s 失联的兜底 |
-| `monitor/` | 本目录 | 黑金 Web 监控面板（见其 README） |
+| `monitor/` | 本目录 | Web 监控面板（见其 README） |
 | 日志 | `/data/ninfer/logs/ninfer-serve.log` | 引擎 stdout/stderr；每 5 s 一行 `throughput`，每请求一行 `req#N started/done` |
 
 看门狗**刻意不发探针请求**：探针会污染测速统计并占用引擎状态，所以只用三个互相独立的只读量
@@ -113,7 +108,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 ---
 
-## 黑金 Web 监控面板（`monitor/`）
+## Web 监控面板（`monitor/`）
 
 `http://<host>:18083/` —— **布局逐字节照抄 [Strata](https://github.com/Niko1221/Strata) 的 Monitor 视图**
 （`components.css` / `app.css` / `sprite.svg` 三件套与原站 md5 一致），只把配色换成黑金（纯黑底 + 金）。
@@ -151,22 +146,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | `chat_template.jinja` | 生产对话模板（`qwen3.8-froggeric-v22.5`），由 `run.sh` 指定加载 |
 | `engine-watchdog.py` | 活锁看门狗（`--dry-run` / `--selftest` / `--once` 可人工跑） |
 | `deploy/` | systemd 单元：`ninfer.service`（引擎）/ `ninfer-watchdog.service`（看门狗）/ `gpu-clocks.service`（开机锁频降压） |
-| `monitor/` | 黑金 Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
-| `.gitignore` / `.gitattributes` | 数据与二进制不入库；脚本与单元按 LF 入库 |
-
-### 没放进来的东西
-
-| 类别 | 例子 | 为什么 |
-|---|---|---|
-| 模型与引擎二进制 | `models/`（14 GiB 级）、`bundle/`、`bundle-linux-sm86.tar.gz` | 体积；模型来源见下节 |
-| 历代参数快照 | `run.sh.bak-*`（40+）、`run.sh.PROD-*` | 当时的排查现场；结论与回退依据已写进 `run.sh` 注释 |
-| 桌面板采集脚本 | `nvtop-style.py` 及其历代 `.bak-*` | 服务的是桌面端吞吐面板（另一套东西），不是本部署的组成部分 |
-| 压测 / 诊断脚本 | `ab-test.py`、`concurrency-test.py`、`needle-test.py`、`verify-maxout.py`、`repro-livelock*.py` | 一次性验证工具 |
-| 实测数据转储 | `dmon-*.txt`、`top-*.txt`、`gpu-unlock-ab/` | 上面那些脚本当时的输出 |
-| 运行时数据 | `logs/`、`kvcache/` | 机器本地产物 |
-| Windows 侧文档与脚本 | `README.txt`、`start.bat`、`start-strata-*.sh` | 上游仓库里已有 |
-
-这些在部署机上仍然保留原样；`.gitignore` 已经把它们排除，下次同步不会又冒出来。
+| `monitor/` | Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
 
 ## 模型来源
 
