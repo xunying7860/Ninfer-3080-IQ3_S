@@ -1,0 +1,70 @@
+# 部署用 Dockerfile —— 与仓内 src-tree/fusion-engine-src/Dockerfile 逐行一致，
+# 唯一差异：ccache 上限 20G → 4G（本机 C: 剩余空间有限，见部署报告“磁盘纪律”一节）。
+# 其余保持原样（noble 基座 / 默认 arch 86 / 关 -lineinfo 由 CMake 默认 OFF 决定）。
+FROM nvidia/cuda:13.1.2-devel-ubuntu24.04 AS build
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        ccache \
+        cmake \
+        libavcodec-dev \
+        libavformat-dev \
+        libavutil-dev \
+        libcurl4-openssl-dev \
+        libswscale-dev \
+        ninja-build \
+        pkg-config \
+        rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY . .
+
+# 与仓内一致：按“配置指纹”分目录、缓存挂载、拷出交付物
+RUN --mount=type=cache,id=ninfer-build,target=/build,sharing=locked \
+    --mount=type=cache,target=/ccache \
+    export CCACHE_DIR=/ccache CCACHE_MAXSIZE=4G \
+    && find . -type f \( -path ./Dockerfile -o -name CMakeLists.txt -o -name '*.cmake' \) \
+        -exec sha256sum {} + > /build/configuration \
+    && dpkg-query -W >> /build/configuration \
+    && LC_ALL=C sort -o /build/configuration /build/configuration \
+    && build_dir="/build/$(sha256sum /build/configuration | cut -d ' ' -f 1)" \
+    && rsync --recursive --links --checksum --delete /src/ /build/src/ \
+    && cmake -S /build/src -B "$build_dir" -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache \
+        -DNINFER_BUILD_APPS=ON \
+        -DBUILD_TESTING=OFF \
+        -DNINFER_BUILD_BENCHMARKS=OFF \
+    && cmake --build "$build_dir" --parallel 8 --target ninfer ninfer-serve \
+    && mkdir -p /out \
+    && cp "$build_dir/apps/ninfer" "$build_dir/apps/ninfer-serve" /out/ \
+    && ccache --show-stats
+
+FROM nvidia/cuda:13.1.2-runtime-ubuntu24.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        ca-certificates \
+        libavcodec60 \
+        libavformat60 \
+        libavutil58 \
+        libcurl4t64 \
+        libswscale7 \
+    && rm -rf /var/lib/apt/lists/*
+
+# GeForce 卡必须删掉 forward-compat（否则 cudaErrorCompatNotSupportedOnDevice）
+RUN rm -rf /usr/local/cuda-13.1/compat /usr/local/cuda-13/compat /usr/local/cuda/compat
+
+COPY --from=build /out/ninfer /usr/local/bin/ninfer
+COPY --from=build /out/ninfer-serve /usr/local/bin/ninfer-serve
+
+WORKDIR /workspace
+EXPOSE 8080
+STOPSIGNAL SIGTERM
+
+CMD ["ninfer-serve", "--help"]

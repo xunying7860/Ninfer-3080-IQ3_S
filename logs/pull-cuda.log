@@ -1,0 +1,47 @@
+13.1.2-devel-ubuntu24.04: Pulling from nvidia/cuda
+641b42bab22d: Pulling fs layer
+73eaa4e381ec: Pulling fs layer
+a4e070c60133: Pulling fs layer
+515d4ff3649f: Pulling fs layer
+508255b2b357: Pulling fs layer
+b40150c1c271: Pulling fs layer
+a0295b236ce6: Pulling fs layer
+9bb9d3de2ae5: Pulling fs layer
+788c57dbc3cb: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+acc4feae45b6: Pulling fs layer
+df302ee0fd5d: Pulling fs layer
+cb563e5d2f44: Pulling fs layer
+cff2769ffc91: Pulling fs layer
+4f4fb700ef54: Already exists
+a4e070c60133: Download complete
+515d4ff3649f: Download complete
+508255b2b357: Download complete
+df302ee0fd5d: Download complete
+641b42bab22d: Download complete
+acc4feae45b6: Download complete
+cb563e5d2f44: Download complete
+9bb9d3de2ae5: Download complete
+a0295b236ce6: Download complete
+b40150c1c271: Download complete
+b40150c1c271: Pull complete
+a0295b236ce6: Pull complete
+9bb9d3de2ae5: Pull complete
+788c57dbc3cb: Download complete
+788c57dbc3cb: Pull complete
+4f4fb700ef54: Pull complete
+acc4feae45b6: Pull complete
+508255b2b357: Pull complete
+73eaa4e381ec: Download complete
+cff2769ffc91: Download complete
+cff2769ffc91: Pull complete
+cb563e5d2f44: Pull complete
+df302ee0fd5d: Pull complete
+641b42bab22d: Pull complete
+73eaa4e381ec: Pull complete
+a4e070c60133: Pull complete
+515d4ff3649f: Pull complete
+Digest: sha256:b9f64abf7226fdb3463ca202bc99878ec847171e6c5f77bd34c8d1403fbf1eca
+Status: Downloaded newer image for nvidia/cuda:13.1.2-devel-ubuntu24.04
+docker.io/nvidia/cuda:13.1.2-devel-ubuntu24.04
+exit=0

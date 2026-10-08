@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>NInfer·KVMem 引擎 x99 吞吐调优（20261008）</title>
+<style>
+  :root{
+    --bg:#0b0b0d; --panel:#141416; --line:#2a2a2e;
+    --gold:#d4af37; --gold-dim:#8a7223; --txt:#ececec; --mut:#9a9a9a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Microsoft YaHei",-apple-system,Segoe UI,sans-serif;padding:22px 26px}
+  h1{font-size:19px;font-weight:600;letter-spacing:.5px}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--mut);font-size:12px;margin-top:6px;line-height:1.7}
+  .wrap{margin-top:18px}
+  .group{margin-bottom:22px}
+  .gname{font-size:13px;color:var(--gold);border-left:3px solid var(--gold);padding-left:8px;margin-bottom:10px;letter-spacing:.4px}
+  .u{color:var(--mut);font-size:11px;margin-left:6px}
+  .row{display:grid;grid-template-columns:150px 1fr 92px;align-items:center;gap:10px;margin:5px 0}
+  .lab{font-size:12px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lab small{color:var(--mut);font-size:10.5px;margin-left:4px}
+  .bar{height:20px;background:#1b1b1e;border-radius:2px;position:relative;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#7a6120,#d4af37);border-radius:2px}
+  .fill.dim{background:linear-gradient(90deg,#3d3d42,#6b6b73)}
+  .val{font-size:12px;color:var(--txt);text-align:right;font-variant-numeric:tabular-nums}
+  .pick .lab{color:var(--gold);font-weight:600}
+  .pick .fill{background:linear-gradient(90deg,#a8861f,#f3d97a);box-shadow:0 0 10px rgba(212,175,55,.35)}
+  .note{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:12px 14px;font-size:12px;color:var(--mut);line-height:1.85}
+  .note b{color:var(--gold);font-weight:600}
+  table{margin-top:14px;border-collapse:collapse;font-size:12px;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+  th{color:var(--gold);font-weight:500;background:#17171a}
+  td.n{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+  <h1>NInfer·KVMem 引擎 · x99 GPU0 吞吐实测 <span>(2026-10-08)</span></h1>
+  <div class="sub">
+    固定口径（用户定案）：rk4v4 · 256K 上下文 · <b>不开 KVMem</b> · temperature 1 / top_k 20 / top_p 0.95 / min_p 0 / presence 0 / frequency 0<br>
+    卡：RTX 3080 20GB (GPU0，sm_86) · 模型：gsq_rco_iq3_s_dflash2_prop.ninfer（MTP 头，权重 11.3 GiB）· 列内按组内最大值归一
+  </div>
+
+  <div class="wrap" id="groups"></div>
+
+  <table>
+    <tr><th>臂</th><th>参数变更</th><th>decode 均 tok/s</th><th>32K prefill</th><th>32K 重复 TTFT</th><th>cache</th><th>空闲显存</th></tr>
+    <tr><td>base</td><td>--draft-tokens 3（生产档）</td><td class="n">139.0</td><td class="n">1.37k</td><td class="n">243 ms</td><td class="n">99.9%</td><td class="n">1.65 GiB</td></tr>
+    <tr><td><b>draft7</b> ✅取用</td><td>--draft-tokens 7（+adaptive）</td><td class="n">151.5</td><td class="n">1.37k</td><td class="n">156 ms</td><td class="n">99.9%</td><td class="n">1.60 GiB</td></tr>
+    <tr><td>lk</td><td>draft7 + --lookup-ngram 64</td><td class="n">151.4</td><td class="n">1.37k</td><td class="n">246 ms</td><td class="n">99.9%</td><td class="n">1.60 GiB</td></tr>
+    <tr><td>a8</td><td>draft7 + --mlp-a8-decode</td><td class="n">151.4</td><td class="n">1.37k</td><td class="n">156 ms</td><td class="n">99.9%</td><td class="n">1.60 GiB</td></tr>
+    <tr><td>pf3</td><td>draft7 + chunk 2048 + --prefill-cublas（DSS 2）</td><td class="n">148.0</td><td class="n">1.42k</td><td class="n">165 ms</td><td class="n">99.9%</td><td class="n">0.95 GiB</td></tr>
+    <tr><td>a8c</td><td>pf3 + --mlp-a8-decode</td><td class="n">147.9</td><td class="n">1.42k</td><td class="n">162 ms</td><td class="n">99.9%</td><td class="n">0.95 GiB</td></tr>
+    <tr><td>pf-cublas@4096</td><td>chunk 4096 + cuBLAS</td><td class="n" colspan="5">启动被拒：requires 11,369,614,592 B &gt; available 8,709,144,576 B</td></tr>
+    <tr><td>pf2</td><td>chunk 2048 + cuBLAS（DSS 8）</td><td class="n" colspan="5">启动被拒：requires 9,128,804,608 B &gt; 8,709,144,576 B</td></tr>
+    <tr><td>d10</td><td>--draft-tokens 10</td><td class="n" colspan="5">启动被拒：requires 10,031,256,832 B &gt; 8,709,144,576 B（adaptive 每档一套 CUDA Graph）</td></tr>
+  </table>
+
+  <div class="note">
+    <b>结论</b>：唯一真实增益是 <b>--draft-tokens 3 → 7</b>（配 --adaptive-mtp）：数数字 decode 均值 <b>139.0 → 151.5 tok/s（+9.0%）</b>，
+    32K 前缀复用 TTFT 243 → 156 ms；MTP 接受率 93.6–99.7%。<br>
+    <b>无效项</b>（逐位相同的读数）：--lookup-ngram 64、--mlp-a8-decode。<b>装不下</b>：draft 10、chunk 4096、chunk 2048+cuBLAS（DSS 8）。<br>
+    <b>可选项</b>：--prefill-cublas + chunk 2048 + DSS 2 ⇒ 32K prefill 1.37k → 1.42k（+3.6%），代价是空闲显存 1.60 → 0.95 GiB。<br>
+    质量无回归：32K 中段针（BLUE-FALCON-7419）与追问在 <b>全部 6 个臂</b>都答对。
+  </div>
+
+<script>
+const groups = [
+  {
+    name:"数数字 decode 吞吐（越大越好）", unit:"tok/s",
+    rows:[
+      {lab:"base", sub:"draft 3（生产档）", v:139.0},
+      {lab:"draft7", sub:"draft 7 ← 取用", v:151.5, pick:true},
+      {lab:"lk", sub:"+lookup-ngram 64", v:151.4},
+      {lab:"a8", sub:"+mlp-a8-decode", v:151.4},
+      {lab:"pf3", sub:"+chunk2048+cuBLAS", v:148.0},
+      {lab:"a8c", sub:"pf3 +mlp-a8", v:147.9}
+    ]
+  },
+  {
+    name:"32K 预填充（越大越好）", unit:"tok/s",
+    rows:[
+      {lab:"base", sub:"chunk 1024", v:1370},
+      {lab:"draft7", sub:"chunk 1024", v:1370},
+      {lab:"lk", sub:"chunk 1024", v:1370},
+      {lab:"a8", sub:"chunk 1024", v:1370},
+      {lab:"pf3", sub:"chunk 2048 + cuBLAS", v:1420, pick:true},
+      {lab:"a8c", sub:"pf3 +mlp-a8", v:1420}
+    ]
+  },
+  {
+    name:"32K 前缀复用 TTFT（越小越好）", unit:"ms",
+    rows:[
+      {lab:"base", sub:"cache 99.9%", v:243},
+      {lab:"draft7", sub:"cache 99.9%", v:156, pick:true},
+      {lab:"lk", sub:"cache 99.9%", v:246},
+      {lab:"a8", sub:"cache 99.9%", v:156},
+      {lab:"pf3", sub:"cache 99.9%", v:165},
+      {lab:"a8c", sub:"cache 99.9%", v:162}
+    ]
+  }
+];
+const wrap = document.getElementById("groups");
+for (const g of groups){
+  const max = Math.max(...g.rows.map(r=>r.v));
+  const el = document.createElement("div");
+  el.className = "group";
+  el.innerHTML = `<div class="gname">${g.name}<span class="u">(${g.unit} · 组内最大值归一)</span></div>` +
+    g.rows.map(r=>`
+      <div class="row${r.pick?" pick":""}">
+        <div class="lab">${r.lab}<small>${r.sub}</small></div>
+        <div class="bar"><div class="fill${r.pick?"":" dim"}" style="width:${(r.v/max*100).toFixed(1)}%"></div></div>
+        <div class="val">${r.v.toLocaleString()}</div>
+      </div>`).join("");
+  wrap.appendChild(el);
+}
+</script>
+</body>
+</html>
