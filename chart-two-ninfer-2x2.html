@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>两个 ninfer · 2×2 投机头交叉对比（20261009）</title>
+<style>
+  :root{--bg:#0b0b0d;--panel:#141416;--line:#2a2a2e;--gold:#d4af37;--txt:#ececec;--mut:#9a9a9a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Microsoft YaHei",-apple-system,Segoe UI,sans-serif;padding:22px 26px}
+  h1{font-size:19px;font-weight:600;letter-spacing:.5px}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--mut);font-size:12px;margin-top:6px;line-height:1.8}
+  .group{margin:20px 0 6px}
+  .gname{font-size:13px;color:var(--gold);border-left:3px solid var(--gold);padding-left:8px;margin-bottom:10px}
+  .u{color:var(--mut);font-size:11px;margin-left:6px}
+  .row{display:grid;grid-template-columns:230px 1fr 96px;align-items:center;gap:10px;margin:5px 0}
+  .lab{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lab small{color:var(--mut);font-size:10.5px;margin-left:5px}
+  .bar{height:20px;background:#1b1b1e;border-radius:2px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#3d3d42,#6b6b73);border-radius:2px}
+  .fill.gold{background:linear-gradient(90deg,#a8861f,#f3d97a);box-shadow:0 0 10px rgba(212,175,55,.3)}
+  .val{font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+  .pick .lab{color:var(--gold);font-weight:600}
+  table{margin-top:16px;border-collapse:collapse;font-size:12px;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--gold);font-weight:500;background:#17171a}
+  td.n{font-variant-numeric:tabular-nums}
+  .note{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:12px 14px;font-size:12px;color:var(--mut);line-height:1.85}
+  .note b{color:var(--gold)}
+</style>
+</head>
+<body>
+  <h1>两个 ninfer · <span>2×2 投机头交叉对比</span>（长任务 65,150 token 题面 + 2,000 token 输出）</h1>
+  <div class="sub">
+    同一张卡（RTX 3080 20GB，GPU0 串行独占）· 同一模型文件（gsq_rco_iq3_s_dflash2_prop.ninfer）· 同一采样口径
+    （温度 1 / top_k 20 / top_p 0.95 / min_p 0 / 存在 0 / 重复 1）· 同一题面（3100 行 + 中段针）· 读数取引擎自己的 <code>req#N done</code> 行
+  </div>
+
+  <div class="group">
+    <div class="gname">长任务 decode（tok/s · 组内最大值归一）<span class="u">同头同档才是引擎对引擎</span></div>
+    <div class="row pick"><div class="lab">生产 ninfer · dflash2 draft12<small>ctx 250880 · 接受 93.4%</small></div><div class="bar"><div class="fill gold" style="width:100%"></div></div><div class="val">217.1</div></div>
+    <div class="row pick"><div class="lab">新引擎 · dflash2 draft12<small>ctx 225280 · 接受 94.0%</small></div><div class="bar"><div class="fill gold" style="width:98.5%"></div></div><div class="val">213.9</div></div>
+    <div class="row"><div class="lab">新引擎 · mtp draft3 + adaptive<small>ctx 262144 · 接受 99.3%</small></div><div class="bar"><div class="fill" style="width:53.9%"></div></div><div class="val">117.0</div></div>
+    <div class="row"><div class="lab">生产 ninfer · mtp draft3 + adaptive<small>ctx 262144 · 接受 95.0%</small></div><div class="bar"><div class="fill" style="width:52.6%"></div></div><div class="val">114.2</div></div>
+  </div>
+
+  <div class="group">
+    <div class="gname">65K 题面预填充（tok/s · 组内最大值归一）<span class="u">两侧同内核，差 ≤2%</span></div>
+    <div class="row"><div class="lab">新引擎 · dflash2</div><div class="bar"><div class="fill" style="width:100%"></div></div><div class="val">1,230</div></div>
+    <div class="row"><div class="lab">生产 ninfer · dflash2</div><div class="bar"><div class="fill" style="width:100%"></div></div><div class="val">1,230</div></div>
+    <div class="row"><div class="lab">新引擎 · mtp3</div><div class="bar"><div class="fill" style="width:100%"></div></div><div class="val">1,250</div></div>
+    <div class="row"><div class="lab">生产 ninfer · mtp3</div><div class="bar"><div class="fill" style="width:100%"></div></div><div class="val">1,250</div></div>
+  </div>
+
+  <div class="group">
+    <div class="gname">65K 追问前缀复用 TTFT（ms · 越小越好，组内最大值归一）<span class="u">cache 均 99.9%</span></div>
+    <div class="row"><div class="lab">新引擎 · dflash2</div><div class="bar"><div class="fill" style="width:93.0%"></div></div><div class="val">294</div></div>
+    <div class="row"><div class="lab">生产 ninfer · dflash2</div><div class="bar"><div class="fill" style="width:100%"></div></div><div class="val">316</div></div>
+    <div class="row"><div class="lab">新引擎 · mtp3</div><div class="bar"><div class="fill" style="width:88.9%"></div></div><div class="val">281</div></div>
+    <div class="row"><div class="lab">生产 ninfer · mtp3</div><div class="bar"><div class="fill" style="width:94.9%"></div></div><div class="val">300</div></div>
+  </div>
+
+  <table>
+    <tr><th>2×2</th><th>新引擎（本仓下游衍生 · 自编 sm_86）</th><th>生产 ninfer（上游 0.11.0 bundle）</th><th>差</th></tr>
+    <tr><td>mtp draft3 + adaptive</td><td class="n">117.0</td><td class="n">114.2</td><td class="n">+2.5%</td></tr>
+    <tr><td>dflash2 draft12</td><td class="n">213.9</td><td class="n">217.1</td><td class="n">−1.5%</td></tr>
+    <tr><td><b>同头相对增益</b></td><td class="n"><b>+82.8%</b>（dflash2 vs mtp）</td><td class="n"><b>+90.1%</b></td><td class="n">—</td></tr>
+  </table>
+
+  <div class="note">
+    <b>结论（修正上一轮口径）</b>：上一轮"新引擎 213.9 vs 生产 114.2（+87%）"是 <b>dflash2 对 mtp</b>，不是引擎对引擎。
+    补测 2×2 后：<b>相同投机头下两个引擎吞吐一致（差 ≤3%）</b>——dflash2 213.9 vs 217.1、mtp3 117.0 vs 114.2。<br>
+    ⇒ <b>+83~90% 的收益来自 dflash2 这个草稿头本身</b>（同一个模型文件里两个头都有），不是本仓引擎侧改动的功劳；本仓的价值在 KVMem 环能力（本轮按定案未启用）。
+    prefill（1.23–1.25k）与复用（cache 99.9% / TTFT 281–316 ms）两侧同量级，无差异。<br>
+    <b>采样噪声提醒</b>：温度 1 下模型会偶发自停——mtp3 档两次尝试分别出 54 / 99 token（另一侧 2000 token），这类短输出<b>不能</b>拿来比 decode；
+    表中数字均取"完整 2,000 token 输出"的那一次。
+  </div>
+</body>
+</html>
