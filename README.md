@@ -148,12 +148,6 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | `deploy/` | systemd 单元：`ninfer.service`（引擎）/ `ninfer-watchdog.service`（看门狗）/ `gpu-clocks.service`（开机锁频降压） |
 | `monitor/` | Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
 
-## 模型来源
-
-- 与上游 Windows 包**同款**的制品也在本机留了一份：`Qwen3.8-27B-GSQ-RCO-IQ3_S-ninfer-v3.ninfer`
-  —— SHA256 `29e54467ca0ddae7e9aac04439f72ad20dbf6dc8fb5e84833b41ec7de9c46750`（部署机上 `models/model.sha256` 留了同一份校验值）。
-- 本部署生产用的是同源的 `gsq_rco_iq3_s_dflash2_prop.ninfer`（自带 dflash2 草稿头 + 视觉塔）。
-
 ## 许可与致谢
 
 - 模型底座 [Qwen/Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B)：Apache-2.0
