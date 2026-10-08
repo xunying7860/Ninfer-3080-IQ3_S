@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>两个 ninfer · x99 长任务真实吞吐对比（20261009）</title>
+<style>
+  :root{--bg:#0b0b0d;--panel:#141416;--line:#2a2a2e;--gold:#d4af37;--txt:#ececec;--mut:#9a9a9a;--dim:#6b6b73}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Microsoft YaHei",-apple-system,Segoe UI,sans-serif;padding:22px 26px}
+  h1{font-size:19px;font-weight:600;letter-spacing:.5px}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--mut);font-size:12px;margin-top:6px;line-height:1.8}
+  .group{margin:20px 0 6px}
+  .gname{font-size:13px;color:var(--gold);border-left:3px solid var(--gold);padding-left:8px;margin-bottom:10px}
+  .u{color:var(--mut);font-size:11px;margin-left:6px}
+  .row{display:grid;grid-template-columns:210px 1fr 96px;align-items:center;gap:10px;margin:5px 0}
+  .lab{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lab small{color:var(--mut);font-size:10.5px;margin-left:5px}
+  .bar{height:20px;background:#1b1b1e;border-radius:2px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#3d3d42,#6b6b73);border-radius:2px}
+  .fill.gold{background:linear-gradient(90deg,#a8861f,#f3d97a);box-shadow:0 0 10px rgba(212,175,55,.3)}
+  .val{font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+  .pick .lab{color:var(--gold);font-weight:600}
+  table{margin-top:16px;border-collapse:collapse;font-size:12px;width:100%}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--gold);font-weight:500;background:#17171a}
+  td.n{font-variant-numeric:tabular-nums}
+  .note{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:12px 14px;font-size:12px;color:var(--mut);line-height:1.85}
+  .note b{color:var(--gold)}
+</style>
+</head>
+<body>
+  <h1>两个 ninfer · x99 GPU0 真实吞吐对比 <span>(2026-10-09)</span></h1>
+  <div class="sub">
+    同一张卡（RTX 3080 20GB，串行独占）· 同一模型（gsq_rco_iq3_s_dflash2_prop.ninfer）· 同一采样口径
+    （温度 1 / top_k 20 / top_p 0.95 / min_p 0 / 存在惩罚 0 / 重复惩罚 1）<br>
+    <b>新引擎</b> = ninfer-fusion-kvmem（本仓下游衍生，本机自编 Linux sm_86）· rk4v4 · ctx 225280 · <b>dflash2 draft12</b> ·
+    <b>生产 ninfer</b> = 上游 0.11.0 bundle · rk4v4 · ctx 262144 · <b>mtp draft3 + adaptive</b>　·　柱内按组内最大值归一
+  </div>
+  <div id="groups"></div>
+
+  <table>
+    <tr><th>测速页档位（题面 token）</th><th>新引擎 prefill t/s</th><th>新引擎 decode t/s</th><th>生产 prefill t/s</th><th>生产 decode t/s</th></tr>
+    <tr><td>2,048</td><td class="n">1385.41</td><td class="n">69.61</td><td class="n">1475.97</td><td class="n">72.68</td></tr>
+    <tr><td>4,096</td><td class="n">1462.48</td><td class="n">61.71</td><td class="n">1491.64</td><td class="n">126.53</td></tr>
+    <tr><td>8,192</td><td class="n">1446.61</td><td class="n">61.66</td><td class="n">1483.51</td><td class="n">71.24</td></tr>
+    <tr><td>16,384</td><td class="n">1429.01</td><td class="n">240.03</td><td class="n">1449.26</td><td class="n">73.93</td></tr>
+    <tr><td>32,768</td><td class="n">1359.32</td><td class="n">58.04</td><td class="n">1377.03</td><td class="n">68.81</td></tr>
+    <tr><td>65,536</td><td class="n">1234.95</td><td class="n">238.32</td><td class="n">1248.78</td><td class="n">64.47</td></tr>
+    <tr><td><b>均值</b></td><td class="n"><b>1386.3</b></td><td class="n"><b>121.6</b></td><td class="n"><b>1421.0</b></td><td class="n"><b>79.6</b></td></tr>
+  </table>
+
+  <div class="note">
+    <b>长任务（65,150 token 题面 + 2,000 token 输出，引擎权威行）</b>：新引擎 <b>decode 213.9 tok/s</b>（dflash2 接受 94.0%）vs 生产 <b>114.2</b>（mtp 接受 95.0%）
+    ⇒ <b>+87%</b>；prefill 两边同为 1.23–1.24k tok/s（差 1%）；同题面追问 cache 99.9%、TTFT 294 vs 297 ms（相同）。<br>
+    <b>页测口径说明</b>：页面用通用填充语料，续写不可预测 ⇒ dflash2 接受率在 16%–85% 之间跳（decode 呈双峰 58 / 240），
+    而生产 mtp 稳定在 64–127。**同一工具同一语料下两者均值差 1.5×，长任务（可预测续写）下差 1.9×** —— 报数字必须带语料。<br>
+    <b>prefill 两边一致</b>（均值 1386 vs 1421，差 2.5%）⇒ 本轮差异全部来自投机解码档位，不是 prefill 内核。
+  </div>
+
+<script>
+const groups = [
+  { name:"长任务 decode（65K 题面 + 2000 输出，引擎权威行）", unit:"tok/s", rows:[
+    {lab:"新引擎 dflash2 draft12", sub:"接受 94.0%", v:213.9, gold:true},
+    {lab:"生产 ninfer mtp3 adaptive", sub:"接受 95.0%", v:114.2}
+  ]},
+  { name:"测速页 decode 均值（6 档 2K→64K，服务端计时）", unit:"tok/s", rows:[
+    {lab:"新引擎 dflash2 draft12", sub:"双峰 58 / 240", v:121.6, gold:true},
+    {lab:"生产 ninfer mtp3 adaptive", sub:"稳定 64–127", v:79.6}
+  ]},
+  { name:"测速页 prefill 均值（6 档，服务端计时）", unit:"tok/s", rows:[
+    {lab:"新引擎 dflash2 draft12", sub:"", v:1386.3, gold:true},
+    {lab:"生产 ninfer mtp3 adaptive", sub:"", v:1421.0}
+  ]},
+  { name:"65K 追问前缀复用 TTFT（越小越好）", unit:"ms", rows:[
+    {lab:"新引擎 dflash2 draft12", sub:"cache 99.9%", v:294, gold:true},
+    {lab:"生产 ninfer mtp3 adaptive", sub:"cache 99.9%", v:297}
+  ]}
+];
+const wrap = document.getElementById('groups');
+for (const g of groups){
+  const max = Math.max(...g.rows.map(r=>r.v));
+  const el = document.createElement('div'); el.className='group';
+  el.innerHTML = `<div class="gname">${g.name}<span class="u">(${g.unit} · 组内最大值归一)</span></div>` +
+    g.rows.map(r=>`<div class="row${r.gold?' pick':''}">
+      <div class="lab">${r.lab}<small>${r.sub||''}</small></div>
+      <div class="bar"><div class="fill${r.gold?' gold':''}" style="width:${(r.v/max*100).toFixed(1)}%"></div></div>
+      <div class="val">${r.v.toLocaleString()}</div></div>`).join('');
+  wrap.appendChild(el);
+}
+</script>
+</body>
+</html>

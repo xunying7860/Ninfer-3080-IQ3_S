@@ -1,0 +1,63 @@
+#!/bin/bash
+# ============================================================================
+# ninfer-fusion-kvmem（下游衍生引擎 · KVMem 环能力）· x99 / GPU0 生产脚本
+# 位置：/data/ninfer-fusion-kvmem/run.sh   盘位：/data（SATA，sda）   端口：18084
+#
+# 【用户定案（2026-10-08/09）】先速度、上下文后议；采样固定
+#   temperature 1 · top_k 20 · top_p 0.95 · min_p 0 · presence 0 · frequency 0
+#   （repetition_penalty 引擎只接受默认 1.0 ⇒ 1 = 不惩罚）；不开 KVMem。
+#
+# 【速度调优结论（实测，引擎自己 req#N done 行；数数字 400 出、关思考）】
+#   mtp  --draft-tokens 3（原生产档）   decode 139.0 tok/s   prefill(32K) 1.37k   空闲 1.65 GiB  ctx 262144
+#   mtp  --draft-tokens 7（+adaptive）  decode 151.5 tok/s   prefill(32K) 1.37k   空闲 1.60 GiB  ctx 262144
+#   **dflash2 --draft-tokens 12（本档）  decode 250.0 tok/s   prefill(32K) 1.36k   空闲 833 MiB   ctx 225280**
+#   ⇒ 选 dflash2：**+65% decode**（对照 mtp draft7），接受率 91.2%。
+#   代价（装得下的边界，全部为引擎拒启原文反解）：
+#     · dflash2 草稿头权重 13.4 GiB（mtp 档 11.3 GiB）⇒ runtime 上限从 8,709,144,576 B 降到 6,463,094,784 B
+#     · ctx 250880 装不下（差 420 MB）；**225280 可**（free 833 MiB）
+#     · dflash2 **不能**配 --adaptive-mtp（引擎：--adaptive-mtp requires --spec mtp）
+#     · 状态槽压到 1、host KV 256 MiB（让权重的代价；代价是设备检查点变少）
+#   未采纳：--lookup-ngram 64 / --mlp-a8-decode（逐位相同，无效）；draft 10（拒启）
+#   `--vision`：本轮测试臂 VISION=0；视觉开销实测只 ~19 MB，余量 833 MiB 够，恢复为 ON（要省显存可设 VISION=0）
+#
+# 【起服务前提】GPU0 必须先让出：`sudo bash scripts/switch-gpu0.sh fusion`
+#   （先停 ninfer-watchdog，否则它探活失败会拉起生产 ninfer 抢卡）
+# ============================================================================
+set -u
+ROOT=/data/ninfer-fusion-kvmem
+MODEL=${MODEL:-/data/ninfer/models/gsq_rco_iq3_s_dflash2_prop.ninfer}
+PORT=${PORT:-18084}
+GPU=${GPU:-0}
+
+# —— 速度优先档（调优落点）——
+CTX=${CTX:-225280}         # 上下文；想回 256K 就得换回 mtp 档（dflash2 装不下）
+SPEC=${SPEC:-dflash2}
+DRAFT=${DRAFT:-12}
+ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
+DSS=${DSS:-1}
+HOSTKV=${HOSTKV:-256}
+CHUNK=${CHUNK:-1024}
+VISION=${VISION:-1}
+EXTRA=${EXTRA:-}
+
+LOADER=$ROOT/bundle/libs/lib64/ld-linux-x86-64.so.2
+LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/lib/x86_64-linux-gnu
+export CUDA_VISIBLE_DEVICES=$GPU
+mkdir -p "$ROOT/logs"
+
+ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
+      --max-context "$CTX" --kv-capacity "$CTX" --kv-dtype rk4v4
+      --temperature 1 --top-k 20 --top-p 0.95 --min-p 0
+      --presence-penalty 0 --frequency-penalty 0
+      --max-concurrency 1 --max-pending-requests 16 --prefill-chunk "$CHUNK"
+      --device-state-slots "$DSS" --host-state-slots 2 --host-kv-mib "$HOSTKV"
+      --context-cache-policy rolling --gdn-state-fp16
+      --spec "$SPEC" --draft-tokens "$DRAFT" --lm-head-draft
+      --chat-template /data/ninfer/chat_template.jinja
+      --default-reasoning-effort max --default-max-tokens 131072
+      --cors)
+[ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
+[ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
+if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi
+
+exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" "$MODEL" "${ARGS[@]}"
