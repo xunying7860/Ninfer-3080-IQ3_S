@@ -23,7 +23,7 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 | 服务 | systemd `ninfer.service` → `/data/ninfer/run.sh`，端口 **18082** |
 | 接口 | `http://<host>:18082/v1`（OpenAI 与 Anthropic 双协议），`--model-id qwen3.8-27b` |
 | 聊天模板 | `qwen3.8-froggeric-v22.5` |
-| 监控 | `monitor/` 黑金面板 → `http://<host>:18083/` |
+| 监控 | `monitor/` 监控面板 → `http://<host>:18083/` |
 
 ---
 
