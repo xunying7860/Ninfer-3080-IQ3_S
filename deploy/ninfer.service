@@ -1,0 +1,26 @@
+[Unit]
+Description=NInfer 推理服务（gsq_rco_iq3_s_dflash2_prop / GPU0 / 262144 ctx rk4v4 / 端口 18082 / vision overlay 12288 / MTP draft7 adaptive / max-tokens 229376 / 停放 1GiB+3槽 / 设备检查点 29 / 无磁盘层）
+Documentation=file:/data/ninfer/logs/ninfer-serve.log
+After=network-online.target gpu-clocks.service
+Wants=network-online.target gpu-clocks.service
+
+[Service]
+Type=simple
+User=xunying
+WorkingDirectory=/data/ninfer
+ExecStart=/data/ninfer/run.sh
+# 与 strata.service 对齐
+LimitMEMLOCK=infinity
+LimitNOFILE=1048576
+Restart=on-failure
+RestartSec=15
+# 冷启约 75 s（权重 11.6 GiB + 路由标定），禁用启动超时避免误判卡死
+TimeoutStartSec=0
+TimeoutStopSec=120
+# SIGTERM 给主进程，随后整组 SIGKILL，保证 loader 子进程不残留
+KillMode=mixed
+StandardOutput=append:/data/ninfer/logs/ninfer-serve.log
+StandardError=append:/data/ninfer/logs/ninfer-serve.log
+
+[Install]
+WantedBy=multi-user.target

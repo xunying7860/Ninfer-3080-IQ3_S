@@ -1,0 +1,15 @@
+[Unit]
+Description=ninfer 引擎看门狗（活锁指纹：空转低功耗 + 计数停滞 → 自动重启）
+Documentation=file:/data/ninfer/engine-watchdog.py
+After=ninfer.service
+Wants=ninfer.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -u /data/ninfer/engine-watchdog.py
+Restart=always
+RestartSec=10
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

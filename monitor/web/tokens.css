@@ -1,0 +1,88 @@
+/* NInfer Monitor — tokens，派生自 Strata 的 serve/web/tokens.css。
+   布局/字号/间距/圆角/动效 与 Strata 完全一致（逐字保留），只把「颜色」换成黑金。
+   黑金 = **初版配色**（纯黑底 + 初版金 #d4af37）；相对初版只有两处提亮：① 文字 ② 进度条/仪表盘。
+   亮色主题是同一套金色的香槟变体。 */
+
+:root{
+  /* type —— 与 Strata 一致 */
+  --st-font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --st-font-mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+  --st-fs-xs:12px;  --st-fs-sm:13px; --st-fs-md:14px; --st-fs-base:16px;
+  --st-fs-lg:18px;  --st-fs-xl:24px; --st-fs-stat:32px; --st-fs-display:40px;
+  --st-fw-regular:400; --st-fw-medium:500; --st-fw-bold:700; --st-fw-black:900;
+  --st-lh-tight:1.1; --st-lh-body:1.55;
+
+  /* spacing (4pt) —— 与 Strata 一致 */
+  --st-s-1:4px; --st-s-2:8px; --st-s-3:12px; --st-s-4:16px; --st-s-5:20px;
+  --st-s-6:24px; --st-s-8:32px; --st-s-10:40px; --st-s-12:48px; --st-s-16:64px;
+
+  /* radius —— 与 Strata 一致 */
+  --st-r-sm:8px; --st-r-md:14px; --st-r-lg:20px; --st-r-xl:24px; --st-r-pill:9999px;
+
+  /* motion —— 与 Strata 一致 */
+  --st-ease:cubic-bezier(.2,.7,.2,1); --st-dur:160ms;
+
+  /* color —— 黑金（默认主题）：**初版配色**，只做两处提亮 —— ① 文字 ② 进度条/仪表盘。
+     底色、卡片面、描边、阴影全部回到初版（纯黑底）。 */
+  --st-bg:#000000;                 /* 初版：纯黑背景 */
+  --st-surface:#0b0a08;            /* 初版：卡片近黑 */
+  --st-surface-2:#17140e;          /* 初版：次级面暖黑 */
+  --st-line:#3a2f18;               /* 初版：金色描边（暗） */
+  --st-line-soft:#241e13;
+  --st-ink:#ffffff;                /* 文字提亮（初版 #f3e7c6） */
+  --st-ink-soft:#f7f2e7;           /* 文字提亮（初版 #d8c9a2） */
+  --st-ink-muted:#e7e1d3;          /* 文字提亮（初版 #9b8a63） */
+  --st-icon:#d4af37;               /* 初版金（图标如故） */
+
+  --st-accent:#f5d76e;             /* 进度条/仪表盘提亮（初版 #d4af37） */
+  --st-accent-hover:#ffe485;
+  --st-accent-ink:#0a0906;
+  --st-accent-tint:rgba(212,175,55,.13);
+  --st-accent-text:#f0d98d;        /* Generating 徽标文字提亮（初版 #e8c96b） */
+  --st-focus:#ffd700;
+
+  --st-info:#e8c65a;     --st-info-tint:rgba(201,162,39,.14);   --st-info-text:#f0d98d;
+  --st-warn:#ffc247;     --st-warn-tint:rgba(255,176,46,.14);   --st-warn-text:#ffd98c;
+  --st-danger:#ff6b6b;   --st-danger-tint:rgba(255,82,82,.14);  --st-danger-text:#ffa3a3;
+
+  --st-code-bg:#0a0906;  --st-code-ink:#f0e4c4;
+
+  --st-sh-card:0 1px 2px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.06);
+  --st-sh-bar:0 12px 32px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.5);
+  --st-sh-pop:0 16px 48px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+/* color —— 亮色：香槟金（同一套金色，浅底） */
+[data-theme="light"]{
+  --st-bg:#f8f4e9;
+  --st-surface:#fffdf6;
+  --st-surface-2:#f2ebd9;
+  --st-line:#e2d5b1;
+  --st-line-soft:#ece3cc;
+  --st-ink:#1c1710;
+  --st-ink-soft:#3a3222;
+  --st-ink-muted:#7d6e50;
+  --st-icon:#8a6d1f;
+
+  --st-accent:#b8860b;
+  --st-accent-hover:#96690a;
+  --st-accent-ink:#fffdf6;
+  --st-accent-tint:#f9f0d6;
+  --st-accent-text:#8a6d1f;
+  --st-focus:#b8860b;
+
+  --st-info:#8a6d1f;     --st-info-tint:#f6efd9;  --st-info-text:#6f5714;
+  --st-warn:#a86b00;     --st-warn-tint:#fbeed2;  --st-warn-text:#7d5000;
+  --st-danger:#c0272d;   --st-danger-tint:#fbe4e4;--st-danger-text:#8f1c21;
+
+  --st-code-bg:#1a1610;  --st-code-ink:#f0e4c4;
+
+  --st-sh-card:0 18px 7px rgba(90,70,20,.04),0 10px 6px rgba(90,70,20,.05),0 4px 4px rgba(90,70,20,.06),0 1px 2px rgba(90,70,20,.08);
+  --st-sh-bar:0 54px 21px rgba(90,70,20,.03),0 30px 18px rgba(90,70,20,.05),0 13px 13px rgba(90,70,20,.07),0 3px 7px rgba(90,70,20,.09);
+  --st-sh-pop:0 10px 40px rgba(60,45,10,.12),0 1px 3px rgba(60,45,10,.10);
+  color-scheme:light;
+}
+
+/* data-theme="dark" 与 :root 同值，无需重复声明（html 上写 data-theme 只为让浏览器按暗色渲染原生控件） */
+[data-theme="dark"]{ color-scheme:dark; }

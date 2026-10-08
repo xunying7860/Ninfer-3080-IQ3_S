@@ -1,0 +1,25 @@
+# 数据与二进制：一律不入库（14 GiB 级制品 / 引擎运行时）
+models/
+bundle/
+bundle-linux-sm86.tar.gz
+kvcache/
+libs/
+bin/
+logs/
+burn
+
+# 编译与运行产物
+__pycache__/
+*.pyc
+*.log
+*.pyo
+
+# 历代参数快照与临时产物（只保留当前生产文件）
+*.bak
+*.bak-*
+*.new
+*.new2
+run.sh.PROD-*
+dmon-*.txt
+top-*.txt
+repro-*.out

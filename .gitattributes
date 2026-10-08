@@ -1,0 +1,8 @@
+# 本仓库是 Linux 部署仓库：脚本/单元/配置一律以 LF 入库，检出也用 LF。
+* text=auto eol=lf
+
+# 二进制原样
+*.png binary
+*.webp binary
+*.tar.gz binary
+*.json -text

@@ -1,0 +1,20 @@
+[Unit]
+Description=NInfer 监控面板（黑金 Web 面板，端口 18083）
+Documentation=file:/data/ninfer/monitor/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xunying
+Group=xunying
+WorkingDirectory=/data/ninfer/monitor
+ExecStart=/usr/bin/python3 -u /data/ninfer/monitor/server/ninfer-monitor.py
+Restart=on-failure
+RestartSec=3
+# 面板崩了不影响引擎；引擎重启后日志 tailer 自愈
+StandardOutput=append:/data/ninfer/monitor/ninfer-monitor.log
+StandardError=append:/data/ninfer/monitor/ninfer-monitor.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=Lock RTX3080 clocks / V-F offsets / power limit (T-03)
+Documentation=file:///data/workspace/qwen38_sglang/03_gpu_undervolt_1800.md
+After=nvidia-persistenced.service
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# 一条命令把 持久化模式 + 锁频 + GPC/MEM 偏移 + 功耗墙 全设好（含逐项回读校验）
+# --force：开机时若已有进程占用 GPU 也照设（此时 GPU 归我们自己，不存在污染基线问题）
+ExecStart=/usr/bin/python3 /data/workspace/qwen38_sglang/bin/s81_gpu_tune.py apply --watts 320 --gpc-offset 250 --mem-offset 500 --gclock-min 210 --gclock-max 1800 --gpus 0,1  --commit --force
+TimeoutStartSec=180
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
