@@ -40,6 +40,8 @@ SPEC=${SPEC:-dflash2}
 DRAFT=${DRAFT:-12}
 ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
 DSS=${DSS:-1}
+HOSTSLOTS=${HOSTSLOTS:-2}  # --host-state-slots：主机侧常驻的会话检查点份数（多吃 RAM，不吃显存）
+PRIVCONT=${PRIVCONT:-}     # --max-private-continuations：私有续写目录容量（默认 2×max-concurrency；空=用默认）
 HOSTKV=${HOSTKV:-256}
 MAXTOK=${MAXTOK:-131072}   # --default-max-tokens：**必须 ≤ 池 token 数**（Bug手册 §1.2：max_tokens ≫ 池 ⇒ worker 崩 + 全 503 不自愈）
 CHUNK=${CHUNK:-1024}
@@ -56,7 +58,7 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
       --temperature 1 --top-k 20 --top-p 0.95 --min-p 0
       --presence-penalty 0 --frequency-penalty 0
       --max-concurrency 1 --max-pending-requests 16 --prefill-chunk "$CHUNK"
-      --device-state-slots "$DSS" --host-state-slots 2 --host-kv-mib "$HOSTKV"
+      --device-state-slots "$DSS" --host-state-slots "$HOSTSLOTS" --host-kv-mib "$HOSTKV"
       --context-cache-policy rolling --gdn-state-fp16
       --spec "$SPEC" --draft-tokens "$DRAFT" --lm-head-draft
       --chat-template /data/ninfer/chat_template.jinja
@@ -65,6 +67,7 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
 [ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
 [ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
 [ -n "${ROPEYARN_FACTOR:-}" ] && ARGS+=(--rope-yarn-factor "$ROPEYARN_FACTOR")
+[ -n "$PRIVCONT" ] && ARGS+=(--max-private-continuations "$PRIVCONT")
 [ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
 if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi
 
