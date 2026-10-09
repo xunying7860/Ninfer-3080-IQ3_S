@@ -42,6 +42,9 @@ ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
 DSS=${DSS:-1}
 HOSTSLOTS=${HOSTSLOTS:-2}  # --host-state-slots：主机侧常驻的会话检查点份数（多吃 RAM，不吃显存）
 PRIVCONT=${PRIVCONT:-}     # --max-private-continuations：私有续写目录容量（默认 2×max-concurrency；空=用默认）
+LEASE=${LEASE:-0}           # --kv-lease-growth=1：输出页只预留 4096 token 窗口按需扩展（替代"整份 max_tokens 一次预留"）
+#                             ★ 依据 fork Bug手册 §1.2 的候选修法；不开时 15:54 实测崩于
+#                             `Paged KV single-page materialization exceeds reservation`（paged_kv_cache.cpp:528）
 HOSTKV=${HOSTKV:-256}
 MAXTOK=${MAXTOK:-131072}   # --default-max-tokens：**必须 ≤ 池 token 数**（Bug手册 §1.2：max_tokens ≫ 池 ⇒ worker 崩 + 全 503 不自愈）
 CHUNK=${CHUNK:-1024}
@@ -68,9 +71,10 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
 [ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
 [ -n "${ROPEYARN_FACTOR:-}" ] && ARGS+=(--rope-yarn-factor "$ROPEYARN_FACTOR")
 [ -n "$PRIVCONT" ] && ARGS+=(--max-private-continuations "$PRIVCONT")
+[ "$LEASE" = "1" ] && ARGS+=(--kv-lease-growth)
 [ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
 if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi
 
-echo "ENV: CTX=$CTX POOL=$POOL HOSTKV=$HOSTKV ROPEYARN=${ROPEYARN:-0} SPEC=$SPEC DRAFT=$DRAFT DSS=$DSS KV_RING=${NINFER_KV_RING:-0} KV_WINDOW=${NINFER_KV_WINDOW:-} KV_RETRIEVE=${NINFER_KV_RETRIEVE:-}"
+echo "ENV: CTX=$CTX POOL=$POOL HOSTKV=$HOSTKV ROPEYARN=${ROPEYARN:-0} LEASE=${LEASE:-0} SPEC=$SPEC DRAFT=$DRAFT DSS=$DSS KV_RING=${NINFER_KV_RING:-0} KV_WINDOW=${NINFER_KV_WINDOW:-} KV_RETRIEVE=${NINFER_KV_RETRIEVE:-}"
 
 exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" "$MODEL" "${ARGS[@]}"
