@@ -42,6 +42,12 @@ ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
 DSS=${DSS:-1}
 HOSTSLOTS=${HOSTSLOTS:-2}  # --host-state-slots：主机侧常驻的会话检查点份数（多吃 RAM，不吃显存）
 PRIVCONT=${PRIVCONT:-}     # --max-private-continuations：私有续写目录容量（默认 2×max-concurrency；空=用默认）
+RECOVER=${RECOVER:-1}       # --recover-invariant-failures：**内部不变量破坏时只丢在途请求、引擎继续服务**
+#                             ★ 2026-10-09 关键修复：今天 4 个崩溃签名（active KV snapshot page ownership /
+#                             Paged KV single-page materialization / KV activation reservation is stale /
+#                             KV activation capacity reservation changed）全是 failure_class.h 分类表里的
+#                             `std::logic_error -> Invariant`（= 默认"崩掉整个引擎"）；该开关是引擎自带、
+#                             help 原文 "fail the active requests and keep serving the queue instead of failing the engine"。
 LEASE=${LEASE:-0}           # --kv-lease-growth=1：输出页只预留 4096 token 窗口按需扩展（替代"整份 max_tokens 一次预留"）
 #                             ★ 依据 fork Bug手册 §1.2 的候选修法；不开时 15:54 实测崩于
 #                             `Paged KV single-page materialization exceeds reservation`（paged_kv_cache.cpp:528）
@@ -76,6 +82,7 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
 [ -n "${ROPEYARN_FACTOR:-}" ] && ARGS+=(--rope-yarn-factor "$ROPEYARN_FACTOR")
 [ -n "$PRIVCONT" ] && ARGS+=(--max-private-continuations "$PRIVCONT")
 [ "$LEASE" = "1" ] && ARGS+=(--kv-lease-growth)
+[ "$RECOVER" = "1" ] && ARGS+=(--recover-invariant-failures)
 [ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
 if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi
 
