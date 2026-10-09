@@ -1,0 +1,15 @@
+[NEW2/B-超池题面] 0.2s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 225280","param":"messages","type":"invalid_request_error"}}
+[NEW2/C1-超池重发] 0.2s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 225280","param":"messages","type":"invalid_request_error"}}
+[NEW2/C2-砖化回归(正常短请求)] 0.4s prompt=14 out=2 reasoning=0 finish=stop content_len=2 命中针=False
+[NEW2/D-思考吃满(64)] 0.5s prompt=56 out=35 reasoning=33 finish=stop content_len=1 命中针=False
+[NEW2/A2-活锁复现] 发题（题面≈51.5K + max_tokens 229376 > 池）… 客户端 240s 超时
+[NEW2/A2-活锁复现] 46.7s prompt=51483 out=1050 reasoning=0 finish=stop content_len=4099 命中针=False
+[NEW2] 用例结束
+2026-10-09 07:04:38.108  INFO  req#8 done | openai-chat | output limit | prompt 32,768 | output 512 | cache 49 (0.1%, shared prefix) | TTFT 24.2s | total 33.0s | queue 38.9 ms | prefill 1.36k tok/s | decode 57.9 tok/s | mixed speculation accepted 341/2,016 (16.9%) | ngram 15/15 accepted, 1 rounds
+2026-10-09 07:05:35.008  INFO  req#9 done | openai-chat | output limit | prompt 65,536 | output 512 | cache 49 (0.1%, shared prefix) | TTFT 53.2s | total 55.3s | queue 51.0 ms | prefill 1.23k tok/s | decode 238.0 tok/s | mixed speculation accepted 472/557 (84.7%) | ngram 461/461 accepted, 31 rounds
+2026-10-09 07:50:00.992  INFO  req#3 done | openai-chat | stop token | prompt 14 | output 2 | cache 0 (0.0%) | TTFT 330 ms | total 378 ms | queue 16.8 ms | prefill 42.6 tok/s | decode 20.6 tok/s | dflash2 accepted 1/12 (8.3%)
+2026-10-09 07:50:01.369  INFO  req#4 done | openai-chat | stop token | prompt 56 | output 23 | cache 0 (0.0%) | TTFT 143 ms | total 376 ms | queue 18.6 ms | prefill 461.0 tok/s | decode 94.5 tok/s | dflash2 accepted 17/60 (28.3%)
+2026-10-09 07:50:02.802  INFO  req#5 done | openai-chat | stop token | prompt 1,108 | output 120 | cache 0 (0.0%) | TTFT 914 ms | total 1.4s | queue 14.5 ms | prefill 1.24k tok/s | decode 229.8 tok/s | dflash2 accepted 108/132 (81.8%)
+2026-10-09 08:07:19.040  INFO  req#3 done | openai-chat | stop token | prompt 14 | output 2 | cache 0 (0.0%) | TTFT 330 ms | total 379 ms | queue 16.6 ms | prefill 42.6 tok/s | decode 20.7 tok/s | dflash2 accepted 1/12 (8.3%)
+2026-10-09 08:07:19.510  INFO  req#4 done | openai-chat | stop token | prompt 56 | output 35 | cache 0 (0.0%) | TTFT 143 ms | total 469 ms | queue 18.6 ms | prefill 460.0 tok/s | decode 104.3 tok/s | dflash2 accepted 28/84 (33.3%)
+2026-10-09 08:08:06.168  INFO  req#5 done | openai-chat | stop token | prompt 51,483 | output 1,050 | cache 0 (0.0%) | TTFT 40.3s | total 46.7s | queue 34.4 ms | prefill 1.28k tok/s | decode 164.7 tok/s | mixed speculation accepted 932/1,545 (60.3%) | ngram 119/645 accepted, 43 rounds

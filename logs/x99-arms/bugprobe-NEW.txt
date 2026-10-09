@@ -1,0 +1,8 @@
+[NEW/B-超池题面] 0.2s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 225280","param":"messages","type":"invalid_request_error"}}
+[NEW/C1-超池重发] 0.2s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 225280","param":"messages","type":"invalid_request_error"}}
+[NEW/C2-砖化回归(正常短请求)] 0.4s prompt=14 out=2 reasoning=0 finish=stop content_len=2 命中针=False
+[NEW/D-思考吃满(64)] 0.4s prompt=56 out=23 reasoning=21 finish=stop content_len=1 命中针=False
+[NEW/A-活锁] 发题（max_tokens 300000 > 池）… 客户端 150s 超时
+[NEW/A-活锁] 1.4s prompt=1108 out=120 reasoning=0 finish=stop content_len=119 命中针=False
+[NEW] 用例结束
+Fri Oct  9 07:50:02 AM CST 2026

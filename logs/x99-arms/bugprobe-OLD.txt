@@ -1,0 +1,14 @@
+[OLD/B-超池题面] 0.3s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 262144","param":"messages","type":"invalid_request_error"}}
+[OLD/C1-超池重发] 0.3s  HTTP 400: {"error":{"code":"context_length_exceeded","message":"prepared prompt exceeds Engine max_context 262144","param":"messages","type":"invalid_request_error"}}
+[OLD/C2-砖化回归(正常短请求)] 0.1s prompt=14 out=2 reasoning=0 finish=stop content_len=2 命中针=False
+[OLD/D-思考吃满(64)] 0.4s prompt=56 out=23 reasoning=21 finish=stop content_len=1 命中针=False
+[OLD/A2-活锁复现] 发题（题面≈51.5K + max_tokens 229376 > 池）… 客户端 240s 超时
+[OLD/A2-活锁复现] 41.4s prompt=51483 out=143 reasoning=0 finish=stop content_len=481 命中针=True
+[OLD] 用例结束
+--- 权威行（OLD）---
+2026-10-09 08:00:52.107  INFO  req#4 started | openai-chat non-stream | 1 message | max output 16 | thinking off
+2026-10-09 08:00:52.190  INFO  req#4 done | openai-chat | stop token | prompt 14 | output 2 | cache 7 (50.0%, turn closure) | TTFT 54.1 ms | total 83.9 ms | prefill 133.1 tok/s | decode 34.0 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-09 08:00:52.192  INFO  req#5 started | openai-chat non-stream | 1 message | max output 64 | thinking xhigh
+2026-10-09 08:00:52.565  INFO  req#5 done | openai-chat | stop token | prompt 56 | output 23 | cache 0 (0.0%) | TTFT 118 ms | total 375 ms | prefill 481.0 tok/s | decode 85.6 tok/s | mtp accepted 16/27 (59.3%)
+2026-10-09 08:00:52.604  INFO  req#6 started | openai-chat non-stream | 1 message | max output 229,376 | thinking off
+2026-10-09 08:01:33.957  INFO  req#6 done | openai-chat | stop token | prompt 51,483 | output 143 | cache 0 (0.0%) | TTFT 39.8s | total 41.4s | queue 15.5 ms | prefill 1.29k tok/s | decode 90.8 tok/s | mtp accepted 96/144 (66.7%)
