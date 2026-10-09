@@ -30,11 +30,12 @@ PORT=${PORT:-18084}
 GPU=${GPU:-0}
 
 # —— 档位（默认速度档 225280；512K/1M 走 systemd drop-in 覆盖这些变量）——
-#   512K 档（2026-10-09 起为线上档）：CTX=524288 POOL=17920 HOSTKV=10240 ROPEYARN=1 DSS=1
+#   384K 档（2026-10-09 起为线上档）：CTX=393216 HOSTKV=5120 ROPEYARN=1 DSS=10
+#     （512K 档的旧值 CTX=524288 HOSTKV=8192 见 git 历史；池一直是 POOL=158720）
 #     + 环环境变量 NINFER_KV_WINDOW=16384 NINFER_KV_RETRIEVE=8192 NINFER_KV_RING=1
 #       NINFER_HOST_PAGEABLE=1 NINFER_KV_REUSE_HOSTBACKED=1（引擎直接读环境，见 drop-in）
 #     依据：主机层每页 1.146 MB（64 token/页）；512K=8192 页，池 280 页 ⇒ 需 7912 页 = 9.07 GiB。
-CTX=${CTX:-225280}         # 逻辑上下文；想回 256K 就得换回 mtp 档（dflash2 装不下）
+CTX=${CTX:-225280}         # 逻辑上下文（线上档由 drop-in 覆盖为 393216 = 384K）
 POOL=${POOL:-$CTX}         # --kv-capacity：**环语义要求 POOL < CTX**（默认相等=不开环）
 SPEC=${SPEC:-dflash2}
 DRAFT=${DRAFT:-12}
