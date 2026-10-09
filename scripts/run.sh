@@ -46,6 +46,9 @@ LEASE=${LEASE:-0}           # --kv-lease-growth=1：输出页只预留 4096 toke
 #                             ★ 依据 fork Bug手册 §1.2 的候选修法；不开时 15:54 实测崩于
 #                             `Paged KV single-page materialization exceeds reservation`（paged_kv_cache.cpp:528）
 HOSTKV=${HOSTKV:-256}
+STATSMS=${STATSMS:-1000}    # --log-stats-interval-ms：引擎 throughput 统计行周期（默认 5000）
+#                             收紧到 1000ms 是为了面板的 tg（每秒刷新）：该行是引擎唯一
+#                             连续的解码速率信号（指标与计数器都只在请求完成时跳一次）。
 MAXTOK=${MAXTOK:-131072}   # --default-max-tokens：**必须 ≤ 池 token 数**（Bug手册 §1.2：max_tokens ≫ 池 ⇒ worker 崩 + 全 503 不自愈）
 CHUNK=${CHUNK:-1024}
 VISION=${VISION:-1}
@@ -66,6 +69,7 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
       --spec "$SPEC" --draft-tokens "$DRAFT" --lm-head-draft
       --chat-template /data/ninfer/chat_template.jinja
       --default-reasoning-effort max --default-max-tokens "$MAXTOK"
+      --log-stats-interval-ms "$STATSMS"
       --cors)
 [ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
 [ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
