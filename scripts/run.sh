@@ -1,21 +1,27 @@
 #!/bin/bash
 # ============================================================================
-# ninfer-fusion-kvmem（下游衍生引擎 · KVMem 环能力）· x99 / GPU0 启动脚本
-# 位置：/data/ninfer-fusion-kvmem/run.sh
-# 盘位：/data（= ubuntu--vg-ubuntu--lv ← /dev/sda，SATA 盘）
-# 端口：18084（避开 8080 strata / 18082 ninfer / 18083 面板）
+# ninfer-fusion-kvmem（下游衍生引擎 · KVMem 环能力）· x99 / GPU0 生产脚本
+# 位置：/data/ninfer-fusion-kvmem/run.sh   盘位：/data（SATA，sda）   端口：18084
 #
-# 用户定案口径（2026-10-08）：**不开 KVMem**、`rk4v4`、**256K 上下文**、
-#   采样 temperature 1 / top_k 20 / top_p 0.95 / min_p 0 / presence_penalty 0 /
-#   repetition_penalty 1（引擎只接受默认值 1.0）；其余参数可参与调优。
+# 【用户定案（2026-10-08/09）】先速度、上下文后议；采样固定
+#   temperature 1 · top_k 20 · top_p 0.95 · min_p 0 · presence 0 · frequency 0
+#   （repetition_penalty 引擎只接受默认 1.0 ⇒ 1 = 不惩罚）；不开 KVMem。
 #
-# 起服务前提（现场实测，2026-10-08）：
-#   1) GPU0 被生产 ninfer 占满 ⇒ 先 `sudo systemctl stop ninfer-watchdog ninfer`
-#      （**必须先停 watchdog**，否则它探活失败会把 ninfer 拉起来抢卡）。
-#   2) 主机内存：strata(GPU1) 常驻 ~57 GiB ⇒ 起本引擎前先 `free -m` 看 MemAvailable，
-#      不足就把 --host-kv-mib 再调小（本脚本默认 512）。
+# 【速度调优结论（实测，引擎自己 req#N done 行；数数字 400 出、关思考）】
+#   mtp  --draft-tokens 3（原生产档）   decode 139.0 tok/s   prefill(32K) 1.37k   空闲 1.65 GiB  ctx 262144
+#   mtp  --draft-tokens 7（+adaptive）  decode 151.5 tok/s   prefill(32K) 1.37k   空闲 1.60 GiB  ctx 262144
+#   **dflash2 --draft-tokens 12（本档）  decode 250.0 tok/s   prefill(32K) 1.36k   空闲 833 MiB   ctx 225280**
+#   ⇒ 选 dflash2：**+65% decode**（对照 mtp draft7），接受率 91.2%。
+#   代价（装得下的边界，全部为引擎拒启原文反解）：
+#     · dflash2 草稿头权重 13.4 GiB（mtp 档 11.3 GiB）⇒ runtime 上限从 8,709,144,576 B 降到 6,463,094,784 B
+#     · ctx 250880 装不下（差 420 MB）；**225280 可**（free 833 MiB）
+#     · dflash2 **不能**配 --adaptive-mtp（引擎：--adaptive-mtp requires --spec mtp）
+#     · 状态槽压到 1、host KV 256 MiB（让权重的代价；代价是设备检查点变少）
+#   未采纳：--lookup-ngram 64 / --mlp-a8-decode（逐位相同，无效）；draft 10（拒启）
+#   `--vision`：本轮测试臂 VISION=0；视觉开销实测只 ~19 MB，余量 833 MiB 够，恢复为 ON（要省显存可设 VISION=0）
 #
-# 用法：./run.sh [额外 argv...]        # 额外参数追加在末尾，可覆盖同名项
+# 【起服务前提】GPU0 必须先让出：`sudo bash scripts/switch-gpu0.sh fusion`
+#   （先停 ninfer-watchdog，否则它探活失败会拉起生产 ninfer 抢卡）
 # ============================================================================
 set -u
 ROOT=/data/ninfer-fusion-kvmem
@@ -23,24 +29,44 @@ MODEL=${MODEL:-/data/ninfer/models/gsq_rco_iq3_s_dflash2_prop.ninfer}
 PORT=${PORT:-18084}
 GPU=${GPU:-0}
 
-# 运行铁律：用 bundle 自带加载器；**绝不全局 export LD_LIBRARY_PATH**
+# —— 档位（默认速度档 225280；512K/1M 走 systemd drop-in 覆盖这些变量）——
+#   512K 档（2026-10-09 起为线上档）：CTX=524288 POOL=17920 HOSTKV=10240 ROPEYARN=1 DSS=1
+#     + 环环境变量 NINFER_KV_WINDOW=16384 NINFER_KV_RETRIEVE=8192 NINFER_KV_RING=1
+#       NINFER_HOST_PAGEABLE=1 NINFER_KV_REUSE_HOSTBACKED=1（引擎直接读环境，见 drop-in）
+#     依据：主机层每页 1.146 MB（64 token/页）；512K=8192 页，池 280 页 ⇒ 需 7912 页 = 9.07 GiB。
+CTX=${CTX:-225280}         # 逻辑上下文；想回 256K 就得换回 mtp 档（dflash2 装不下）
+POOL=${POOL:-$CTX}         # --kv-capacity：**环语义要求 POOL < CTX**（默认相等=不开环）
+SPEC=${SPEC:-dflash2}
+DRAFT=${DRAFT:-12}
+ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
+DSS=${DSS:-1}
+HOSTKV=${HOSTKV:-256}
+CHUNK=${CHUNK:-1024}
+VISION=${VISION:-1}
+EXTRA=${EXTRA:-}
+
 LOADER=$ROOT/bundle/libs/lib64/ld-linux-x86-64.so.2
 LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/lib/x86_64-linux-gnu
-
 export CUDA_VISIBLE_DEVICES=$GPU
 mkdir -p "$ROOT/logs"
 
-exec "$LOADER" --library-path "$LIBPATH" \
-  "$ROOT/bundle/bin/ninfer-serve" "$MODEL" \
-  --host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b \
-  --max-context 262144 --kv-capacity 262144 --kv-dtype rk4v4 \
-  --temperature 1 --top-k 20 --top-p 0.95 --min-p 0 \
-  --presence-penalty 0 --frequency-penalty 0 \
-  --vision --vision-residency overlay --vision-max-merged 12288 \
-  --max-concurrency 1 --max-pending-requests 16 --prefill-chunk 1024 \
-  --device-state-slots 8 --host-state-slots 2 --host-kv-mib 512 \
-  --context-cache-policy rolling --gdn-state-fp16 \
-  --spec mtp --draft-tokens 3 --adaptive-mtp \
-  --chat-template /data/ninfer/chat_template.jinja \
-  --default-reasoning-effort max --default-max-tokens 131072 \
-  --cors "$@"
+ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
+      --max-context "$CTX" --kv-capacity "$POOL" --kv-dtype rk4v4
+      --temperature 1 --top-k 20 --top-p 0.95 --min-p 0
+      --presence-penalty 0 --frequency-penalty 0
+      --max-concurrency 1 --max-pending-requests 16 --prefill-chunk "$CHUNK"
+      --device-state-slots "$DSS" --host-state-slots 2 --host-kv-mib "$HOSTKV"
+      --context-cache-policy rolling --gdn-state-fp16
+      --spec "$SPEC" --draft-tokens "$DRAFT" --lm-head-draft
+      --chat-template /data/ninfer/chat_template.jinja
+      --default-reasoning-effort max --default-max-tokens 131072
+      --cors)
+[ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
+[ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
+[ -n "${ROPEYARN_FACTOR:-}" ] && ARGS+=(--rope-yarn-factor "$ROPEYARN_FACTOR")
+[ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
+if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi
+
+echo "ENV: CTX=$CTX POOL=$POOL HOSTKV=$HOSTKV ROPEYARN=${ROPEYARN:-0} SPEC=$SPEC DRAFT=$DRAFT DSS=$DSS KV_RING=${NINFER_KV_RING:-0} KV_WINDOW=${NINFER_KV_WINDOW:-} KV_RETRIEVE=${NINFER_KV_RETRIEVE:-}"
+
+exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" "$MODEL" "${ARGS[@]}"
