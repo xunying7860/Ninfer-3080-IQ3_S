@@ -20,6 +20,7 @@ HOSTKV=${HOSTKV:-512}
 HOSTSLOTS=${HOSTSLOTS:-2}
 VISION=${VISION:-1}
 CTX=${CTX:-262144}
+POOL=${POOL:-$CTX}          # --kv-capacity：**环语义要求 POOL < CTX**（默认相等=不开环）
 LMHEAD=${LMHEAD:-0}
 EXTRA=${EXTRA:-}
 
@@ -29,7 +30,7 @@ export CUDA_VISIBLE_DEVICES=$GPU
 mkdir -p "$ROOT/logs"
 
 ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
-      --max-context "$CTX" --kv-capacity "$CTX" --kv-dtype rk4v4
+      --max-context "$CTX" --kv-capacity "$POOL" --kv-dtype rk4v4
       --temperature 1 --top-k 20 --top-p 0.95 --min-p 0
       --presence-penalty 0 --frequency-penalty 0
       --max-concurrency 1 --max-pending-requests 16 --prefill-chunk "$CHUNK"
@@ -42,6 +43,8 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
 [ "$VISION" = "1" ] && ARGS+=(--vision --vision-residency overlay --vision-max-merged 12288)
 [ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
 [ "$LMHEAD" = "1" ] && ARGS+=(--lm-head-draft)
+[ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
+[ -n "${ROPEYARN_FACTOR:-}" ] && ARGS+=(--rope-yarn-factor "$ROPEYARN_FACTOR")
 [ "$ALLOWANCE" != "0" ] && ARGS+=(--cuda-graph-allowance-mib "$ALLOWANCE")
 # EXTRA 用空格分隔的额外旗标
 if [ -n "$EXTRA" ]; then for f in $EXTRA; do ARGS+=("$f"); done; fi

@@ -1,0 +1,93 @@
+{
+  "exe": "/data/workspace/strata01403/engine/strata",
+  "args": [
+    "--pack",
+    "/data/nvme/strata-data/packs/iq3_xxs",
+    "--native",
+    "/data/nvme/strata-models/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+    "--ple-gguf",
+    "/data/nvme/strata-models/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00002-of-00002.gguf",
+    "--ple-io",
+    "direct",
+    "--expert-profile",
+    "/data/workspace/strata01403/data/expert-profile.bin",
+    "--max-context",
+    "262144",
+    "--kv",
+    "q4_0",
+    "--spec",
+    "6",
+    "--mtp-max-t",
+    "4",
+    "--suffix-draft",
+    "3",
+    "--prefill",
+    "auto",
+    "--expert-cache",
+    "auto",
+    "--vram-reserve-mib",
+    "512",
+    "--mtp",
+    "/data/nvme/strata-data/mtp/rt",
+    "--pcie-frac",
+    "0.20",
+    "--spec-min-p",
+    "0.70",
+    "--ple-inflight",
+    "128",
+    "--ple-row-cache",
+    "8388608",
+    "--short-read",
+    "128",
+    "--conversation-cache-mib",
+    "10240",
+    "--conversation-cache-min-free-mib",
+    "2048",
+    "--conversation-cache-slots",
+    "8",
+    "--prompt-cache",
+    "12",
+    "--prompt-cache-every",
+    "16384"
+  ],
+  "cwd": "/data/workspace/strata01403",
+  "tokenizer": "/data/nvme/strata-data/packs/iq3_xxs/tokenizer",
+  "model_name": "qwen3.8-flash-next-iq3_xxs",
+  "log": "/data/workspace/strata01403/strata-iq3_xxs.1card.log",
+  "lib_dirs": [
+    "/usr/local/cuda-13.3/bin",
+    "/usr/local/cuda-13.3/lib64"
+  ],
+  "port": 8080,
+  "gpu": [
+    1
+  ],
+  "gpus_asked": true,
+  "parallel": 1,
+  "draft_vocab": "cjk",
+  "host": "0.0.0.0",
+  "fit_max_tokens": true,
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0,
+    "force": true
+  },
+  "engine_silence_s": 300,
+  "expert_profile_save": "expert-profile-xxs-learned.bin",
+  "expert_profile_save_every": 10,
+  "aliases": [
+    "qwen3.8-flash-next-iq3_s",
+    "qwen3.8-flash-next"
+  ],
+  "max_tokens": 131072,
+  "cors_origins": [
+    "*"
+  ],
+  "env": {
+    "STRATA_PREFILL_CPU_SHARE": "auto"
+  }
+}
