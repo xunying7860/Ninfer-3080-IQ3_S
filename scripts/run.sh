@@ -41,6 +41,7 @@ DRAFT=${DRAFT:-12}
 ADAPTIVE=${ADAPTIVE:-0}    # dflash2 必须 0（--adaptive-mtp 只配 mtp）
 DSS=${DSS:-1}
 HOSTKV=${HOSTKV:-256}
+MAXTOK=${MAXTOK:-131072}   # --default-max-tokens：**必须 ≤ 池 token 数**（Bug手册 §1.2：max_tokens ≫ 池 ⇒ worker 崩 + 全 503 不自愈）
 CHUNK=${CHUNK:-1024}
 VISION=${VISION:-1}
 EXTRA=${EXTRA:-}
@@ -59,7 +60,7 @@ ARGS=(--host 0.0.0.0 --port "$PORT" --model-id qwen3.8-27b
       --context-cache-policy rolling --gdn-state-fp16
       --spec "$SPEC" --draft-tokens "$DRAFT" --lm-head-draft
       --chat-template /data/ninfer/chat_template.jinja
-      --default-reasoning-effort max --default-max-tokens 131072
+      --default-reasoning-effort max --default-max-tokens "$MAXTOK"
       --cors)
 [ "$ADAPTIVE" = "1" ] && ARGS+=(--adaptive-mtp)
 [ "${ROPEYARN:-0}" = "1" ] && ARGS+=(--rope-yarn)
