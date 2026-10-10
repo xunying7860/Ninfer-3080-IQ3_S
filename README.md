@@ -136,6 +136,16 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 ---
 
+## 引擎补丁（2026-10-10 起）
+
+`scripts/` 与 `docs/` 记录我们对 **NInfer 引擎本体**的补丁与运维流程：**单会话直接重启也不再重算**
+（实测 **1.2 s** vs 冷 28.0 s），另含 strata 会话文件自动落盘、监控面板 `tg` / `tg_3s` 口径修正。
+
+详见 [`docs/引擎补丁与运维-重启不丢上下文.md`](docs/引擎补丁与运维-重启不丢上下文.md)。
+
+> ⚠ 生产现跑**自编补丁件**（厂商原件已备份为 `…/bundle/bin/ninfer-serve.bak-*-diag`）；
+> 以后更新引擎必须按 `docs/` 里的流程从 `iamwavecut/ninfer-all@60f18c3` 重编。
+
 ## 目录说明
 
 只留部署必需的东西，一共 19 个文件：
