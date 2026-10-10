@@ -143,6 +143,9 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 详见 [`docs/引擎补丁与运维-重启不丢上下文.md`](docs/引擎补丁与运维-重启不丢上下文.md)。
 
+项目整理与两代引擎的逐项对比（上下文/吞吐/并发/崩溃族/维护成本）见
+[`docs/旧引擎-项目整理与新引擎对比.md`](docs/旧引擎-项目整理与新引擎对比.md)。
+
 > ⚠ 生产现跑**自编补丁件**（厂商原件已备份为 `…/bundle/bin/ninfer-serve.bak-*-diag`）；
 > 以后更新引擎必须按 `docs/` 里的流程从 `iamwavecut/ninfer-all@60f18c3` 重编。
 
