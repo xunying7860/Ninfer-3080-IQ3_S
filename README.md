@@ -39,13 +39,13 @@ LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/l
 export CUDA_VISIBLE_DEVICES=0
 mkdir -p "$ROOT/logs"
 exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
-  "$ROOT/models/gsq_rco_iq3_s_dflash2_prop.ninfer" \
-  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b \
-  --max-context 262144 --kv-capacity 262144 --kv-dtype rk4v4 \
-  --cuda-graph-allowance-mib 1792 \
-  --vision --vision-residency overlay --vision-max-merged 12288 --media-cache-mib 512 --media-live-mib 1024 \
+  "/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer" \
+  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-coder390-q2lynn \
+  --max-context 317440 --kv-capacity 317440 --kv-dtype rk4v4 \
+  --cuda-graph-allowance-mib 256 \
+  --vision --vision-residency overlay --vision-max-merged 4096 --media-cache-mib 512 --media-live-mib 1024 \
   --max-concurrency 1 --max-pending-requests 16 --prefill-chunk 1024 \
-  --device-state-slots 8 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
+  --device-state-slots 1 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
   --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
   --chat-template "$ROOT/chat_template.jinja" --default-reasoning-effort max --default-max-tokens 131072 \
   "$@"
@@ -58,8 +58,19 @@ exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
   避免「固定窗口在不可预测输出上反而更慢」。
 - **`--default-max-tokens 131072`**：引擎默认 8192（thinking xhigh 会把额度吃光、正文一个 token 都轮不到）；
   而 `0`（无上限）在这台引擎上是**坏的** —— 0 被解释成 `INT32_MAX`，远大于 KV 池，
-  输出租约拿不到页 ⇒ 活锁（见「已知问题」）。约束不等式：`prompt + max_tokens ≤ 池(262144)`。
-- **`--host-kv-mib 512` / `--device-state-slots 8`**：主机停放区收小、显存侧多留可复用状态。
+  输出租约拿不到页 ⇒ 活锁（见「已知问题」）。约束不等式：`prompt + max_tokens ≤ 池(317440)`。
+- **`--device-state-slots 1`**（引擎默认值 = `max-concurrency`）：它是**活跃会话之外**的额外检查点容量。
+  曾经设 8，8 份检查点各占 ~210 页（每页 64 token），把 4096 页的分页 KV 池吃到 `allocated 3076`，
+  再来一个带图请求要 1020 页 ⇒ `HTTP 429 server overloaded`（Hermes 侧显示
+  `context cache exhausted: Paged KV pool cannot resize the page reservation`）。降到 1 后池里少占 ~1470 页。
+  实测链式（每发延长上一发）命中率在 slots 1/2/4 下**逐项相同**（0/50.3/66.8/75.1/80.1/83.4/99.0）；
+  只有 slots=0 才会退化成每发全量重算。
+- **`--max-context`/`--kv-capacity 317440`**（310K，逐档实测的硬顶）：320K 差 173 MiB、315K 差 84 MiB 起不来。
+  两个数要分清：**reservation 随 ctx 与槽位变**（每槽 ≈32 MiB），而
+  **available runtime capacity 恒为 7,553,613,824 B**（slots 8/4/1 三次读数一字不差，任何旋钮都动不了）。
+  现状：`pages 4,960/4,960 | runtime 7.02 GiB | free 253.7 MiB`（贴顶，无余量；要留余量退 300K=307200）。
+- **`--host-kv-mib 512`**：主机停放区收小，显存侧留给会话。
+- **`--vision-max-merged 4096`**（原 12288）：单图合并 token 上限收小，省显存与池占用。
 - **`--max-concurrency 1`**：单槽独占，配合 `--context-cache-policy rolling` 保前缀命中率。
 - **`--default-reasoning-effort max`**：思考档位最高，配合上面那个输出上限。
 

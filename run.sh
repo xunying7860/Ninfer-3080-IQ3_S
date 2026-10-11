@@ -67,7 +67,7 @@
 #
 # 2026-10-03 22:0x 二次压边（用户定案「ninfer再往显存边缘压」）：
 #   上下文 250880 → 262144（= 模型 max_position_embeddings 的原生上限，pages 4096/4096）
-#   手段：--cuda-graph-allowance-mib 1792。该值「从 KV sizing 预算里扣」（引擎 --help 原文）；
+#   手段：--cuda-graph-allowance-mib 256。该值「从 KV sizing 预算里扣」（引擎 --help 原文）；
 #     默认按设备档算出的额度把 262144 挡在门外（requires 6585185280 > 6444220416 available，
 #     差 134.4 MiB）；显式降到 256 MiB 后装得下，余量 93.9 MiB。
 #   实测（测试实例，同模型同参数，GPU0）：
@@ -87,13 +87,13 @@ LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/l
 export CUDA_VISIBLE_DEVICES=0
 mkdir -p "$ROOT/logs"
 exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
-  "$ROOT/models/gsq_rco_iq3_s_dflash2_prop.ninfer" \
-  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b \
-  --max-context 262144 --kv-capacity 262144 --kv-dtype rk4v4 \
-  --cuda-graph-allowance-mib 1792 \
-  --vision --vision-residency overlay --vision-max-merged 12288 --media-cache-mib 512 --media-live-mib 1024 \
+  "/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer" \
+  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-coder390-q2lynn \
+  --max-context 317440 --kv-capacity 317440 --kv-dtype rk4v4 \
+  --cuda-graph-allowance-mib 256 \
+  --vision --vision-residency overlay --vision-max-merged 4096 --media-cache-mib 512 --media-live-mib 1024 \
   --max-concurrency 1 --max-pending-requests 16 --prefill-chunk 1024 \
-  --device-state-slots 8 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
+  --device-state-slots 1 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
   --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
   --chat-template "$ROOT/chat_template.jinja" --default-reasoning-effort max --default-max-tokens 131072 \
   "$@"
@@ -114,3 +114,13 @@ exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
 #   ⇒ 29 槽需 8,700,624,839 ≤ 8,709,144,576 ✓（余 8.5 MB）；30 槽需 8,777,543,988 ✗
 #   ⇒ **29 槽就是引擎硬上限**（19,893 MiB 用量 / 仅 212 MiB 空闲 ⇒ 显存已实质吃满）。
 #   注：换 MTP3 并不改变这个天花板——基线（KV池+runtime）一样大。
+
+# 20261011 变更（生产定稿，用户「能开多大开多大」）：
+#   模型 → Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer（绝对路径 /data/nvme/ninfer-models/，repack 过 q4_0 MTP 头）
+#   --model-id qwen3.8-27b → qwen3.8-27b-coder390-q2lynn
+#   --max-context/--kv-capacity 262144 → 317440（310K，逐档实测硬顶：315K 差 84 MiB 起不来）
+#   --device-state-slots 8 → 1（引擎默认值 = max-concurrency；8 个检查点曾吃满分页 KV 池导致 HTTP 429；
+#     实测链式命中率 1/2/4 逐项相同）
+#   --vision-max-merged 12288 → 4096；--cuda-graph-allowance-mib 1792 → 256
+#   硬账：reservation 随 ctx/槽位变（每槽 ≈32 MiB），available runtime capacity 恒为 7,553,613,824 B（不可调）
+#   现状：pages 4,960/4,960 | runtime 7.02 GiB | free 253.7 MiB | GPU0 19,853/20,480 MiB
