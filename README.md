@@ -4,8 +4,8 @@
 systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不需要装 Python 环境），
 另带一套**Web 监控面板**（`monitor/`）。
 
-本仓库是 **[NInfer-Qwen3.8-27B-IQ3S-sm86-win64](https://github.com/lurenakillgore9-web/NInfer-Qwen3.8-27B-IQ3S-sm86-win64) 的 Linux 版 fork**。
-那个仓库是 Windows 整合包（Release 里 10 个 7z 分卷，17.3 GiB）。
+引擎源 **[iamwavecut/ninfer-all](https://github.com/iamwavecut/ninfer-all)**（默认分支 `master`；生产自编补丁件的基线 pin 在 `60f18c3`）。
+部署脚本与 Windows 整合包 **[NInfer-Qwen3.8-27B-IQ3S-sm86-win64](https://github.com/lurenakillgore9-web/NInfer-Qwen3.8-27B-IQ3S-sm86-win64)**（Release 里 10 个 7z 分卷，17.3 GiB）同源，本仓库是它的 Linux 常驻版。
 本仓库只放**把服务跑起来所必需的东西**：启动脚本、systemd 单元、看门狗、监控面板；
 **不含**模型与引擎二进制（14 GiB 级）。
 
@@ -15,13 +15,13 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 
 | | |
 |---|---|
-| 引擎 | NInfer sm_86 Linux 预编译 bundle（`bundle/bin/ninfer-serve`，约 1.16 GiB；自带 loader + glibc，CUDA 用机器的 13.3） |
-| 模型 | `gsq_rco_iq3_s_dflash2_prop.ninfer`（15,017,456,128 B，自带 dflash2 草稿头 + 视觉塔） |
+| 引擎 | NInfer sm_86 Linux bundle（`bundle/bin/ninfer-serve`，1,249,869,248 B ≈ 1.16 GiB，md5 `2cbd88ab06318c81b695ec64c72b433d`；自带 loader + glibc，CUDA 用机器的 13.3）。生产跑自编补丁件，厂商原件留档 |
+| 模型 | `Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer`（13,568,617,472 B，自带 MTP 与 DFlash2 两套草稿头 + 视觉塔）；上一件 `gsq_rco_iq3_s_dflash2_prop.ninfer`（15,017,456,128 B）仍在盘上，未删 |
 | 机器 | Ubuntu 22.04.5 / kernel 5.15.0-119 / Xeon E5-2680 v4（28 线程）/ 62 GiB RAM |
 | 显卡 | **单张 RTX 3080 20GB**（sm_86）；脚本里用 `CUDA_VISIBLE_DEVICES=0` 固定 GPU0 |
 | 驱动 | 615.71.09 |
 | 服务 | systemd `ninfer.service` → `/data/ninfer/run.sh`，端口 **18082** |
-| 接口 | `http://<host>:18082/v1`（OpenAI 与 Anthropic 双协议），`--model-id qwen3.8-27b` |
+| 接口 | `http://<host>:18082/v1`（OpenAI 与 Anthropic 双协议），`--model-id qwen3.8-27b-coder390-q2lynn` |
 | 聊天模板 | `qwen3.8-froggeric-v22.5` |
 | 监控 | `monitor/` 监控面板 → `http://<host>:18083/` |
 
@@ -110,12 +110,12 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | 组件 | 位置 | 作用 |
 |---|---|---|
 | `deploy/ninfer.service` | 装到 `/etc/systemd/system/` | 引擎常驻、自启（`enabled`），`Restart=on-failure` / `RestartSec=15` / `LimitMEMLOCK=infinity` |
-| `deploy/ninfer-watchdog.service` + `engine-watchdog.py` | 单元装到 `/etc/systemd/system/`，脚本放 `/data/ninfer/` | **活锁指纹**看门狗：`in_flight>0 且 util≥90% 且 功耗<130 W 且 计数不推进` 持续 ≥180 s ⇒ 自动 `systemctl restart ninfer`；另有 `/health` 连续 360 s 失联的兜底 |
+| `deploy/ninfer-watchdog.service` + `engine-watchdog.py` | 单元装到 `/etc/systemd/system/`，脚本放 `/data/ninfer/` | **活锁指纹**看门狗：`in_flight>0 且 util≥90% 且 功耗<130 W 且 计数不推进` 持续 ≥180 s ⇒ 自动 `systemctl restart ninfer`；另有 `/health` 连续 360 s 失联的兜底，与引擎空闲时才打一条最小请求的僵尸探针（25 s 超时，model-id 从 `/v1/models` 动态取） |
 | `monitor/` | 本目录 | Web 监控面板（见其 README） |
 | 日志 | `/data/ninfer/logs/ninfer-serve.log` | 引擎 stdout/stderr；每 5 s 一行 `throughput`，每请求一行 `req#N started/done` |
 
-看门狗**刻意不发探针请求**：探针会污染测速统计并占用引擎状态，所以只用三个互相独立的只读量
-（GPU 利用率、功耗、计数器是否推进）做指纹判定。
+指纹判定只用三个互相独立的只读量（GPU 利用率、功耗、计数器是否推进），**不在引擎忙时打探针**，
+以免污染测速统计；只有在指纹判不出、引擎示空闲时才补一条最小请求的僵尸探针（25 s 超时）。
 
 ---
 
@@ -135,15 +135,15 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 1. **活锁（引擎已知）**：`max_tokens` 远大于 KV 池时，输出租约拿不到页。表现是
    GPU 100% 占用但功耗只有 ~95 W、显存带宽 0%、一个主机线程烧满一个核、计数器不推进，
    而 `/health` 仍返回 ok（systemd 的 `Restart=on-failure` 抓不到）。**看门狗按指纹自动重启。**
-   约束：`prompt + max_tokens ≤ 262144`。
+   约束：`prompt + max_tokens ≤ 池(317440)`。
 2. **`cudaErrorIllegalAddress`**：`./src/core/device.cu:402 CUDA_CHECK(cudaStreamSynchronize(endpoint.stream))`，
    2026-10-07 22:25、2026-10-08 12:54、2026-10-08 19:27 各一次，**三次都发生在大题面的 prefill 进行中**
    （host 侧 46–57% CPU，prefill 处于峰值速率）。`Restart=on-failure` 自动拉起，重启到就绪约 2 分钟；
    期间面板显示 `Engine not reachable`。
 3. 引擎**不提供**实时 prefill 进度百分比，也没有「专家缓存」类计数 ⇒ 面板对应位置留空，或用等价的真实量替代
    （例如用 `engine ready` 的权重体积画「模型占显存」）。
-4. `ninfer.service` 的 `Description=` 文案是历史遗留（写着 draft7 / max-tokens 229376 / 停放 1GiB+3槽 /
-   设备检查点 29），**与 `run.sh` 的实际参数已经不一致**，以 `run.sh` 为准。
+4. `ninfer.service` 的 `Description=` 已于 2026-10-12 随换档改正为
+   `Q2LynnStyle Coder390 MTP repack / GPU0 / 317440 ctx rk4v4 / 端口 18082 / vision overlay 4096 / MTP draft3 adaptive / 设备检查点 1 / 无磁盘层`，与 `run.sh` 一致；改档时两处都要改。
 
 ---
 
@@ -154,23 +154,24 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 详见 [`docs/引擎补丁与运维-重启不丢上下文.md`](docs/引擎补丁与运维-重启不丢上下文.md)。
 
-项目整理与两代引擎的逐项对比（上下文/吞吐/并发/崩溃族/维护成本）见
-[`docs/旧引擎-项目整理与新引擎对比.md`](docs/旧引擎-项目整理与新引擎对比.md)。
 
 > ⚠ 生产现跑**自编补丁件**（厂商原件已备份为 `…/bundle/bin/ninfer-serve.bak-*-diag`）；
 > 以后更新引擎必须按 `docs/` 里的流程从 `iamwavecut/ninfer-all@60f18c3` 重编。
 
 ## 目录说明
 
-只留部署必需的东西，一共 19 个文件：
+只留部署与运维必需的东西，一共 115 个文件：
 
 | 路径 | 说明 |
 |---|---|
 | `run.sh` | 生产启动脚本（含全部取舍注释：为什么选 MTP、为什么输出上限是 131072、每次改档的回退依据） |
 | `chat_template.jinja` | 生产对话模板（`qwen3.8-froggeric-v22.5`），由 `run.sh` 指定加载 |
 | `engine-watchdog.py` | 活锁看门狗（`--dry-run` / `--selftest` / `--once` 可人工跑） |
-| `deploy/` | systemd 单元：`ninfer.service`（引擎）/ `ninfer-watchdog.service`（看门狗）/ `gpu-clocks.service`（开机锁频降压） |
+| `deploy/` | systemd 单元：`ninfer.service`（引擎）/ `ninfer-watchdog.service`（看门狗）/ `ninfer-monitor.service`（面板）/ `gpu-clocks.service`（开机锁频降压）；`profiles/` 存当前标定件；`archive-20261012-132024-pre-kvarn/` 是 2026-10-12 停生产前的回退点（`RESTORE.txt` 等） |
 | `monitor/` | Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
+| `test/` | 门禁套件 `gate_test.py`（9 套件 + compare）、`slot-sidecar.py` 与候选实例控制脚本（`launch-cand.sh` / `run-cand.sh` / `restart-cand.sh` / `detach.sh` / `stop-save-hook.sh`）、`probe-master/` 只读取证快照 |
+| `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`） |
+| `docs/` | 引擎补丁与运维流程（重启不丢上下文） |
 
 ## 许可与致谢
 
