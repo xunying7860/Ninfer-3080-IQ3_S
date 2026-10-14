@@ -154,11 +154,19 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 `/data/kvarn/backup-prod01-20261014/`，往后称**旧生产01**。
 
 **KVarN（Hadamard 旋转 + 双向 Sinkhorn 方差归一）已完整移植进引擎并实测完毕，结论是"不投"**：与生产 `rk4v4` 质量打平
-（引擎 PPL −0.0325% / −0.0166%）、字节 **280 = 280 零收益**、且同窗口下 prefill 吞吐 **−28%**、32K TTFT **+39%**；
+（引擎 PPL −0.0325% / −0.0166%）、字节**反而更费**（本实现 P1 口径 **292 B** vs 生产 `rk4v4` **280 B**，**+4.29%**；
+scale leading 的单位是每 token 每 head 的 FP16 元素数 K=10/V=8，见 `kvarn-port/engine/src/ops/kv_cache/kvarn_layout.h`）、
+且同窗口下 prefill 吞吐 **−28%**、32K TTFT **+39%**；
 论文/vLLM 分支宣称的"2bit 近无损"在这个模型上判死（K4V2 **+2.55%/+2.91%**，2bit V 一切改法最好 +1.68%）——
 它的"2.3 bit 近无损"用的是 **sink + 最近若干 token 保持 FP16 的三段式布局**、且评测口径是论文自提的 `pseudo-decode`。
 与 llama.cpp 原生 KV 档同数据对拍：K 侧 KVarN 略胜集合内最好的 `iq4_nl`（+0.00198 cos），V 侧反而输给不旋转的 `iq4_nl`（−0.00132）。
 数字、口径与出处全表见 **[`docs/KVarN-KV量化结论-20261014.md`](docs/KVarN-KV量化结论-20261014.md)**。
+
+**移植本体与取证都已进本仓库，不再只是链接**：`kvarn-port/`（基线与应用方法 + 7 个 commit 的 patch 系列 502,790 B +
+KVarN 那几个新 TU 按引擎内相对路径原样放着）、`docs/kvarn-移植/`（24 份过程文档：接线细案、几何与偏移表、WHT 等价性、
+两道 gate、oracle 结果、rk4v4 回归对照、紧凑几何设计、V 侧结论、收单等）、`kvarn-evidence/`（**1,026 个原始件 41.7 MB**，
+含 oracle/kernel/引擎三级对拍、三语料 PPL、与 llama.cpp 原生 KV 档的 300 组对照、rk4v4 消融与 kvarn128 验收的逐请求日志，
+逐文件 md5 见 `kvarn-evidence/checksums.txt`）。
 
 ## 引擎补丁（2026-10-10 起）
 
@@ -175,7 +183,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 ## 目录说明
 
-只留部署与运维必需的东西，一共 129 个文件：
+只留部署与运维必需的东西 + 本轮 KVarN 移植的补丁与取证，一共 1,196 个文件：
 
 | 路径 | 说明 |
 |---|---|
@@ -187,6 +195,9 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | `test/` | 门禁套件 `gate_test.py`（9 套件 + compare）、`slot-sidecar.py` 与候选实例控制脚本（`launch-cand.sh` / `run-cand.sh` / `restart-cand.sh` / `detach.sh` / `stop-save-hook.sh`）、`probe-master/` 只读取证快照 |
 | `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`） |
 | `docs/` | 引擎补丁与运维流程（重启不丢上下文）、**KV 量化本轮结论（`KVarN-KV量化结论-20261014.md`）** |
+| `kvarn-port/` | **KVarN 移植本体**：`BASELINE.md`（上游 `iamwavecut/ninfer-all@11327e96` + 取件 sha256 + `git am` 复原步骤 + 未经完整门禁的诚实登记）、`patches/` 7 份 patch（33 文件 +5,263 −2,155）、`engine/` KVarN 新 TU 原样（`kvarn_layout.h` 是几何单一真值） |
+| `kvarn-evidence/` | **移植取证**：1,026 个原始件（三级对拍、三语料 PPL、llama 原档对照、rk4v4 消融、kvarn128 验收），`README.md` 讲每个目录在证明什么 + 判据 + 方法学边界，`checksums.txt` 逐文件 md5 |
+| `docs/kvarn-移植/` | 本轮 24 份过程文档（含 `KVarN-收单-20261014.md` 冻结收单） |
 | `engine/` | **引擎本体**：`ninfer-serve` + `bundle/libs` 打成 zstd 分卷（10 卷、928,429,363 B）+ `install-engine.sh`（校验 / 安装 / 旧件改名留档）+ `checksums.txt`（整包、逐卷、解包后 148 个文件三层 md5）+ `README.md` |
 
 ## 许可与致谢
