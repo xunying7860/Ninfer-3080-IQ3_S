@@ -6,3 +6,7 @@
 *.webp binary
 *.tar.gz binary
 *.json -text
+
+# 引擎 bundle 分卷：二进制、不做 CRLF 转换（内容是高熵数据，binary 同时禁掉 delta/zlib）
+*.zst binary
+*.tar.zst.part-* binary -delta

@@ -6,8 +6,9 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 
 引擎源 **[iamwavecut/ninfer-all](https://github.com/iamwavecut/ninfer-all)**（默认分支 `master`；生产自编补丁件的基线 pin 在 `60f18c3`）。
 部署脚本与 Windows 整合包 **[NInfer-Qwen3.8-27B-IQ3S-sm86-win64](https://github.com/lurenakillgore9-web/NInfer-Qwen3.8-27B-IQ3S-sm86-win64)**（Release 里 10 个 7z 分卷，17.3 GiB）同源，本仓库是它的 Linux 常驻版。
-本仓库只放**把服务跑起来所必需的东西**：启动脚本、systemd 单元、看门狗、监控面板；
-**不含**模型与引擎二进制（14 GiB 级）。
+本仓库放**把服务跑起来所必需的全部东西**：启动脚本、systemd 单元、看门狗、监控面板，
+**以及引擎本体本身**（`engine/`，10 个分卷 928,429,363 B，普通 git 存放、不用 Git LFS）；
+**只有模型权重不分发**（13,568,617,472 B）。
 
 ---
 
@@ -15,7 +16,7 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 
 | | |
 |---|---|
-| 引擎 | NInfer sm_86 Linux bundle（`bundle/bin/ninfer-serve`，1,249,869,248 B ≈ 1.16 GiB，md5 `2cbd88ab06318c81b695ec64c72b433d`；自带 loader + glibc，CUDA 用机器的 13.3）。生产跑自编补丁件，厂商原件留档 |
+| 引擎 | NInfer sm_86 Linux bundle（`bundle/bin/ninfer-serve`，1,249,869,248 B ≈ 1.16 GiB，md5 `2cbd88ab06318c81b695ec64c72b433d`；自带 loader + glibc，CUDA 用机器的 13.3）。**这个件就放在本仓库 `engine/` 里**，它与厂商原件 `ninfer-serve.vendor-original` 是同一个 md5，即线上跑的就是它 |
 | 模型 | `Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer`（13,568,617,472 B，自带 MTP 与 DFlash2 两套草稿头 + 视觉塔）；上一件 `gsq_rco_iq3_s_dflash2_prop.ninfer`（15,017,456,128 B）仍在盘上，未删 |
 | 机器 | Ubuntu 22.04.5 / kernel 5.15.0-119 / Xeon E5-2680 v4（28 线程）/ 62 GiB RAM |
 | 显卡 | **单张 RTX 3080 20GB**（sm_86）；脚本里用 `CUDA_VISIBLE_DEVICES=0` 固定 GPU0 |
@@ -155,12 +156,14 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 详见 [`docs/引擎补丁与运维-重启不丢上下文.md`](docs/引擎补丁与运维-重启不丢上下文.md)。
 
 
-> ⚠ 生产现跑**自编补丁件**（厂商原件已备份为 `…/bundle/bin/ninfer-serve.bak-*-diag`）；
-> 以后更新引擎必须按 `docs/` 里的流程从 `iamwavecut/ninfer-all@60f18c3` 重编。
+> ⚠ 两处按 2026-10-12 复测更正：**线上引擎是厂商原件** —— `bundle/bin/ninfer-serve` 与 `ninfer-serve.vendor-original` 是同一个 md5
+> `2cbd88ab06318c81b695ec64c72b433d`；当年那批 `.bak-*-diag` 自编补丁件已不在盘上，"重启 1.2 s"那个数字来自它们，现已无法复现。
+> 另一处：`60f18c3` 是后来那条补丁线的**直系祖先、落后当前基线 599 个提交**，且那棵树里没有 `--slot-save-path` / `session_snapshot.cpp`
+> （会话落盘特性 2026-09-28 才在另一条线诞生）⇒ "从 60f18c3 重编就能开重启不重算"不成立；换线与否看 `docs/` 与复测记录，别照旧流程走。
 
 ## 目录说明
 
-只留部署与运维必需的东西，一共 115 个文件：
+只留部署与运维必需的东西，一共 128 个文件：
 
 | 路径 | 说明 |
 |---|---|
@@ -172,6 +175,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | `test/` | 门禁套件 `gate_test.py`（9 套件 + compare）、`slot-sidecar.py` 与候选实例控制脚本（`launch-cand.sh` / `run-cand.sh` / `restart-cand.sh` / `detach.sh` / `stop-save-hook.sh`）、`probe-master/` 只读取证快照 |
 | `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`） |
 | `docs/` | 引擎补丁与运维流程（重启不丢上下文） |
+| `engine/` | **引擎本体**：`ninfer-serve` + `bundle/libs` 打成 zstd 分卷（10 卷、928,429,363 B）+ `install-engine.sh`（校验 / 安装 / 旧件改名留档）+ `checksums.txt`（整包、逐卷、解包后 148 个文件三层 md5）+ `README.md` |
 
 ## 许可与致谢
 
@@ -182,4 +186,4 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 - 量化 GSQ-RCO：[ISTA-DASLab](https://huggingface.co/ISTA-DASLab)
 - 面板布局参照 [Niko1221/Strata](https://github.com/Niko1221/Strata) 的 Monitor 视图（只换了配色）
 
-本仓库只做**部署适配与运维工具**的整理与分发，不对上述项目主张任何权利；不分发模型与引擎二进制。
+本仓库只做**部署适配与运维工具**的整理与分发，不对上述项目主张任何权利。引擎 bundle 随仓库分发（`engine/`，按上游 Apache-2.0 原样转发、内容未改动）；**模型权重不分发**。
