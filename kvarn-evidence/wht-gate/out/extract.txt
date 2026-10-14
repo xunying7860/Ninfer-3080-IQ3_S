@@ -1,0 +1,6 @@
+(容器内无 python3；使用宿主已生成的 *_verbatim.h)
+  // 来源：kvarn-全档位移植-20261013/ref-beellama/src/ggml/src/ggml-cuda/kvarn.cu:12-19  （beellama KVarN 常量（KVAR_N_DIM 等））
+  // 来源：kvarn-全档位移植-20261013/ref-beellama/src/ggml/src/ggml-cuda/kvarn.cu:510-543  （beellama kvarn_wht_cross_slices（跨 slice 蝶形 + 1/sqrt(head_slices)））
+  // 来源：kvarn-全档位移植-20261013/ref-beellama/src/ggml/src/ggml-cuda/kvarn.cu:1113-1131  （beellama headwide store 的调用点（旋转 + 跨 slice））
+  // 来源：kvarn-全档位移植-20261013/ref-beellama/src/ggml/src/ggml-cuda/kvarn.cu:456-472  （beellama kvarn_wht_128（128 点 Sylvester FWHT + 1/sqrt(128)））
+  // 来源：kvarn-任务A-20261012/engine/ninfer-all-kvarn/src/ops/kv_cache/hadamard_d256.cuh:1-67  （ninfer normalized_hadamard_d256_inplace（整 D256 归一化 FWHT））

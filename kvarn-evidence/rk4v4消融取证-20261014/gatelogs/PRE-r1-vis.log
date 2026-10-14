@@ -1,0 +1,10 @@
+### suite=vis (vision-after-r1) model=qwen3.8-27b-coder390-q2lynn port=18122
+  R1 client=0.37s ttft=282 ms cache=0 (0.0%, None) prompt=124 out=8 finish=stop
+  >>> restart: bash /data/kvarn/g128-rk4v4-test/armctl3.sh PRE restart
+[armctl3] 2026-10-14 10:32:58 SIGTERM -> pid=143442
+[armctl3] pid=143442 exited after 2s
+[armctl3] launched pid=143588 log=/data/kvarn/g128-rk4v4-test/logs/PRE-20261014-102726.log
+  >>> ready in 11 s (restart+boot)
+  R2 client=0.74s ttft=709 ms cache=0 (0.0%, None) prompt=154 out=2 finish=stop
+  R3 client=0.18s ttft=150 ms cache=155 (87.1%, private endpoint) prompt=178 out=2 finish=stop
+### evidence written: /data/kvarn/g128-rk4v4-test/ev/PRE-r1-vis.json

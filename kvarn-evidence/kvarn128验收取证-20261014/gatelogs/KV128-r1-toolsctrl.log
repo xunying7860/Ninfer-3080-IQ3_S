@@ -1,0 +1,6 @@
+### suite=toolsctrl (tools-no-restart) model=qwen3.8-27b-coder390-q2lynn port=18131
+  R1 client=24.81s ttft=24700 ms cache=0 (0.0%, None) prompt=25566 out=6 finish=stop
+  R2 client=24.64s ttft=24500 ms cache=0 (0.0%, None) prompt=25289 out=24 finish=stop
+  R3 client=0.63s ttft=215 ms cache=25312 (99.8%, private endpoint) prompt=25358 out=47 finish=stop
+  R4 client=0.56s ttft=188 ms cache=25404 (99.8%, private endpoint) prompt=25445 out=32 finish=stop
+### evidence written: /data/kvarn/g128-验收-20261014/ev/KV128-r1-toolsctrl.json

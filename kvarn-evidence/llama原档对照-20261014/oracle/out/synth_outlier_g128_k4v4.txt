@@ -1,0 +1,34 @@
+# 口径: GPU(kvarn.cu:660)   group=128 iters=16 stage_f16=1
+synth_outlier_k_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9937108 cos_vec_mean=0.9937685 cos_vec_min=0.9919095 relL2=0.11318 maxAbs=6.777 maxRel=54.5
+synth_outlier_v_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9940454 cos_vec_mean=0.9936120 cos_vec_min=0.9869759 relL2=0.10933 maxAbs=6.27 maxRel=43.2
+synth_outlier_k_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9936001 cos_vec_mean=0.9938252 cos_vec_min=0.9922299 relL2=0.11310 maxAbs=10.04 maxRel=54.1
+synth_outlier_v_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9923636 cos_vec_mean=0.9935751 cos_vec_min=0.9878263 relL2=0.12419 maxAbs=7.911 maxRel=55.4
+synth_outlier_k_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9940426 cos_vec_mean=0.9940689 cos_vec_min=0.9927816 relL2=0.10965 maxAbs=0.3884 maxRel=149
+synth_outlier_v_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9936387 cos_vec_mean=0.9938328 cos_vec_min=0.9838954 relL2=0.11333 maxAbs=0.584 maxRel=147
+synth_outlier_k_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9937026 cos_vec_mean=0.9937322 cos_vec_min=0.9918291 relL2=0.11275 maxAbs=0.5199 maxRel=311
+synth_outlier_v_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9929531 cos_vec_mean=0.9933407 cos_vec_min=0.9821455 relL2=0.11930 maxAbs=0.6518 maxRel=102
+synth_outlier_k_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9937504 cos_vec_mean=0.9938849 cos_vec_min=0.9924243 relL2=0.11213 maxAbs=8.297 maxRel=69.9
+synth_outlier_v_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9935593 cos_vec_mean=0.9937648 cos_vec_min=0.9851329 relL2=0.11394 maxAbs=6.241 maxRel=80.8
+synth_outlier_k_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9947491 cos_vec_mean=0.9940261 cos_vec_min=0.9926982 relL2=0.10295 maxAbs=6.656 maxRel=45
+synth_outlier_v_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9936351 cos_vec_mean=0.9940414 cos_vec_min=0.9885990 relL2=0.11321 maxAbs=6.651 maxRel=69.1
+synth_outlier_k_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9934424 cos_vec_mean=0.9934498 cos_vec_min=0.9913068 relL2=0.11527 maxAbs=0.6082 maxRel=119
+synth_outlier_v_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9933604 cos_vec_mean=0.9936425 cos_vec_min=0.9852045 relL2=0.11586 maxAbs=0.5861 maxRel=130
+synth_outlier_k_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9938321 cos_vec_mean=0.9938454 cos_vec_min=0.9917341 relL2=0.11170 maxAbs=0.5544 maxRel=137
+synth_outlier_v_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9937589 cos_vec_mean=0.9939643 cos_vec_min=0.9855623 relL2=0.11242 maxAbs=0.5717 maxRel=129
+synth_outlier_k_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9942044 cos_vec_mean=0.9938015 cos_vec_min=0.9919165 relL2=0.10816 maxAbs=9.303 maxRel=47.4
+synth_outlier_v_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9939645 cos_vec_mean=0.9941014 cos_vec_min=0.9881872 relL2=0.11043 maxAbs=6.914 maxRel=46.6
+synth_outlier_k_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9933053 cos_vec_mean=0.9933504 cos_vec_min=0.9912477 relL2=0.11577 maxAbs=11.72 maxRel=77.8
+synth_outlier_v_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9929608 cos_vec_mean=0.9937169 cos_vec_min=0.9847305 relL2=0.11885 maxAbs=6.969 maxRel=81.4
+synth_outlier_k_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9938489 cos_vec_mean=0.9938649 cos_vec_min=0.9923693 relL2=0.11149 maxAbs=0.5109 maxRel=195
+synth_outlier_v_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9929031 cos_vec_mean=0.9934786 cos_vec_min=0.9847928 relL2=0.11973 maxAbs=0.9476 maxRel=144
+synth_outlier_k_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9936416 cos_vec_mean=0.9936446 cos_vec_min=0.9918074 relL2=0.11342 maxAbs=0.6501 maxRel=89.3
+synth_outlier_v_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9938559 cos_vec_mean=0.9940931 cos_vec_min=0.9880975 relL2=0.11134 maxAbs=0.6185 maxRel=117
+synth_outlier_k_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9936296 cos_vec_mean=0.9937404 cos_vec_min=0.9924864 relL2=0.11361 maxAbs=8.607 maxRel=155
+synth_outlier_v_s0_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9940973 cos_vec_mean=0.9939854 cos_vec_min=0.9853258 relL2=0.10953 maxAbs=6.273 maxRel=111
+synth_outlier_k_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9941677 cos_vec_mean=0.9934971 cos_vec_min=0.9918630 relL2=0.10865 maxAbs=10.35 maxRel=59.9
+synth_outlier_v_s1_g0      bits=4 128x128 rec= 8960 B | cos_glob=0.9936780 cos_vec_mean=0.9937149 cos_vec_min=0.9868970 relL2=0.11429 maxAbs=6.601 maxRel=90.1
+synth_outlier_k_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9934049 cos_vec_mean=0.9934282 cos_vec_min=0.9918315 relL2=0.11543 maxAbs=0.5701 maxRel=160
+synth_outlier_v_s0_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9934855 cos_vec_mean=0.9937178 cos_vec_min=0.9883507 relL2=0.11470 maxAbs=0.6612 maxRel=158
+synth_outlier_k_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9939429 cos_vec_mean=0.9939293 cos_vec_min=0.9922940 relL2=0.11062 maxAbs=0.6375 maxRel=167
+synth_outlier_v_s1_g1      bits=4 128x128 rec= 8960 B | cos_glob=0.9939488 cos_vec_mean=0.9940761 cos_vec_min=0.9873879 relL2=0.11036 maxAbs=0.4618 maxRel=149
+>>> synth_outlier 汇总(16 tiles): K cos_glob=0.9938110 cos_vec_mean=0.9937411 | V cos_glob=0.9935130 cos_vec_mean=0.9937911

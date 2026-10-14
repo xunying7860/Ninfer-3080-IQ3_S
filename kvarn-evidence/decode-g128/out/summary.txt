@@ -1,0 +1,192 @@
+[K4V4|K|real L35_k_h0|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 3) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.219576211 cos_mean=-0.064237978 s0=-0.249765359 s1=-0.256991270 | vs原值: 逆旋转后 cos_min=0.997833559 / 不逆旋转 cos_min=-0.222635432 cos_mean=-0.063836106
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 76) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.189802079 cos_mean=-0.052778685 s0=-0.170434203 s1=-0.237172172 | vs原值: 逆旋转后 cos_min=0.997781685 / 不逆旋转 cos_min=-0.190388803 cos_mean=-0.052798528
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|real L35_k_h0|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 1) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.216427755 cos_mean=-0.062366341 s0=-0.251610920 s1=-0.267291090 | vs原值: 逆旋转后 cos_min=0.998128672 / 不逆旋转 cos_min=-0.220986505 cos_mean=-0.062895902
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|real L35_k_h0|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 12) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.222827041 cos_mean=-0.065840548 s0=-0.255912248 s1=-0.263776712 | vs原值: 逆旋转后 cos_min=0.998285403 / 不逆旋转 cos_min=-0.224084839 cos_mean=-0.066812269
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|real L35_k_h0|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.021384704 cos_mean=-0.021384704 s0=-0.045975668 s1=-0.006102522 | vs原值: 逆旋转后 cos_min=0.999999407 / 不逆旋转 cos_min=-0.021353133 cos_mean=-0.021353133
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|gauss|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 10) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.261717688 cos_mean=-0.004232618 s0=-0.207881535 s1=-0.316090799 | vs原值: 逆旋转后 cos_min=0.994001437 / 不逆旋转 cos_min=-0.252813456 cos_mean=-0.004709963
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 64) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.204199421 cos_mean=-0.016008701 s0=-0.262642022 s1=-0.184530267 | vs原值: 逆旋转后 cos_min=0.994124412 / 不逆旋转 cos_min=-0.209517436 cos_mean=-0.015768223
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|gauss|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.231600594 cos_mean=-0.004828297 s0=-0.199291784 s1=-0.314507972 | vs原值: 逆旋转后 cos_min=0.995568550 / 不逆旋转 cos_min=-0.235920756 cos_mean=-0.005014433
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|gauss|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.236641326 cos_mean=0.005591294 s0=-0.166093927 s1=-0.311016575 | vs原值: 逆旋转后 cos_min=0.995861916 / 不逆旋转 cos_min=-0.240110006 cos_mean=0.004767192
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|gauss|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=0.017992641 cos_mean=0.017992641 s0=0.061625850 s1=-0.025578444 | vs原值: 逆旋转后 cos_min=0.999998672 / 不逆旋转 cos_min=0.018088294 cos_mean=0.018088294
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|outlier|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.199288412 cos_mean=0.007876997 s0=-0.297338126 s1=-0.206300959 | vs原值: 逆旋转后 cos_min=0.992543808 / 不逆旋转 cos_min=-0.191445852 cos_mean=0.007562512
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 68) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.168315966 cos_mean=0.004199070 s0=-0.203419362 s1=-0.186492654 | vs原值: 逆旋转后 cos_min=0.993039510 / 不逆旋转 cos_min=-0.161804600 cos_mean=0.005019434
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|outlier|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 16) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.185737295 cos_mean=0.010577824 s0=-0.267929855 s1=-0.222239502 | vs原值: 逆旋转后 cos_min=0.993474726 / 不逆旋转 cos_min=-0.184532027 cos_mean=0.008996447
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|outlier|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 7) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.187595917 cos_mean=0.007756959 s0=-0.277738075 s1=-0.221987333 | vs原值: 逆旋转后 cos_min=0.993845759 / 不逆旋转 cos_min=-0.185650275 cos_mean=0.007498155
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|K|outlier|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.141728764 cos_mean=-0.141728764 s0=-0.141175357 s1=-0.161462281 | vs原值: 逆旋转后 cos_min=0.999999143 / 不逆旋转 cos_min=-0.141845117 cos_mean=-0.141845117
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|real L35_v_h0|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.214704848 cos_mean=-0.004944509 s0=-0.316075066 s1=-0.204575910 | vs原值: 逆旋转后 cos_min=0.993823700 / 不逆旋转 cos_min=-0.215094884 cos_mean=-0.005341585
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 67) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.154390038 cos_mean=0.012519470 s0=-0.220243726 s1=-0.200360286 | vs原值: 逆旋转后 cos_min=0.993208897 / 不逆旋转 cos_min=-0.154238529 cos_mean=0.012262055
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|real L35_v_h0|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.221851125 cos_mean=-0.005735679 s0=-0.306466941 s1=-0.181495855 | vs原值: 逆旋转后 cos_min=0.992505096 / 不逆旋转 cos_min=-0.218370992 cos_mean=-0.005728553
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|real L35_v_h0|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 27) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.209517808 cos_mean=-0.011083000 s0=-0.312498201 s1=-0.182074882 | vs原值: 逆旋转后 cos_min=0.993228708 / 不逆旋转 cos_min=-0.212859651 cos_mean=-0.009965542
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|real L35_v_h0|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.058663096 cos_mean=-0.058663096 s0=-0.071629716 s1=-0.065599705 | vs原值: 逆旋转后 cos_min=0.998373803 / 不逆旋转 cos_min=-0.058418017 cos_mean=-0.058418017
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|gauss|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.250064087 cos_mean=-0.003701169 s0=-0.211572394 s1=-0.300375015 | vs原值: 逆旋转后 cos_min=0.993541212 / 不逆旋转 cos_min=-0.246420341 cos_mean=-0.004461170
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 77) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.185333481 cos_mean=-0.013990057 s0=-0.262915829 s1=-0.199181266 | vs原值: 逆旋转后 cos_min=0.992914546 / 不逆旋转 cos_min=-0.200978523 cos_mean=-0.014807480
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|gauss|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.246942743 cos_mean=-0.006922706 s0=-0.203054329 s1=-0.307579103 | vs原值: 逆旋转后 cos_min=0.993091994 / 不逆旋转 cos_min=-0.245092200 cos_mean=-0.006020706
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|gauss|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.246942743 cos_mean=0.001838236 s0=-0.187639051 s1=-0.307579103 | vs原值: 逆旋转后 cos_min=0.993091994 / 不逆旋转 cos_min=-0.245092200 cos_mean=0.002909752
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|gauss|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=0.033835322 cos_mean=0.033835322 s0=0.067767716 s1=-0.000773062 | vs原值: 逆旋转后 cos_min=0.995747143 / 不逆旋转 cos_min=0.026230089 cos_mean=0.026230089
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|outlier|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 28) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.189002045 cos_mean=0.008308663 s0=-0.265877164 s1=-0.188596311 | vs原值: 逆旋转后 cos_min=0.994845051 / 不逆旋转 cos_min=-0.186206114 cos_mean=0.007887679
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 64) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.159661147 cos_mean=0.004634329 s0=-0.189423744 s1=-0.242319265 | vs原值: 逆旋转后 cos_min=0.994984512 / 不逆旋转 cos_min=-0.156889171 cos_mean=0.005233856
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|outlier|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 16) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.192078101 cos_mean=0.009262913 s0=-0.276467405 s1=-0.202984013 | vs原值: 逆旋转后 cos_min=0.994762599 / 不逆旋转 cos_min=-0.187844422 cos_mean=0.008312145
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|outlier|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 19) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.189769480 cos_mean=0.005855216 s0=-0.272020288 s1=-0.182327781 | vs原值: 逆旋转后 cos_min=0.994744504 / 不逆旋转 cos_min=-0.186592487 cos_mean=0.006536682
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V4|V|outlier|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.142552659 cos_mean=-0.142552659 s0=-0.139558459 s1=-0.167627029 | vs原值: 逆旋转后 cos_min=0.995928900 / 不逆旋转 cos_min=-0.141355327 cos_mean=-0.141355327
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|real L35_k_h0|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 3) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.219576211 cos_mean=-0.064237978 s0=-0.249765359 s1=-0.256991270 | vs原值: 逆旋转后 cos_min=0.997833559 / 不逆旋转 cos_min=-0.222635432 cos_mean=-0.063836106
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 76) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.189802079 cos_mean=-0.052778685 s0=-0.170434203 s1=-0.237172172 | vs原值: 逆旋转后 cos_min=0.997781685 / 不逆旋转 cos_min=-0.190388803 cos_mean=-0.052798528
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|real L35_k_h0|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 1) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.216427755 cos_mean=-0.062366341 s0=-0.251610920 s1=-0.267291090 | vs原值: 逆旋转后 cos_min=0.998128672 / 不逆旋转 cos_min=-0.220986505 cos_mean=-0.062895902
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|real L35_k_h0|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 12) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.222827041 cos_mean=-0.065840548 s0=-0.255912248 s1=-0.263776712 | vs原值: 逆旋转后 cos_min=0.998285403 / 不逆旋转 cos_min=-0.224084839 cos_mean=-0.066812269
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|real L35_k_h0|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.021384704 cos_mean=-0.021384704 s0=-0.045975668 s1=-0.006102522 | vs原值: 逆旋转后 cos_min=0.999999407 / 不逆旋转 cos_min=-0.021353133 cos_mean=-0.021353133
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|gauss|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 10) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.261717688 cos_mean=-0.004232618 s0=-0.207881535 s1=-0.316090799 | vs原值: 逆旋转后 cos_min=0.994001437 / 不逆旋转 cos_min=-0.252813456 cos_mean=-0.004709963
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 64) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.204199421 cos_mean=-0.016008701 s0=-0.262642022 s1=-0.184530267 | vs原值: 逆旋转后 cos_min=0.994124412 / 不逆旋转 cos_min=-0.209517436 cos_mean=-0.015768223
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|gauss|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.231600594 cos_mean=-0.004828297 s0=-0.199291784 s1=-0.314507972 | vs原值: 逆旋转后 cos_min=0.995568550 / 不逆旋转 cos_min=-0.235920756 cos_mean=-0.005014433
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|gauss|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.236641326 cos_mean=0.005591294 s0=-0.166093927 s1=-0.311016575 | vs原值: 逆旋转后 cos_min=0.995861916 / 不逆旋转 cos_min=-0.240110006 cos_mean=0.004767192
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|gauss|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=0.017992641 cos_mean=0.017992641 s0=0.061625850 s1=-0.025578444 | vs原值: 逆旋转后 cos_min=0.999998672 / 不逆旋转 cos_min=0.018088294 cos_mean=0.018088294
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|outlier|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.199288412 cos_mean=0.007876997 s0=-0.297338126 s1=-0.206300959 | vs原值: 逆旋转后 cos_min=0.992543808 / 不逆旋转 cos_min=-0.191445852 cos_mean=0.007562512
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 68) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.168315966 cos_mean=0.004199070 s0=-0.203419362 s1=-0.186492654 | vs原值: 逆旋转后 cos_min=0.993039510 / 不逆旋转 cos_min=-0.161804600 cos_mean=0.005019434
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|outlier|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 16) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.185737295 cos_mean=0.010577824 s0=-0.267929855 s1=-0.222239502 | vs原值: 逆旋转后 cos_min=0.993474726 / 不逆旋转 cos_min=-0.184532027 cos_mean=0.008996447
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|outlier|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 7) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.187595917 cos_mean=0.007756959 s0=-0.277738075 s1=-0.221987333 | vs原值: 逆旋转后 cos_min=0.993845759 / 不逆旋转 cos_min=-0.185650275 cos_mean=0.007498155
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|K|outlier|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.141728764 cos_mean=-0.141728764 s0=-0.141175357 s1=-0.161462281 | vs原值: 逆旋转后 cos_min=0.999999143 / 不逆旋转 cos_min=-0.141845117 cos_mean=-0.141845117
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|real L35_v_h0|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 15) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.258597933 cos_mean=-0.000142366 s0=-0.368383438 s1=-0.220773057 | vs原值: 逆旋转后 cos_min=0.861857737 / 不逆旋转 cos_min=-0.227445366 cos_mean=-0.004050601
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 74) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.168947643 cos_mean=0.013249196 s0=-0.289785575 s1=-0.227169929 | vs原值: 逆旋转后 cos_min=0.855180537 / 不逆旋转 cos_min=-0.125224533 cos_mean=0.012482819
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|real L35_v_h0|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 16) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.203150286 cos_mean=0.003177488 s0=-0.305230499 s1=-0.187761871 | vs原值: 逆旋转后 cos_min=0.857837032 / 不逆旋转 cos_min=-0.198035638 cos_mean=-0.001196309
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|real L35_v_h0|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 15) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.202009487 cos_mean=0.003362429 s0=-0.304129236 s1=-0.188135626 | vs原值: 逆旋转后 cos_min=0.860405240 / 不逆旋转 cos_min=-0.188257035 cos_mean=-0.002313068
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|real L35_v_h0|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.012289561 cos_mean=-0.012289561 s0=0.007327483 s1=-0.073971780 | vs原值: 逆旋转后 cos_min=0.951618598 / 不逆旋转 cos_min=-0.034077868 cos_mean=-0.034077868
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|gauss|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 2) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.210621095 cos_mean=-0.000360452 s0=-0.241385538 s1=-0.264492103 | vs原值: 逆旋转后 cos_min=0.866967994 / 不逆旋转 cos_min=-0.214305604 cos_mean=-0.002946293
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 68) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.239289075 cos_mean=0.000217171 s0=-0.213257541 s1=-0.265518838 | vs原值: 逆旋转后 cos_min=0.862592860 / 不逆旋转 cos_min=-0.184933254 cos_mean=-0.008347092
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|gauss|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.187933597 cos_mean=0.002443969 s0=-0.180747649 s1=-0.235094886 | vs原值: 逆旋转后 cos_min=0.857848242 / 不逆旋转 cos_min=-0.183932067 cos_mean=-0.000574501
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|gauss|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.187933597 cos_mean=0.005920122 s0=-0.180747649 s1=-0.235094886 | vs原值: 逆旋转后 cos_min=0.857848242 / 不逆旋转 cos_min=-0.183932067 cos_mean=0.005683340
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|gauss|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=0.150829630 cos_mean=0.150829630 s0=0.208305736 s1=0.094808110 | vs原值: 逆旋转后 cos_min=0.903513260 / 不逆旋转 cos_min=0.086430762 cos_mean=0.086430762
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|outlier|tok=128]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 29) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.176804996 cos_mean=0.004088240 s0=-0.240824437 s1=-0.238657304 | vs原值: 逆旋转后 cos_min=0.882177044 / 不逆旋转 cos_min=-0.162892130 cos_mean=0.004922092
+  page1 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 70) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.166738390 cos_mean=0.002866522 s0=-0.180415308 s1=-0.223642419 | vs原值: 逆旋转后 cos_min=0.888806914 / 不逆旋转 cos_min=-0.178855225 cos_mean=0.004807494
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|outlier|tok=64]
+  page0 valid=64  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 18) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.169657307 cos_mean=0.003846297 s0=-0.250329523 s1=-0.203020006 | vs原值: 逆旋转后 cos_min=0.895492001 / 不逆旋转 cos_min=-0.161493271 cos_mean=0.004666893
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|outlier|tok=51]
+  page0 valid=51  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 34) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.167168821 cos_mean=-0.003849864 s0=-0.249890563 s1=-0.171409978 | vs原值: 逆旋转后 cos_min=0.896528275 / 不逆旋转 cos_min=-0.162134024 cos_mean=0.001352430
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0
+[K4V2|V|outlier|tok=1]
+  page0 valid= 1  cos_min=1.000000000 cos_mean=1.000000000 (worst tok 0) maxabs=0.000e+00 nonfinite=0 | slice0 cos_min=1.000000000 slice1 cos_min=1.000000000 | 反证(不逆旋转) cos_min=-0.137106657 cos_mean=-0.137106657 s0=-0.181399440 s1=-0.068842447 | vs原值: 逆旋转后 cos_min=0.905817767 / 不逆旋转 cos_min=-0.153518702 cos_mean=-0.153518702
+  page1 valid= 0 (无有效 token，未计入判据)
+  对拍 device_vs_cpuP1(f32旋转域) mismatch=0/32768 maxabs=0.000e+00 | P1(路径B)_vs_主机反量化(路径A) mismatch=0 maxabs=0.000e+00 | device_bf16_vs_期望_bf16 mismatch=0/32768 maxabs=0.000e+00 | P1→record 重建坏=0 | 两页维轴副本失配=0 | 全页(含未满槽位) nonfinite=0

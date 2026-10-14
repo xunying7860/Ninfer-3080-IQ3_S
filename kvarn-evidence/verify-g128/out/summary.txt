@@ -1,0 +1,15 @@
+### selftest
+[selftest] data/real_k4v4_it0.bin : records=32 iters=0 不一致=0 差异字节=0
+[selftest] 结论：PASS —— import 的量化器副本逐字节复现 GATE2 dump，副本没走样
+[selftest] data/real_k4v4.bin : records=32 iters=16 不一致=0 差异字节=0
+[selftest] 结论：PASS —— import 的量化器副本逐字节复现 GATE2 dump，副本没走样
+### oracle 真实 tile
+heads=16  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.993589292  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+总判定：PASS
+heads=16  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.869420238  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+总判定：PASS
+### from-dump 真实性
+heads=8  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.895298316  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+总判定：PASS
+heads=16  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.993589292  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+总判定：PASS

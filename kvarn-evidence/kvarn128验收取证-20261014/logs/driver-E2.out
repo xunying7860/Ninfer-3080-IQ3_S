@@ -1,0 +1,267 @@
+########## E2 KV128 tag=r1 kv=kvarn128 extra='' port=18131 start 2026-10-14 12:08:40 ##########
+### profile md5 BEFORE: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json
+[armctl] no pidfile for KV128
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-120840.log
+[armctl] launched pid=228988 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-120840.log
+[wait] api base 出现在 8s
+### boot lines:
+    2026-10-14 12:08:40.097  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+    2026-10-14 12:08:40.417  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+    2026-10-14 12:08:46.529  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.3s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:08:46.529  INFO  capacity | KV 65,536 tokens, kvarn128, explicit | pages 1,024/1,024 | runtime 2.63 GiB | free 1.09 GiB
+    2026-10-14 12:08:46.699  INFO  api base http://127.0.0.1:18131/v1
+### nvidia-smi boot: 18987 MiB
+=== [gates] name=KV128 tag=r1 port=18131 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-120840.log nonce=gate-prod doc_lines=1200 suites='ctrl rst rst2 toolsctrl tools apitoolctrl apitool visctrl vis' ===
+=== [gates] KV128/r1 ctrl start 12:08:47 ===
+=== [gates] KV128/r1 ctrl exit=0 end 12:09:15 ===
+=== [gates] KV128/r1 rst start 12:09:15 ===
+=== [gates] KV128/r1 rst exit=0 end 12:10:15 ===
+=== [gates] KV128/r1 rst2 start 12:10:15 ===
+=== [gates] KV128/r1 rst2 exit=0 end 12:11:49 ===
+=== [gates] KV128/r1 toolsctrl start 12:11:49 ===
+=== [gates] KV128/r1 toolsctrl exit=0 end 12:12:42 ===
+=== [gates] KV128/r1 tools start 12:12:42 ===
+=== [gates] KV128/r1 tools exit=0 end 12:13:44 ===
+=== [gates] KV128/r1 apitoolctrl start 12:13:44 ===
+=== [gates] KV128/r1 apitoolctrl exit=0 end 12:13:46 ===
+=== [gates] KV128/r1 apitool start 12:13:46 ===
+=== [gates] KV128/r1 apitool exit=0 end 12:13:58 ===
+=== [gates] KV128/r1 visctrl start 12:13:58 ===
+=== [gates] KV128/r1 visctrl exit=0 end 12:14:00 ===
+=== [gates] KV128/r1 vis start 12:14:00 ===
+=== [gates] KV128/r1 vis exit=0 end 12:14:11 ===
+=== [gates] compares KV128/r1 12:14:11 ===
+--- KV128/r1 compare ctrl vs rst exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128/r1 compare rst vs rst2 exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128/r1 compare toolsctrl vs tools exit=1 ---
+  R1 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=1200
+     A: '1200\n'
+     B: '1200\n</thinking>\n1200\n<tool_call>\n'
+  R4 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。 B_out=文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。
+     A: '文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。'
+     B: '文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。'
+### VERDICT: FAIL(逐 token 不一致)
+--- KV128/r1 compare apitoolctrl vs apitool exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128/r1 compare visctrl vs vis exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+=== [gates] ALL DONE KV128/r1 12:14:11 ===
+### profile md5 AFTER: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json
+### nvidia-smi post: 18989 MiB
+[armctl] 2026-10-14 12:14:11 SIGTERM -> pid=231283
+[armctl] pid=231283 exited after 2s
+### KV128 stopped 2026-10-14 12:14:12
+########## E2 RK4V4 tag=r1 kv=rk4v4 extra='' port=18132 start 2026-10-14 12:14:12 ##########
+### profile md5 BEFORE: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json
+[armctl] no pidfile for RK4V4
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-121412.log
+[armctl] launched pid=231409 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-121412.log
+[wait] api base 出现在 9s
+### boot lines:
+    2026-10-14 12:14:13.000  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+    2026-10-14 12:14:13.231  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+    2026-10-14 12:14:19.884  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:14:19.884  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.58 GiB | free 5.42 GiB
+    2026-10-14 12:14:20.373  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi boot: 14557 MiB
+=== [gates] name=RK4V4 tag=r1 port=18132 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-121412.log nonce=gate-prod doc_lines=1200 suites='ctrl rst rst2 toolsctrl tools apitoolctrl apitool visctrl vis' ===
+=== [gates] RK4V4/r1 ctrl start 12:14:20 ===
+=== [gates] RK4V4/r1 ctrl exit=0 end 12:14:42 ===
+=== [gates] RK4V4/r1 rst start 12:14:42 ===
+=== [gates] RK4V4/r1 rst exit=0 end 12:15:30 ===
+=== [gates] RK4V4/r1 rst2 start 12:15:30 ===
+=== [gates] RK4V4/r1 rst2 exit=0 end 12:16:44 ===
+=== [gates] RK4V4/r1 toolsctrl start 12:16:44 ===
+=== [gates] RK4V4/r1 toolsctrl exit=0 end 12:17:24 ===
+=== [gates] RK4V4/r1 tools start 12:17:24 ===
+=== [gates] RK4V4/r1 tools exit=0 end 12:18:11 ===
+=== [gates] RK4V4/r1 apitoolctrl start 12:18:11 ===
+=== [gates] RK4V4/r1 apitoolctrl exit=0 end 12:18:14 ===
+=== [gates] RK4V4/r1 apitool start 12:18:14 ===
+=== [gates] RK4V4/r1 apitool exit=0 end 12:18:26 ===
+=== [gates] RK4V4/r1 visctrl start 12:18:26 ===
+=== [gates] RK4V4/r1 visctrl exit=0 end 12:18:28 ===
+=== [gates] RK4V4/r1 vis start 12:18:28 ===
+=== [gates] RK4V4/r1 vis exit=0 end 12:18:39 ===
+=== [gates] compares RK4V4/r1 12:18:39 ===
+--- RK4V4/r1 compare ctrl vs rst exit=1 ---
+  R4 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=文档含大量例行维护记录，第600行暗号为MARK-7731-KXQ。 B_out=文档含大量例行维护记录，第600行暗号MARK-7731-KXQ。
+     A: '文档含大量例行维护记录，第600行暗号为MARK-7731-KXQ。'
+     B: '文档含大量例行维护记录，第600行暗号MARK-7731-KXQ。'
+### VERDICT: FAIL(逐 token 不一致)
+--- RK4V4/r1 compare rst vs rst2 exit=1 ---
+  R4 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=文档含大量例行维护记录，第600行暗号MARK-7731-KXQ。 B_out=文档含大量例行维护记录，第600行暗号为MARK-7731-KXQ。
+     A: '文档含大量例行维护记录，第600行暗号MARK-7731-KXQ。'
+     B: '文档含大量例行维护记录，第600行暗号为MARK-7731-KXQ。'
+### VERDICT: FAIL(逐 token 不一致)
+--- RK4V4/r1 compare toolsctrl vs tools exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4/r1 compare apitoolctrl vs apitool exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4/r1 compare visctrl vs vis exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+=== [gates] ALL DONE RK4V4/r1 12:18:39 ===
+### profile md5 AFTER: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json
+### nvidia-smi post: 14561 MiB
+[armctl] 2026-10-14 12:18:39 SIGTERM -> pid=233324
+[armctl] pid=233324 exited after 2s
+### RK4V4 stopped 2026-10-14 12:18:40
+########## E2 INT8 tag=r1 kv=int8 extra='' port=18133 start 2026-10-14 12:18:40 ##########
+### profile md5 BEFORE: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-int8.json
+[armctl] no pidfile for INT8
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-121840.log
+[armctl] launched pid=233455 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-121840.log
+[wait] api base 出现在 9s
+### boot lines:
+    2026-10-14 12:18:40.828  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+    2026-10-14 12:18:41.058  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+    2026-10-14 12:18:47.743  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:18:47.743  INFO  capacity | KV 65,536 tokens, int8, explicit | pages 1,024/1,024 | runtime 3.61 GiB | free 4.39 GiB
+    2026-10-14 12:18:48.234  INFO  api base http://127.0.0.1:18133/v1
+### nvidia-smi boot: 15611 MiB
+=== [gates] name=INT8 tag=r1 port=18133 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-121840.log nonce=gate-prod doc_lines=1200 suites='ctrl rst rst2 toolsctrl tools apitoolctrl apitool visctrl vis' ===
+=== [gates] INT8/r1 ctrl start 12:18:48 ===
+=== [gates] INT8/r1 ctrl exit=0 end 12:19:10 ===
+=== [gates] INT8/r1 rst start 12:19:10 ===
+=== [gates] INT8/r1 rst exit=0 end 12:19:57 ===
+=== [gates] INT8/r1 rst2 start 12:19:57 ===
+=== [gates] INT8/r1 rst2 exit=0 end 12:21:11 ===
+=== [gates] INT8/r1 toolsctrl start 12:21:11 ===
+=== [gates] INT8/r1 toolsctrl exit=0 end 12:21:50 ===
+=== [gates] INT8/r1 tools start 12:21:50 ===
+=== [gates] INT8/r1 tools exit=0 end 12:22:38 ===
+=== [gates] INT8/r1 apitoolctrl start 12:22:38 ===
+=== [gates] INT8/r1 apitoolctrl exit=0 end 12:22:40 ===
+=== [gates] INT8/r1 apitool start 12:22:40 ===
+=== [gates] INT8/r1 apitool exit=0 end 12:22:52 ===
+=== [gates] INT8/r1 visctrl start 12:22:52 ===
+=== [gates] INT8/r1 visctrl exit=0 end 12:22:54 ===
+=== [gates] INT8/r1 vis start 12:22:54 ===
+=== [gates] INT8/r1 vis exit=0 end 12:23:05 ===
+=== [gates] compares INT8/r1 12:23:05 ===
+--- INT8/r1 compare ctrl vs rst exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- INT8/r1 compare rst vs rst2 exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- INT8/r1 compare toolsctrl vs tools exit=1 ---
+  R1 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=1200 B_out=1200
+     A: '1200'
+     B: '1200\n'
+### VERDICT: FAIL(逐 token 不一致)
+--- INT8/r1 compare apitoolctrl vs apitool exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- INT8/r1 compare visctrl vs vis exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+=== [gates] ALL DONE INT8/r1 12:23:06 ===
+### profile md5 AFTER: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-int8.json
+### nvidia-smi post: 15615 MiB
+[armctl] 2026-10-14 12:23:06 SIGTERM -> pid=235362
+[armctl] pid=235362 exited after 2s
+### INT8 stopped 2026-10-14 12:23:07
+########## E2 KV128NG tag=ng0 kv=kvarn128 extra='--ngram-draft-tokens 0' port=18134 start 2026-10-14 12:23:07 ##########
+### profile md5 BEFORE: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json
+[armctl] no pidfile for KV128NG
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128NG-20261014-122307.log
+[armctl] launched pid=235492 log=/data/kvarn/g128-验收-20261014/logs/KV128NG-20261014-122307.log
+[wait] api base 出现在 8s
+### boot lines:
+    2026-10-14 12:23:07.204  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+    2026-10-14 12:23:07.438  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+    2026-10-14 12:23:13.081  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 5.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:23:13.081  INFO  capacity | KV 65,536 tokens, kvarn128, explicit | pages 1,024/1,024 | runtime 2.60 GiB | free 1.15 GiB
+    2026-10-14 12:23:13.401  INFO  api base http://127.0.0.1:18134/v1
+### nvidia-smi boot: 18933 MiB
+=== [gates] name=KV128NG tag=ng0 port=18134 log=/data/kvarn/g128-验收-20261014/logs/KV128NG-20261014-122307.log nonce=gate-prod doc_lines=1200 suites='ctrl rst rst2 toolsctrl tools apitoolctrl apitool visctrl vis' ===
+=== [gates] KV128NG/ng0 ctrl start 12:23:14 ===
+=== [gates] KV128NG/ng0 ctrl exit=0 end 12:23:42 ===
+=== [gates] KV128NG/ng0 rst start 12:23:42 ===
+=== [gates] KV128NG/ng0 rst exit=0 end 12:24:42 ===
+=== [gates] KV128NG/ng0 rst2 start 12:24:42 ===
+=== [gates] KV128NG/ng0 rst2 exit=0 end 12:26:17 ===
+=== [gates] KV128NG/ng0 toolsctrl start 12:26:17 ===
+=== [gates] KV128NG/ng0 toolsctrl exit=0 end 12:27:09 ===
+=== [gates] KV128NG/ng0 tools start 12:27:09 ===
+=== [gates] KV128NG/ng0 tools exit=0 end 12:28:11 ===
+=== [gates] KV128NG/ng0 apitoolctrl start 12:28:11 ===
+=== [gates] KV128NG/ng0 apitoolctrl exit=0 end 12:28:13 ===
+=== [gates] KV128NG/ng0 apitool start 12:28:13 ===
+=== [gates] KV128NG/ng0 apitool exit=0 end 12:28:25 ===
+=== [gates] KV128NG/ng0 visctrl start 12:28:25 ===
+=== [gates] KV128NG/ng0 visctrl exit=0 end 12:28:27 ===
+=== [gates] KV128NG/ng0 vis start 12:28:27 ===
+=== [gates] KV128NG/ng0 vis exit=0 end 12:28:38 ===
+=== [gates] compares KV128NG/ng0 12:28:38 ===
+--- KV128NG/ng0 compare ctrl vs rst exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128NG/ng0 compare rst vs rst2 exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128NG/ng0 compare toolsctrl vs tools exit=1 ---
+  R1 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=1200
+     A: '1200\n'
+     B: '1200\n</thinking>\n1200\n<tool_call>\n'
+  R4 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。 B_out=文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。
+     A: '文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。'
+     B: '文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。'
+### VERDICT: FAIL(逐 token 不一致)
+--- KV128NG/ng0 compare apitoolctrl vs apitool exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- KV128NG/ng0 compare visctrl vs vis exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+=== [gates] ALL DONE KV128NG/ng0 12:28:38 ===
+### profile md5 AFTER: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json
+### nvidia-smi post: 18935 MiB
+[armctl] 2026-10-14 12:28:38 SIGTERM -> pid=237779
+[armctl] pid=237779 exited after 2s
+### KV128NG stopped 2026-10-14 12:28:39
+########## E2 RK4V4NG tag=ng0 kv=rk4v4 extra='--ngram-draft-tokens 0' port=18135 start 2026-10-14 12:28:39 ##########
+### profile md5 BEFORE: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json
+[armctl] no pidfile for RK4V4NG
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+[armctl] launched pid=237910 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+[wait] api base 出现在 8s
+### boot lines:
+    2026-10-14 12:28:40.052  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+    2026-10-14 12:28:40.279  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+    2026-10-14 12:28:46.287  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:28:46.287  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+    2026-10-14 12:28:46.963  INFO  api base http://127.0.0.1:18135/v1
+### nvidia-smi boot: 14507 MiB
+=== [gates] name=RK4V4NG tag=ng0 port=18135 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log nonce=gate-prod doc_lines=1200 suites='ctrl rst rst2 toolsctrl tools apitoolctrl apitool visctrl vis' ===
+=== [gates] RK4V4NG/ng0 ctrl start 12:28:47 ===
+=== [gates] RK4V4NG/ng0 ctrl exit=0 end 12:29:08 ===
+=== [gates] RK4V4NG/ng0 rst start 12:29:08 ===
+=== [gates] RK4V4NG/ng0 rst exit=0 end 12:29:56 ===
+=== [gates] RK4V4NG/ng0 rst2 start 12:29:56 ===
+=== [gates] RK4V4NG/ng0 rst2 exit=0 end 12:31:11 ===
+=== [gates] RK4V4NG/ng0 toolsctrl start 12:31:11 ===
+=== [gates] RK4V4NG/ng0 toolsctrl exit=0 end 12:31:50 ===
+=== [gates] RK4V4NG/ng0 tools start 12:31:50 ===
+=== [gates] RK4V4NG/ng0 tools exit=0 end 12:32:38 ===
+=== [gates] RK4V4NG/ng0 apitoolctrl start 12:32:38 ===
+=== [gates] RK4V4NG/ng0 apitoolctrl exit=0 end 12:32:41 ===
+=== [gates] RK4V4NG/ng0 apitool start 12:32:41 ===
+=== [gates] RK4V4NG/ng0 apitool exit=0 end 12:32:52 ===
+=== [gates] RK4V4NG/ng0 visctrl start 12:32:52 ===
+=== [gates] RK4V4NG/ng0 visctrl exit=0 end 12:32:54 ===
+=== [gates] RK4V4NG/ng0 vis start 12:32:54 ===
+=== [gates] RK4V4NG/ng0 vis exit=0 end 12:33:05 ===
+=== [gates] compares RK4V4NG/ng0 12:33:05 ===
+--- RK4V4NG/ng0 compare ctrl vs rst exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4NG/ng0 compare rst vs rst2 exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4NG/ng0 compare toolsctrl vs tools exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4NG/ng0 compare apitoolctrl vs apitool exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+--- RK4V4NG/ng0 compare visctrl vs vis exit=0 ---
+### VERDICT: PASS(逐 token 一致)
+=== [gates] ALL DONE RK4V4NG/ng0 12:33:06 ===
+### profile md5 AFTER: 7277b862f5c7319fc534c50bbc57a436  /data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json
+### nvidia-smi post: 14509 MiB
+[armctl] 2026-10-14 12:33:06 SIGTERM -> pid=239885
+[armctl] pid=239885 exited after 2s
+### RK4V4NG stopped 2026-10-14 12:33:07
+########## E2 ALL DONE 2026-10-14 12:33:07 ##########

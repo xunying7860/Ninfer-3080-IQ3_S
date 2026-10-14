@@ -1,0 +1,6 @@
+[15:09:42] 礼貌跑 round2-D 启动；缺口：有
+[15:09:42] 忙 (used=21MiB procs=0 writes=2)，等 60s
+[15:11:07] 窗口连续空闲 (used=21MiB procs=0 writes=0) → 起跑
+[15:14:20] 第 1 次结束 rc=0 log=logs/round2D-20261014-151107.log
+[15:14:20] 全部臂已完成
+[15:14:20] ROUND2D_DONE

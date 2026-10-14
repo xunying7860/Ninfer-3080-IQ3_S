@@ -1,0 +1,4 @@
+== 工具链 ==
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Build cuda_13.1.r13.1/compiler.37061995_0
+NVIDIA GeForce RTX 3080, 8.6

@@ -1,0 +1,2 @@
+dumprec: 32 records -> data/real_k4v4.bin  (bits_k=4 bits_v=4 iters=16 stage_f16=1)
+dumprec: 32 records -> data/real_k4v2.bin  (bits_k=4 bits_v=2 iters=16 stage_f16=1)

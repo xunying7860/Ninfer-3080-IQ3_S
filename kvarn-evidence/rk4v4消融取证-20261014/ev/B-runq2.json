@@ -1,0 +1,801 @@
+{
+ "arm": "B",
+ "port": 18121,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "log": "logs/armB-20261014-094959.log",
+ "prompts_file": "prompts.json",
+ "results": [
+  {
+   "id": "F1",
+   "kind": "事实",
+   "run": 1,
+   "max_tokens": 32,
+   "prompt_chars": 21,
+   "content": "1949",
+   "reasoning": "用户要求只回答数字，问题是中华人民共和国成立于哪一年。答案是1949年。\n",
+   "combined": "用户要求只回答数字，问题是中华人民共和国成立于哪一年。答案是1949年。\n1949",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 27,
+    "completion_tokens_details": {
+     "reasoning_tokens": 22
+    },
+    "prompt_tokens": 62,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 89
+   },
+   "client_s": 0.68,
+   "engine_raw": "2026-10-14 09:50:41.614  INFO  req#1 done | openai-chat | stop token | prompt 62 | output 27 | cache 0 (0.0%) | TTFT 444 ms | total 680 ms | queue 10.2 ms | prefill 141.2 tok/s | decode 110.2 tok/s | mtp accepted 19/24 (79.2%)",
+   "engine_started": "2026-10-14 09:50:40.939  INFO  req#1 started | openai-chat non-stream | 1 message | max output 32 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 444,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "62",
+    "output_tokens": "27",
+    "prefill_tps": "141.2",
+    "decode_tps": "110.2",
+    "mtp": "19/24 (79.2%)"
+   }
+  },
+  {
+   "id": "F1",
+   "kind": "事实",
+   "run": 2,
+   "max_tokens": 32,
+   "prompt_chars": 21,
+   "content": "1949",
+   "reasoning": "用户要求只回答数字，问题是中华人民共和国成立于哪一年。答案是1949年。\n",
+   "combined": "用户要求只回答数字，问题是中华人民共和国成立于哪一年。答案是1949年。\n1949",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 27,
+    "completion_tokens_details": {
+     "reasoning_tokens": 22
+    },
+    "prompt_tokens": 62,
+    "prompt_tokens_details": {
+     "cached_tokens": 57
+    },
+    "total_tokens": 89
+   },
+   "client_s": 0.3,
+   "engine_raw": "2026-10-14 09:50:42.413  INFO  req#2 done | openai-chat | stop token | prompt 62 | output 27 | cache 57 (91.9%, turn closure) | TTFT 53.8 ms | total 296 ms | prefill 101.0 tok/s | decode 110.9 tok/s | mtp accepted 19/24 (79.2%)",
+   "engine_started": "2026-10-14 09:50:42.120  INFO  req#2 started | openai-chat non-stream | 1 message | max output 32 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 54,
+    "cache_tokens": "57",
+    "cache_pct": "91.9",
+    "cache_kind": "turn closure",
+    "prompt_tokens": "62",
+    "output_tokens": "27",
+    "prefill_tps": "101.0",
+    "decode_tps": "110.9",
+    "mtp": "19/24 (79.2%)"
+   }
+  },
+  {
+   "id": "F2",
+   "kind": "事实",
+   "run": 1,
+   "max_tokens": 16,
+   "prompt_chars": 19,
+   "content": "",
+   "reasoning": "We need answer user's request: \"请只回答一个化学式：水的",
+   "combined": "We need answer user's request: \"请只回答一个化学式：水的",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 16,
+    "completion_tokens_details": {
+     "reasoning_tokens": 16
+    },
+    "prompt_tokens": 64,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 80
+   },
+   "client_s": 0.27,
+   "engine_raw": "2026-10-14 09:50:43.185  INFO  req#3 done | openai-chat | output limit | prompt 64 | output 16 | cache 0 (0.0%) | TTFT 123 ms | total 270 ms | prefill 545.2 tok/s | decode 102.7 tok/s | mtp accepted 10/14 (71.4%)",
+   "engine_started": "2026-10-14 09:50:42.920  INFO  req#3 started | openai-chat non-stream | 1 message | max output 16 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 123,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "64",
+    "output_tokens": "16",
+    "prefill_tps": "545.2",
+    "decode_tps": "102.7",
+    "mtp": "10/14 (71.4%)"
+   }
+  },
+  {
+   "id": "F2",
+   "kind": "事实",
+   "run": 2,
+   "max_tokens": 16,
+   "prompt_chars": 19,
+   "content": "",
+   "reasoning": "We need answer user's request: \"请只回答一个化学式：水的",
+   "combined": "We need answer user's request: \"请只回答一个化学式：水的",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 16,
+    "completion_tokens_details": {
+     "reasoning_tokens": 16
+    },
+    "prompt_tokens": 64,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 80
+   },
+   "client_s": 0.27,
+   "engine_raw": "2026-10-14 09:50:43.952  INFO  req#4 done | openai-chat | output limit | prompt 64 | output 16 | cache 0 (0.0%) | TTFT 119 ms | total 265 ms | prefill 548.7 tok/s | decode 102.9 tok/s | mtp accepted 10/14 (71.4%)",
+   "engine_started": "2026-10-14 09:50:43.689  INFO  req#4 started | openai-chat non-stream | 1 message | max output 16 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 119,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "64",
+    "output_tokens": "16",
+    "prefill_tps": "548.7",
+    "decode_tps": "102.9",
+    "mtp": "10/14 (71.4%)"
+   }
+  },
+  {
+   "id": "C1",
+   "kind": "代码",
+   "run": 1,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\n",
+   "combined": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\ndef add(a, b):\n    return a + b",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "completion_tokens_details": {
+     "reasoning_tokens": 97
+    },
+    "prompt_tokens": 76,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 186
+   },
+   "client_s": 1.16,
+   "engine_raw": "2026-10-14 09:50:45.613  INFO  req#5 done | openai-chat | stop token | prompt 76 | output 110 | cache 0 (0.0%) | TTFT 196 ms | total 1.2s | prefill 392.3 tok/s | decode 113.3 tok/s | mtp accepted 77/99 (77.8%)",
+   "engine_started": "2026-10-14 09:50:44.456  INFO  req#5 started | openai-chat non-stream | 1 message | max output 160 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 196,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "76",
+    "output_tokens": "110",
+    "prefill_tps": "392.3",
+    "decode_tps": "113.3",
+    "mtp": "77/99 (77.8%)"
+   }
+  },
+  {
+   "id": "C1",
+   "kind": "代码",
+   "run": 2,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\n",
+   "combined": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\ndef add(a, b):\n    return a + b",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "completion_tokens_details": {
+     "reasoning_tokens": 97
+    },
+    "prompt_tokens": 76,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 186
+   },
+   "client_s": 1.12,
+   "engine_raw": "2026-10-14 09:50:47.231  INFO  req#6 done | openai-chat | stop token | prompt 76 | output 110 | cache 0 (0.0%) | TTFT 145 ms | total 1.1s | prefill 531.0 tok/s | decode 113.2 tok/s | mtp accepted 77/99 (77.8%)",
+   "engine_started": "2026-10-14 09:50:46.117  INFO  req#6 started | openai-chat non-stream | 1 message | max output 160 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "76",
+    "output_tokens": "110",
+    "prefill_tps": "531.0",
+    "decode_tps": "113.2",
+    "mtp": "77/99 (77.8%)"
+   }
+  },
+  {
+   "id": "C2",
+   "kind": "代码",
+   "run": 1,
+   "max_tokens": 240,
+   "prompt_chars": 69,
+   "content": "```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```",
+   "reasoning": "用户要求用 Python 写一个函数 fib(n)，用循环返回第 n 个斐波那契数，fib(0)=0, fib(1)=1。只输出代码，不要解释。需要直接给出代码。\n",
+   "combined": "用户要求用 Python 写一个函数 fib(n)，用循环返回第 n 个斐波那契数，fib(0)=0, fib(1)=1。只输出代码，不要解释。需要直接给出代码。\n```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 95,
+    "completion_tokens_details": {
+     "reasoning_tokens": 51
+    },
+    "prompt_tokens": 93,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 188
+   },
+   "client_s": 0.91,
+   "engine_raw": "2026-10-14 09:50:48.639  INFO  req#7 done | openai-chat | stop token | prompt 93 | output 95 | cache 0 (0.0%) | TTFT 147 ms | total 906 ms | prefill 640.1 tok/s | decode 123.9 tok/s | mtp accepted 70/78 (89.7%)",
+   "engine_started": "2026-10-14 09:50:47.735  INFO  req#7 started | openai-chat non-stream | 1 message | max output 240 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 147,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "93",
+    "output_tokens": "95",
+    "prefill_tps": "640.1",
+    "decode_tps": "123.9",
+    "mtp": "70/78 (89.7%)"
+   }
+  },
+  {
+   "id": "C2",
+   "kind": "代码",
+   "run": 2,
+   "max_tokens": 240,
+   "prompt_chars": 69,
+   "content": "```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```",
+   "reasoning": "用户要求用 Python 写一个函数 fib(n)，用循环返回第 n 个斐波那契数，fib(0)=0, fib(1)=1。只输出代码，不要解释。需要直接给出代码。\n",
+   "combined": "用户要求用 Python 写一个函数 fib(n)，用循环返回第 n 个斐波那契数，fib(0)=0, fib(1)=1。只输出代码，不要解释。需要直接给出代码。\n```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 95,
+    "completion_tokens_details": {
+     "reasoning_tokens": 51
+    },
+    "prompt_tokens": 93,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 188
+   },
+   "client_s": 0.91,
+   "engine_raw": "2026-10-14 09:50:50.055  INFO  req#8 done | openai-chat | stop token | prompt 93 | output 95 | cache 0 (0.0%) | TTFT 147 ms | total 913 ms | prefill 641.6 tok/s | decode 123.9 tok/s | mtp accepted 70/78 (89.7%)",
+   "engine_started": "2026-10-14 09:50:49.144  INFO  req#8 started | openai-chat non-stream | 1 message | max output 240 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 147,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "93",
+    "output_tokens": "95",
+    "prefill_tps": "641.6",
+    "decode_tps": "123.9",
+    "mtp": "70/78 (89.7%)"
+   }
+  },
+  {
+   "id": "Z1",
+   "kind": "中文长答",
+   "run": 1,
+   "max_tokens": 512,
+   "prompt_chars": 46,
+   "content": "",
+   "reasoning": "我们需要用中文写一段约250字的说明，解释什么是KV缓存，以及它在长上下文推理中为什么重要。需要确保字数大约250字。先构思内容。\n\nKV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n需要约250字。数一下字数。上面两段大概多少字？第一段：KV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n第二段：在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n总字数估计：第一段约150字，第二段约150字，总共300字。需要约250",
+   "combined": "我们需要用中文写一段约250字的说明，解释什么是KV缓存，以及它在长上下文推理中为什么重要。需要确保字数大约250字。先构思内容。\n\nKV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n需要约250字。数一下字数。上面两段大概多少字？第一段：KV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n第二段：在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n总字数估计：第一段约150字，第二段约150字，总共300字。需要约250",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 512,
+    "completion_tokens_details": {
+     "reasoning_tokens": 512
+    },
+    "prompt_tokens": 80,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 592
+   },
+   "client_s": 5.25,
+   "engine_raw": "2026-10-14 09:50:55.803  INFO  req#9 done | openai-chat | output limit | prompt 80 | output 512 | cache 0 (0.0%) | TTFT 145 ms | total 5.2s | prefill 560.7 tok/s | decode 100.2 tok/s | mtp accepted 336/524 (64.1%)",
+   "engine_started": "2026-10-14 09:50:50.559  INFO  req#9 started | openai-chat non-stream | 1 message | max output 512 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "80",
+    "output_tokens": "512",
+    "prefill_tps": "560.7",
+    "decode_tps": "100.2",
+    "mtp": "336/524 (64.1%)"
+   }
+  },
+  {
+   "id": "Z1",
+   "kind": "中文长答",
+   "run": 2,
+   "max_tokens": 512,
+   "prompt_chars": 46,
+   "content": "",
+   "reasoning": "我们需要用中文写一段约250字的说明，解释什么是KV缓存，以及它在长上下文推理中为什么重要。需要确保字数大约250字。先构思内容。\n\nKV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n需要约250字。数一下字数。上面两段大概多少字？第一段：KV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n第二段：在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n总字数估计：第一段约150字，第二段约150字，总共300字。需要约250",
+   "combined": "我们需要用中文写一段约250字的说明，解释什么是KV缓存，以及它在长上下文推理中为什么重要。需要确保字数大约250字。先构思内容。\n\nKV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n需要约250字。数一下字数。上面两段大概多少字？第一段：KV缓存（Key-Value Cache）是Transformer模型推理时的一种优化技术。在自回归生成中，每生成一个新token，都需要计算当前token与之前所有token的注意力。如果每次都重新计算所有历史token的Key和Value向量，计算量会随序列长度平方增长。KV缓存将之前token的Key和Value向量存储起来，生成新token时只需计算新token的Key和Value，并与缓存中的历史Key和Value进行注意力计算，从而避免重复计算。\n\n第二段：在长上下文推理中，序列长度可能达到数千甚至数万token。没有KV缓存，每步推理都要处理整个历史序列，计算和内存开销巨大，导致推理速度极慢。KV缓存将历史Key和Value存储在显存中，使每步推理只需处理新token，计算复杂度从O(n^2)降至O(n)，显著加速生成过程。同时，它减少了重复计算，使长文本生成在时间和资源上变得可行，是支撑大模型长上下文能力的关键技术。\n\n总字数估计：第一段约150字，第二段约150字，总共300字。需要约250",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 512,
+    "completion_tokens_details": {
+     "reasoning_tokens": 512
+    },
+    "prompt_tokens": 80,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 592
+   },
+   "client_s": 5.25,
+   "engine_raw": "2026-10-14 09:51:01.553  INFO  req#10 done | openai-chat | output limit | prompt 80 | output 512 | cache 0 (0.0%) | TTFT 145 ms | total 5.2s | prefill 560.1 tok/s | decode 100.2 tok/s | mtp accepted 336/524 (64.1%)",
+   "engine_started": "2026-10-14 09:50:56.307  INFO  req#10 started | openai-chat non-stream | 1 message | max output 512 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "80",
+    "output_tokens": "512",
+    "prefill_tps": "560.1",
+    "decode_tps": "100.2",
+    "mtp": "336/524 (64.1%)"
+   }
+  },
+  {
+   "id": "Z2",
+   "kind": "中文长答",
+   "run": 1,
+   "max_tokens": 512,
+   "prompt_chars": 60,
+   "content": "Tensor Core 是 NVIDIA GPU 中专门用于加速矩阵运算的硬件单元。它把多个乘法和加法打包成一条指令，一次完成小矩阵的乘加操作，从而大幅提高矩阵乘法的吞吐量。Tensor Core 支持 FP16、BF16、INT8、FP8 等低精度格式，并能在低精度下保持较高精度，因此特别适合深度学习中的卷积、全连接层等大量矩阵乘法。相比普通 CUDA Core，Tensor Core 能在相同功耗下完成更多计算，显著缩短训练和推理时间，同时降低能耗。它已成为现代 GPU 加速 AI 计算的核心组件。",
+   "reasoning": "用户要求用中文写一段约250字的说明，介绍NVIDIA GPU的Tensor Core是什么、对矩阵乘法有什么帮助。需要直接给出中文段落，字数约250字。需要控制长度，解释Tensor Core是NVIDIA GPU中专门加速矩阵运算的硬件单元，支持低精度（FP16/BF16/INT8/FP8等）和混合精度，将多个乘加操作打包成单个指令，提高吞吐和能效，对深度学习训练/推理中的矩阵乘法（GEMM）有帮助。避免过度技术细节，但准确。约250字。\n",
+   "combined": "用户要求用中文写一段约250字的说明，介绍NVIDIA GPU的Tensor Core是什么、对矩阵乘法有什么帮助。需要直接给出中文段落，字数约250字。需要控制长度，解释Tensor Core是NVIDIA GPU中专门加速矩阵运算的硬件单元，支持低精度（FP16/BF16/INT8/FP8等）和混合精度，将多个乘加操作打包成单个指令，提高吞吐和能效，对深度学习训练/推理中的矩阵乘法（GEMM）有帮助。避免过度技术细节，但准确。约250字。\nTensor Core 是 NVIDIA GPU 中专门用于加速矩阵运算的硬件单元。它把多个乘法和加法打包成一条指令，一次完成小矩阵的乘加操作，从而大幅提高矩阵乘法的吞吐量。Tensor Core 支持 FP16、BF16、INT8、FP8 等低精度格式，并能在低精度下保持较高精度，因此特别适合深度学习中的卷积、全连接层等大量矩阵乘法。相比普通 CUDA Core，Tensor Core 能在相同功耗下完成更多计算，显著缩短训练和推理时间，同时降低能耗。它已成为现代 GPU 加速 AI 计算的核心组件。",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 261,
+    "completion_tokens_details": {
+     "reasoning_tokens": 131
+    },
+    "prompt_tokens": 81,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 342
+   },
+   "client_s": 3.18,
+   "engine_raw": "2026-10-14 09:51:05.232  INFO  req#11 done | openai-chat | stop token | prompt 81 | output 261 | cache 0 (0.0%) | TTFT 145 ms | total 3.2s | prefill 567.1 tok/s | decode 85.8 tok/s | mtp accepted 158/312 (50.6%)",
+   "engine_started": "2026-10-14 09:51:02.057  INFO  req#11 started | openai-chat non-stream | 1 message | max output 512 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "81",
+    "output_tokens": "261",
+    "prefill_tps": "567.1",
+    "decode_tps": "85.8",
+    "mtp": "158/312 (50.6%)"
+   }
+  },
+  {
+   "id": "Z2",
+   "kind": "中文长答",
+   "run": 2,
+   "max_tokens": 512,
+   "prompt_chars": 60,
+   "content": "Tensor Core 是 NVIDIA GPU 中专门用于加速矩阵运算的硬件单元。它把多个乘法和加法打包成一条指令，一次完成小矩阵的乘加操作，从而大幅提高矩阵乘法的吞吐量。Tensor Core 支持 FP16、BF16、INT8、FP8 等低精度格式，并能在低精度下保持较高精度，因此特别适合深度学习中的卷积、全连接层等大量矩阵乘法。相比普通 CUDA Core，Tensor Core 能在相同功耗下完成更多计算，显著缩短训练和推理时间，同时降低能耗。它已成为现代 GPU 加速 AI 计算的核心组件。",
+   "reasoning": "用户要求用中文写一段约250字的说明，介绍NVIDIA GPU的Tensor Core是什么、对矩阵乘法有什么帮助。需要直接给出中文段落，字数约250字。需要控制长度，解释Tensor Core是NVIDIA GPU中专门加速矩阵运算的硬件单元，支持低精度（FP16/BF16/INT8/FP8等）和混合精度，将多个乘加操作打包成单个指令，提高吞吐和能效，对深度学习训练/推理中的矩阵乘法（GEMM）有帮助。避免过度技术细节，但准确。约250字。\n",
+   "combined": "用户要求用中文写一段约250字的说明，介绍NVIDIA GPU的Tensor Core是什么、对矩阵乘法有什么帮助。需要直接给出中文段落，字数约250字。需要控制长度，解释Tensor Core是NVIDIA GPU中专门加速矩阵运算的硬件单元，支持低精度（FP16/BF16/INT8/FP8等）和混合精度，将多个乘加操作打包成单个指令，提高吞吐和能效，对深度学习训练/推理中的矩阵乘法（GEMM）有帮助。避免过度技术细节，但准确。约250字。\nTensor Core 是 NVIDIA GPU 中专门用于加速矩阵运算的硬件单元。它把多个乘法和加法打包成一条指令，一次完成小矩阵的乘加操作，从而大幅提高矩阵乘法的吞吐量。Tensor Core 支持 FP16、BF16、INT8、FP8 等低精度格式，并能在低精度下保持较高精度，因此特别适合深度学习中的卷积、全连接层等大量矩阵乘法。相比普通 CUDA Core，Tensor Core 能在相同功耗下完成更多计算，显著缩短训练和推理时间，同时降低能耗。它已成为现代 GPU 加速 AI 计算的核心组件。",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 261,
+    "completion_tokens_details": {
+     "reasoning_tokens": 131
+    },
+    "prompt_tokens": 81,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 342
+   },
+   "client_s": 3.18,
+   "engine_raw": "2026-10-14 09:51:08.912  INFO  req#12 done | openai-chat | stop token | prompt 81 | output 261 | cache 0 (0.0%) | TTFT 145 ms | total 3.2s | prefill 567.3 tok/s | decode 85.8 tok/s | mtp accepted 158/312 (50.6%)",
+   "engine_started": "2026-10-14 09:51:05.737  INFO  req#12 started | openai-chat non-stream | 1 message | max output 512 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "81",
+    "output_tokens": "261",
+    "prefill_tps": "567.3",
+    "decode_tps": "85.8",
+    "mtp": "158/312 (50.6%)"
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 1,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "",
+   "reasoning": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 000000 到 001999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 编号。用户问“第 1000 行和第 1500 行分别写了什么？” 文档中明确有 Line 001000 和 Line 001500。通常这种题指行号标签。需要回答：一共 2000 行。第 1000 行原文：Line 001000: MARK-7731-KXQ at 1000。第 1500 行原文：Line 001500: LATE-9082-QQ at 1500。然后中文总结主题不少于 500 字。需要总结文档主题：大量例行维护说明、库存记录和日志条目，几乎每行重复同一句，只有第1000和第1500行出现特殊标记/事件代码。主题可能是模拟日志/维护记录，用于测试检索、定位、计数、异常标记。需要不少于500字。要确保总结超过500中文字。可以写约600-800字。需要可能解释文档结构：每行以 Line 六位数字编号开头，冒号后内容。绝大多数是固定填充文本“routine maintenance notes, inventory records and log entries follow.”，表示例行维护、库存、日志。少数异常行：1000和1500，包含代码和位置/行号。整体像合成日志、占位数据、测试语料。主题：记录系统运行、维护、库存盘点、日志追踪，但内容高度重复，重点在编号体系和异常标记。可总结为：这是一份以行号索引的维护/库存/日志文档，表面是日常记录，实际是结构化数据，便于按行检索。第1000行和第1500行是特殊标记，可能代表事件、检查点、异常或任务。文档主题可归纳为“例行运维与库存日志的编号化记录，并嵌入关键标记”。需要不少于500字。要中文。可能用户要求“用中文总结这份文档的主题，不少于 500 字。” 所以总结部分必须>=500字。我们可以先回答行数和两行原文，然后“主题总结：”写长段。确保总回答中总结部分超过500字。可以数一下。需要避免太短。写大约700字。\n\n需要注意：用户说“请把那两行原文逐字抄出来”，要逐字，包括 Line 001000: MARK-7731-KXQ at 1000 和 Line 001500: LATE-9082-QQ at 1500。不要改标点。原文是英文。可以原样。\n\n行数：从 000",
+   "combined": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 000000 到 001999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 编号。用户问“第 1000 行和第 1500 行分别写了什么？” 文档中明确有 Line 001000 和 Line 001500。通常这种题指行号标签。需要回答：一共 2000 行。第 1000 行原文：Line 001000: MARK-7731-KXQ at 1000。第 1500 行原文：Line 001500: LATE-9082-QQ at 1500。然后中文总结主题不少于 500 字。需要总结文档主题：大量例行维护说明、库存记录和日志条目，几乎每行重复同一句，只有第1000和第1500行出现特殊标记/事件代码。主题可能是模拟日志/维护记录，用于测试检索、定位、计数、异常标记。需要不少于500字。要确保总结超过500中文字。可以写约600-800字。需要可能解释文档结构：每行以 Line 六位数字编号开头，冒号后内容。绝大多数是固定填充文本“routine maintenance notes, inventory records and log entries follow.”，表示例行维护、库存、日志。少数异常行：1000和1500，包含代码和位置/行号。整体像合成日志、占位数据、测试语料。主题：记录系统运行、维护、库存盘点、日志追踪，但内容高度重复，重点在编号体系和异常标记。可总结为：这是一份以行号索引的维护/库存/日志文档，表面是日常记录，实际是结构化数据，便于按行检索。第1000行和第1500行是特殊标记，可能代表事件、检查点、异常或任务。文档主题可归纳为“例行运维与库存日志的编号化记录，并嵌入关键标记”。需要不少于500字。要中文。可能用户要求“用中文总结这份文档的主题，不少于 500 字。” 所以总结部分必须>=500字。我们可以先回答行数和两行原文，然后“主题总结：”写长段。确保总回答中总结部分超过500字。可以数一下。需要避免太短。写大约700字。\n\n需要注意：用户说“请把那两行原文逐字抄出来”，要逐字，包括 Line 001000: MARK-7731-KXQ at 1000 和 Line 001500: LATE-9082-QQ at 1500。不要改标点。原文是英文。可以原样。\n\n行数：从 000",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 900,
+    "completion_tokens_details": {
+     "reasoning_tokens": 900
+    },
+    "prompt_tokens": 42111,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 43011
+   },
+   "client_s": 41.65,
+   "engine_raw": "2026-10-14 09:51:51.061  INFO  req#13 done | openai-chat | output limit | prompt 42,111 | output 900 | cache 0 (0.0%) | TTFT 31.2s | total 41.6s | prefill 1.35k tok/s | decode 86.1 tok/s | mtp accepted 577/966 (59.7%)",
+   "engine_started": "2026-10-14 09:51:09.456  INFO  req#13 started | openai-chat non-stream | 1 message | max output 900 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 31200,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "42111",
+    "output_tokens": "900",
+    "prefill_tps": null,
+    "decode_tps": "86.1",
+    "mtp": "577/966 (59.7%)"
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 2,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "",
+   "reasoning": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 000000 到 001999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 编号。用户问“第 1000 行和第 1500 行分别写了什么？” 文档中明确有 Line 001000 和 Line 001500。通常这种题指行号标签。需要回答：一共 2000 行。第 1000 行原文：Line 001000: MARK-7731-KXQ at 1000。第 1500 行原文：Line 001500: LATE-9082-QQ at 1500。然后中文总结主题不少于 500 字。需要总结文档主题：大量例行维护说明、库存记录和日志条目，几乎每行重复同一句，只有第1000和第1500行出现特殊标记/事件代码。主题可能是模拟日志/维护记录，用于测试检索、定位、计数、异常标记。需要不少于500字。要确保总结超过500中文字。可以写约600-800字。需要可能解释文档结构：每行以 Line 六位数字编号开头，冒号后内容。绝大多数是固定填充文本“routine maintenance notes, inventory records and log entries follow.”，表示例行维护、库存、日志。少数异常行：1000和1500，包含代码和位置/行号。整体像合成日志、占位数据、测试语料。主题：记录系统运行、维护、库存盘点、日志追踪，但内容高度重复，重点在编号体系和异常标记。可总结为：这是一份以行号索引的维护/库存/日志文档，表面是日常记录，实际是结构化数据，便于按行检索。第1000行和第1500行是特殊标记，可能代表事件、检查点、异常或任务。文档主题可归纳为“例行运维与库存日志的编号化记录，并嵌入关键标记”。需要不少于500字。要中文。可能用户要求“用中文总结这份文档的主题，不少于 500 字。” 所以总结部分必须>=500字。我们可以先回答行数和两行原文，然后“主题总结：”写长段。确保总回答中总结部分超过500字。可以数一下。需要避免太短。写大约700字。\n\n需要注意：用户说“请把那两行原文逐字抄出来”，要逐字，包括 Line 001000: MARK-7731-KXQ at 1000 和 Line 001500: LATE-9082-QQ at 1500。不要改标点。原文是英文。可以原样。\n\n行数：从 000",
+   "combined": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 000000 到 001999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 编号。用户问“第 1000 行和第 1500 行分别写了什么？” 文档中明确有 Line 001000 和 Line 001500。通常这种题指行号标签。需要回答：一共 2000 行。第 1000 行原文：Line 001000: MARK-7731-KXQ at 1000。第 1500 行原文：Line 001500: LATE-9082-QQ at 1500。然后中文总结主题不少于 500 字。需要总结文档主题：大量例行维护说明、库存记录和日志条目，几乎每行重复同一句，只有第1000和第1500行出现特殊标记/事件代码。主题可能是模拟日志/维护记录，用于测试检索、定位、计数、异常标记。需要不少于500字。要确保总结超过500中文字。可以写约600-800字。需要可能解释文档结构：每行以 Line 六位数字编号开头，冒号后内容。绝大多数是固定填充文本“routine maintenance notes, inventory records and log entries follow.”，表示例行维护、库存、日志。少数异常行：1000和1500，包含代码和位置/行号。整体像合成日志、占位数据、测试语料。主题：记录系统运行、维护、库存盘点、日志追踪，但内容高度重复，重点在编号体系和异常标记。可总结为：这是一份以行号索引的维护/库存/日志文档，表面是日常记录，实际是结构化数据，便于按行检索。第1000行和第1500行是特殊标记，可能代表事件、检查点、异常或任务。文档主题可归纳为“例行运维与库存日志的编号化记录，并嵌入关键标记”。需要不少于500字。要中文。可能用户要求“用中文总结这份文档的主题，不少于 500 字。” 所以总结部分必须>=500字。我们可以先回答行数和两行原文，然后“主题总结：”写长段。确保总回答中总结部分超过500字。可以数一下。需要避免太短。写大约700字。\n\n需要注意：用户说“请把那两行原文逐字抄出来”，要逐字，包括 Line 001000: MARK-7731-KXQ at 1000 和 Line 001500: LATE-9082-QQ at 1500。不要改标点。原文是英文。可以原样。\n\n行数：从 000",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 900,
+    "completion_tokens_details": {
+     "reasoning_tokens": 900
+    },
+    "prompt_tokens": 42111,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 43011
+   },
+   "client_s": 41.66,
+   "engine_raw": "2026-10-14 09:52:33.223  INFO  req#14 done | openai-chat | output limit | prompt 42,111 | output 900 | cache 0 (0.0%) | TTFT 31.2s | total 41.7s | queue 12.4 ms | prefill 1.35k tok/s | decode 86.1 tok/s | mtp accepted 577/966 (59.7%)",
+   "engine_started": "2026-10-14 09:51:51.605  INFO  req#14 started | openai-chat non-stream | 1 message | max output 900 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 31200,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "42111",
+    "output_tokens": "900",
+    "prefill_tps": null,
+    "decode_tps": "86.1",
+    "mtp": "577/966 (59.7%)"
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 3,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "",
+   "reasoning": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 0 到 1999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 000000 等。用户问“第 1000 行和第 1500 行分别写了什么？” 在给出的文档中，行标签是 Line 000000 到 Line 001999。通常“第 1000 行”可能指 Line 001000，因为文档中明确有 Line 001000。也可能如果按物理行从 1 开始，第 1000 行是 Line 000999，第 1500 行是 Line 001499。但用户要求“第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来”，而文档中有特殊行 Line 001000 和 Line 001500，明显是埋点。应该回答 Line 001000 和 Line 001500。需要说明按文档自带行号。总行数 2000 行。\n\n然后中文总结主题，不少于 500 字。文档大部分是重复的“routine maintenance notes, inventory records and log entries follow.”，只有第 1000 行和第 1500 行是特殊标记。主题可总结为：这是一份模拟/占位的维护日志或库存记录文档，主体由大量重复的例行说明组成，表示后续是例行维护笔记、库存记录和日志条目。两个特殊行像是标记、事件或校验点：MARK-7731-KXQ at 1000 和 LATE-9082-QQ at 1500。可能用于测试检索、定位、计数、抽取能力。文档主题不是真实业务内容，而是结构化噪声/填充文本，夹杂少量关键标记。需要不少于 500 字中文。要确保总结超过 500 字。可以写详细：行数、结构、重复文本、特殊行、可能用途、信息密度、检索意义、数据质量等。需要“用中文总结这份文档的主题，不少于 500 字。” 可能总结部分要 500 字以上。整体回答可包括：总行数，两行原文，然后总结。总结必须不少于 500 字。要数中文字数？大概写 600-800 字。确保总结部分单独明显超过 500 字。可以写“文档主题总结：”然后长段落。需要避免只说 500 字，实际要够。\n\n需要逐字抄出两行原文：\nLine 001000: MARK-7731-KXQ at 1000\nLine 001",
+   "combined": "我们需要回答用户中文问题。用户给了一个文档，从 Line 000000 到 Line 001999，每行格式 \"Line NNNNNN: ...\"。问：这份文档一共有多少行？第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来，然后用中文总结这份文档的主题，不少于 500 字。\n\n需要仔细数行数。文档显示从 Line 000000 到 Line 001999 连续。如果包含 000000 到 001999，共 2000 行。需要确认没有缺失。用户文本中确实列出所有行？看起来是完整从 0 到 1999。第 1000 行：Line 001000: MARK-7731-KXQ at 1000。第 1500 行：Line 001500: LATE-9082-QQ at 1500。需要逐字抄出那两行原文。可能“第 1000 行”按人类计数从 1 开始？但文档自身有 Line 000000 等。用户问“第 1000 行和第 1500 行分别写了什么？” 在给出的文档中，行标签是 Line 000000 到 Line 001999。通常“第 1000 行”可能指 Line 001000，因为文档中明确有 Line 001000。也可能如果按物理行从 1 开始，第 1000 行是 Line 000999，第 1500 行是 Line 001499。但用户要求“第 1000 行和第 1500 行分别写了什么？请把那两行原文逐字抄出来”，而文档中有特殊行 Line 001000 和 Line 001500，明显是埋点。应该回答 Line 001000 和 Line 001500。需要说明按文档自带行号。总行数 2000 行。\n\n然后中文总结主题，不少于 500 字。文档大部分是重复的“routine maintenance notes, inventory records and log entries follow.”，只有第 1000 行和第 1500 行是特殊标记。主题可总结为：这是一份模拟/占位的维护日志或库存记录文档，主体由大量重复的例行说明组成，表示后续是例行维护笔记、库存记录和日志条目。两个特殊行像是标记、事件或校验点：MARK-7731-KXQ at 1000 和 LATE-9082-QQ at 1500。可能用于测试检索、定位、计数、抽取能力。文档主题不是真实业务内容，而是结构化噪声/填充文本，夹杂少量关键标记。需要不少于 500 字中文。要确保总结超过 500 字。可以写详细：行数、结构、重复文本、特殊行、可能用途、信息密度、检索意义、数据质量等。需要“用中文总结这份文档的主题，不少于 500 字。” 可能总结部分要 500 字以上。整体回答可包括：总行数，两行原文，然后总结。总结必须不少于 500 字。要数中文字数？大概写 600-800 字。确保总结部分单独明显超过 500 字。可以写“文档主题总结：”然后长段落。需要避免只说 500 字，实际要够。\n\n需要逐字抄出两行原文：\nLine 001000: MARK-7731-KXQ at 1000\nLine 001",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 900,
+    "completion_tokens_details": {
+     "reasoning_tokens": 900
+    },
+    "prompt_tokens": 42111,
+    "prompt_tokens_details": {
+     "cached_tokens": 42106
+    },
+    "total_tokens": 43011
+   },
+   "client_s": 9.97,
+   "engine_raw": "2026-10-14 09:52:43.691  INFO  req#15 done | openai-chat | output limit | prompt 42,111 | output 900 | cache 42,106 (100.0%, turn closure) | TTFT 105 ms | total 10.0s | queue 12.0 ms | prefill 85.7 tok/s | decode 91.2 tok/s | mtp accepted 595/911 (65.3%)",
+   "engine_started": "2026-10-14 09:52:33.768  INFO  req#15 started | openai-chat non-stream | 1 message | max output 900 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 105,
+    "cache_tokens": "42106",
+    "cache_pct": "100.0",
+    "cache_kind": "turn closure",
+    "prompt_tokens": "42111",
+    "output_tokens": "900",
+    "prefill_tps": "85.7",
+    "decode_tps": "91.2",
+    "mtp": "595/911 (65.3%)"
+   }
+  },
+  {
+   "id": "Q1",
+   "kind": "长答-技术解释",
+   "run": 1,
+   "max_tokens": 1024,
+   "prompt_chars": 111,
+   "content": "下面按“作用—公式—缩放原因”的顺序，详细解释 Transformer 自注意力（self-attention）的计算过程。\n\n## 1. 自注意力的整体目标\n\n自注意力让序列中的每个位置都能“查看”序列中其他位置，并根据相关性加权聚合信息。  \n例如在句子 “The animal did not cross the street because it was too tired” 中，模型需要判断 “it” 指代 “animal” 还是 “street”。自注意力就是让 “it” 这个位置去关注其他词，并得到一个新的、融合了上下文的表示。\n\n在 Transformer 中，输入序列通常表示为矩阵 \\(X\\)，每一行是一个 token 的向量表示。自注意力会基于 \\(X\\) 生成三组向量：Q、K、V。\n\n---\n\n## 2. Q、K、V 各自的作用\n\n### 2.1 Q：Query，查询向量\n\nQ 表示“当前位置想要寻找什么信息”。  \n对于第 \\(i\\) 个位置，它的查询向量 \\(q_i\\) 会去和所有位置的键向量 \\(k_j\\) 比较，判断哪些位置与它相关。\n\n可以把它理解为“检索条件”：  \n- 当前词想知道哪些词和它语义相关；  \n- 当前词想知道哪些位置能提供上下文信息；  \n- 当前词想知道哪些位置应该被重点关注。\n\n### 2.2 K：Key，键向量\n\nK 表示“每个位置可以被检索的特征”。  \n第 \\(j\\) 个位置的键向量 \\(k_j\\) 会告诉其他位置：“我这里有什么信息，可以被谁关注”。\n\nQ 和 K 的点积衡量的是“查询”和“键”的匹配程度。  \n如果 \\(q_i\\) 和 \\(k_j\\) 很相似，说明第 \\(i\\) 个位置应该更多关注第 \\(j\\) 个位置。\n\n### 2.3 V：Value，值向量\n\nV 表示“真正被传递的信息”。  \n当第 \\(i\\) 个位置决定关注第 \\(j\\) 个位置时，它并不是直接拿 \\(k_j\\)，而是拿 \\(v_j\\)。  \nV 是实际参与加权求和的内容向量。\n\n可以类比数据库检索：  \n- Q 是查询条件；  \n- K 是索引键；  \n- V 是真正要读取的数据。\n\n在自注意力中，Q、K、V 都来自同一个输入序列，只是通过不同的线性变换得到：\n\n\\[\nQ = XW_Q,\\quad K = XW_K,\\quad V = XW_V\n\\]\n\n其中 \\(W_Q, W_K, W_V\\) 是可学习参数。\n\n---\n\n## 3. 缩放点积注意力的公式\n\n缩放点积注意力的标准公式是：\n\n\\[\n\\",
+   "reasoning": "我们需要回答中文问题：详细解释 Transformer 自注意力计算过程：Q、K、V 各自作用，缩放点积注意力公式，为什么除以 sqrt(d_k)。要求条理清晰、分点说明，不少于600字。需要最终答案中文。无需工具。先构思结构：\n1. 总览：自注意力让序列内每个位置关注其他位置，生成加权表示。\n2. Q/K/V 作用：输入 X 通过三个线性变换得到 Q（查询，我要找什么）、K（键，我能提供什么/被检索的标签）、V（值，实际携带的信息）。自注意力中 Q/K/V 来自同一序列，但不同头/位置。\n3. 计算过程：对每个位置 i，q_i 与所有 k_j 点积得到相似度分数，softmax 归一化得到权重，加权求和 v_j 得到输出 o_i。多头：分头并行，拼接投影。\n4. 公式：Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V。解释维度：Q [n,d_k], K [n,d_k], V [n,d_v]，QK^T [n,n]，softmax 行归一化，乘 V 得 [n,d_v]。\n5. 为什么除以 sqrt(d_k)：点积方差随维度增长。假设 q,k 独立零均值单位方差，点积方差 d_k，标准差 sqrt(d_k)。大维度使点积绝对值大，softmax 饱和，梯度小/消失，注意力分布尖锐，训练不稳定。除以 sqrt(d_k) 使方差回到 1，保持 softmax 输入尺度稳定，使注意力更平滑，梯度更稳定。也可从信息论/相似度角度：归一化点积相当于余弦相似度加幅度，缩放防止幅度主导。\n6. 可能补充：温度参数，多头降低维度，d_k=d_model/heads。\n需要不少于600字。确保分点。最终答案直接给。\n",
+   "combined": "我们需要回答中文问题：详细解释 Transformer 自注意力计算过程：Q、K、V 各自作用，缩放点积注意力公式，为什么除以 sqrt(d_k)。要求条理清晰、分点说明，不少于600字。需要最终答案中文。无需工具。先构思结构：\n1. 总览：自注意力让序列内每个位置关注其他位置，生成加权表示。\n2. Q/K/V 作用：输入 X 通过三个线性变换得到 Q（查询，我要找什么）、K（键，我能提供什么/被检索的标签）、V（值，实际携带的信息）。自注意力中 Q/K/V 来自同一序列，但不同头/位置。\n3. 计算过程：对每个位置 i，q_i 与所有 k_j 点积得到相似度分数，softmax 归一化得到权重，加权求和 v_j 得到输出 o_i。多头：分头并行，拼接投影。\n4. 公式：Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V。解释维度：Q [n,d_k], K [n,d_k], V [n,d_v]，QK^T [n,n]，softmax 行归一化，乘 V 得 [n,d_v]。\n5. 为什么除以 sqrt(d_k)：点积方差随维度增长。假设 q,k 独立零均值单位方差，点积方差 d_k，标准差 sqrt(d_k)。大维度使点积绝对值大，softmax 饱和，梯度小/消失，注意力分布尖锐，训练不稳定。除以 sqrt(d_k) 使方差回到 1，保持 softmax 输入尺度稳定，使注意力更平滑，梯度更稳定。也可从信息论/相似度角度：归一化点积相当于余弦相似度加幅度，缩放防止幅度主导。\n6. 可能补充：温度参数，多头降低维度，d_k=d_model/heads。\n需要不少于600字。确保分点。最终答案直接给。\n下面按“作用—公式—缩放原因”的顺序，详细解释 Transformer 自注意力（self-attention）的计算过程。\n\n## 1. 自注意力的整体目标\n\n自注意力让序列中的每个位置都能“查看”序列中其他位置，并根据相关性加权聚合信息。  \n例如在句子 “The animal did not cross the street because it was too tired” 中，模型需要判断 “it” 指代 “animal” 还是 “street”。自注意力就是让 “it” 这个位置去关注其他词，并得到一个新的、融合了上下文的表示。\n\n在 Transformer 中，输入序列通常表示为矩阵 \\(X\\)，每一行是一个 token 的向量表示。自注意力会基于 \\(X\\) 生成三组向量：Q、K、V。\n\n---\n\n## 2. Q、K、V 各自的作用\n\n### 2.1 Q：Query，查询向量\n\nQ 表示“当前位置想要寻找什么信息”。  \n对于第 \\(i\\) 个位置，它的查询向量 \\(q_i\\) 会去和所有位置的键向量 \\(k_j\\) 比较，判断哪些位置与它相关。\n\n可以把它理解为“检索条件”：  \n- 当前词想知道哪些词和它语义相关；  \n- 当前词想知道哪些位置能提供上下文信息；  \n- 当前词想知道哪些位置应该被重点关注。\n\n### 2.2 K：Key，键向量\n\nK 表示“每个位置可以被检索的特征”。  \n第 \\(j\\) 个位置的键向量 \\(k_j\\) 会告诉其他位置：“我这里有什么信息，可以被谁关注”。\n\nQ 和 K 的点积衡量的是“查询”和“键”的匹配程度。  \n如果 \\(q_i\\) 和 \\(k_j\\) 很相似，说明第 \\(i\\) 个位置应该更多关注第 \\(j\\) 个位置。\n\n### 2.3 V：Value，值向量\n\nV 表示“真正被传递的信息”。  \n当第 \\(i\\) 个位置决定关注第 \\(j\\) 个位置时，它并不是直接拿 \\(k_j\\)，而是拿 \\(v_j\\)。  \nV 是实际参与加权求和的内容向量。\n\n可以类比数据库检索：  \n- Q 是查询条件；  \n- K 是索引键；  \n- V 是真正要读取的数据。\n\n在自注意力中，Q、K、V 都来自同一个输入序列，只是通过不同的线性变换得到：\n\n\\[\nQ = XW_Q,\\quad K = XW_K,\\quad V = XW_V\n\\]\n\n其中 \\(W_Q, W_K, W_V\\) 是可学习参数。\n\n---\n\n## 3. 缩放点积注意力的公式\n\n缩放点积注意力的标准公式是：\n\n\\[\n\\",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 1024,
+    "completion_tokens_details": {
+     "reasoning_tokens": 430
+    },
+    "prompt_tokens": 107,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 1131
+   },
+   "client_s": 11.77,
+   "engine_raw": "2026-10-14 09:52:55.958  INFO  req#16 done | openai-chat | output limit | prompt 107 | output 1,024 | cache 0 (0.0%) | TTFT 151 ms | total 11.8s | prefill 725.5 tok/s | decode 88.1 tok/s | mtp accepted 625/1,192 (52.4%)",
+   "engine_started": "2026-10-14 09:52:44.196  INFO  req#16 started | openai-chat non-stream | 1 message | max output 1,024 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 151,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "107",
+    "output_tokens": "1024",
+    "prefill_tps": "725.5",
+    "decode_tps": "88.1",
+    "mtp": null
+   }
+  },
+  {
+   "id": "Q1",
+   "kind": "长答-技术解释",
+   "run": 2,
+   "max_tokens": 1024,
+   "prompt_chars": 111,
+   "content": "下面按“作用—公式—缩放原因”的顺序，详细解释 Transformer 自注意力（self-attention）的计算过程。\n\n## 1. 自注意力的整体目标\n\n自注意力让序列中的每个位置都能“查看”序列中其他位置，并根据相关性加权聚合信息。  \n例如在句子 “The animal did not cross the street because it was too tired” 中，模型需要判断 “it” 指代 “animal” 还是 “street”。自注意力就是让 “it” 这个位置去关注其他词，并得到一个新的、融合了上下文的表示。\n\n在 Transformer 中，输入序列通常表示为矩阵 \\(X\\)，每一行是一个 token 的向量表示。自注意力会基于 \\(X\\) 生成三组向量：Q、K、V。\n\n---\n\n## 2. Q、K、V 各自的作用\n\n### 2.1 Q：Query，查询向量\n\nQ 表示“当前位置想要寻找什么信息”。  \n对于第 \\(i\\) 个位置，它的查询向量 \\(q_i\\) 会去和所有位置的键向量 \\(k_j\\) 比较，判断哪些位置与它相关。\n\n可以把它理解为“检索条件”：  \n- 当前词想知道哪些词和它语义相关；  \n- 当前词想知道哪些位置能提供上下文信息；  \n- 当前词想知道哪些位置应该被重点关注。\n\n### 2.2 K：Key，键向量\n\nK 表示“每个位置可以被检索的特征”。  \n第 \\(j\\) 个位置的键向量 \\(k_j\\) 会告诉其他位置：“我这里有什么信息，可以被谁关注”。\n\nQ 和 K 的点积衡量的是“查询”和“键”的匹配程度。  \n如果 \\(q_i\\) 和 \\(k_j\\) 很相似，说明第 \\(i\\) 个位置应该更多关注第 \\(j\\) 个位置。\n\n### 2.3 V：Value，值向量\n\nV 表示“真正被传递的信息”。  \n当第 \\(i\\) 个位置决定关注第 \\(j\\) 个位置时，它并不是直接拿 \\(k_j\\)，而是拿 \\(v_j\\)。  \nV 是实际参与加权求和的内容向量。\n\n可以类比数据库检索：  \n- Q 是查询条件；  \n- K 是索引键；  \n- V 是真正要读取的数据。\n\n在自注意力中，Q、K、V 都来自同一个输入序列，只是通过不同的线性变换得到：\n\n\\[\nQ = XW_Q,\\quad K = XW_K,\\quad V = XW_V\n\\]\n\n其中 \\(W_Q, W_K, W_V\\) 是可学习参数。\n\n---\n\n## 3. 缩放点积注意力的公式\n\n缩放点积注意力的标准公式是：\n\n\\[\n\\",
+   "reasoning": "我们需要回答中文问题：详细解释 Transformer 自注意力计算过程：Q、K、V 各自作用，缩放点积注意力公式，为什么除以 sqrt(d_k)。要求条理清晰、分点说明，不少于600字。需要最终答案中文。无需工具。先构思结构：\n1. 总览：自注意力让序列内每个位置关注其他位置，生成加权表示。\n2. Q/K/V 作用：输入 X 通过三个线性变换得到 Q（查询，我要找什么）、K（键，我能提供什么/被检索的标签）、V（值，实际携带的信息）。自注意力中 Q/K/V 来自同一序列，但不同头/位置。\n3. 计算过程：对每个位置 i，q_i 与所有 k_j 点积得到相似度分数，softmax 归一化得到权重，加权求和 v_j 得到输出 o_i。多头：分头并行，拼接投影。\n4. 公式：Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V。解释维度：Q [n,d_k], K [n,d_k], V [n,d_v]，QK^T [n,n]，softmax 行归一化，乘 V 得 [n,d_v]。\n5. 为什么除以 sqrt(d_k)：点积方差随维度增长。假设 q,k 独立零均值单位方差，点积方差 d_k，标准差 sqrt(d_k)。大维度使点积绝对值大，softmax 饱和，梯度小/消失，注意力分布尖锐，训练不稳定。除以 sqrt(d_k) 使方差回到 1，保持 softmax 输入尺度稳定，使注意力更平滑，梯度更稳定。也可从信息论/相似度角度：归一化点积相当于余弦相似度加幅度，缩放防止幅度主导。\n6. 可能补充：温度参数，多头降低维度，d_k=d_model/heads。\n需要不少于600字。确保分点。最终答案直接给。\n",
+   "combined": "我们需要回答中文问题：详细解释 Transformer 自注意力计算过程：Q、K、V 各自作用，缩放点积注意力公式，为什么除以 sqrt(d_k)。要求条理清晰、分点说明，不少于600字。需要最终答案中文。无需工具。先构思结构：\n1. 总览：自注意力让序列内每个位置关注其他位置，生成加权表示。\n2. Q/K/V 作用：输入 X 通过三个线性变换得到 Q（查询，我要找什么）、K（键，我能提供什么/被检索的标签）、V（值，实际携带的信息）。自注意力中 Q/K/V 来自同一序列，但不同头/位置。\n3. 计算过程：对每个位置 i，q_i 与所有 k_j 点积得到相似度分数，softmax 归一化得到权重，加权求和 v_j 得到输出 o_i。多头：分头并行，拼接投影。\n4. 公式：Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V。解释维度：Q [n,d_k], K [n,d_k], V [n,d_v]，QK^T [n,n]，softmax 行归一化，乘 V 得 [n,d_v]。\n5. 为什么除以 sqrt(d_k)：点积方差随维度增长。假设 q,k 独立零均值单位方差，点积方差 d_k，标准差 sqrt(d_k)。大维度使点积绝对值大，softmax 饱和，梯度小/消失，注意力分布尖锐，训练不稳定。除以 sqrt(d_k) 使方差回到 1，保持 softmax 输入尺度稳定，使注意力更平滑，梯度更稳定。也可从信息论/相似度角度：归一化点积相当于余弦相似度加幅度，缩放防止幅度主导。\n6. 可能补充：温度参数，多头降低维度，d_k=d_model/heads。\n需要不少于600字。确保分点。最终答案直接给。\n下面按“作用—公式—缩放原因”的顺序，详细解释 Transformer 自注意力（self-attention）的计算过程。\n\n## 1. 自注意力的整体目标\n\n自注意力让序列中的每个位置都能“查看”序列中其他位置，并根据相关性加权聚合信息。  \n例如在句子 “The animal did not cross the street because it was too tired” 中，模型需要判断 “it” 指代 “animal” 还是 “street”。自注意力就是让 “it” 这个位置去关注其他词，并得到一个新的、融合了上下文的表示。\n\n在 Transformer 中，输入序列通常表示为矩阵 \\(X\\)，每一行是一个 token 的向量表示。自注意力会基于 \\(X\\) 生成三组向量：Q、K、V。\n\n---\n\n## 2. Q、K、V 各自的作用\n\n### 2.1 Q：Query，查询向量\n\nQ 表示“当前位置想要寻找什么信息”。  \n对于第 \\(i\\) 个位置，它的查询向量 \\(q_i\\) 会去和所有位置的键向量 \\(k_j\\) 比较，判断哪些位置与它相关。\n\n可以把它理解为“检索条件”：  \n- 当前词想知道哪些词和它语义相关；  \n- 当前词想知道哪些位置能提供上下文信息；  \n- 当前词想知道哪些位置应该被重点关注。\n\n### 2.2 K：Key，键向量\n\nK 表示“每个位置可以被检索的特征”。  \n第 \\(j\\) 个位置的键向量 \\(k_j\\) 会告诉其他位置：“我这里有什么信息，可以被谁关注”。\n\nQ 和 K 的点积衡量的是“查询”和“键”的匹配程度。  \n如果 \\(q_i\\) 和 \\(k_j\\) 很相似，说明第 \\(i\\) 个位置应该更多关注第 \\(j\\) 个位置。\n\n### 2.3 V：Value，值向量\n\nV 表示“真正被传递的信息”。  \n当第 \\(i\\) 个位置决定关注第 \\(j\\) 个位置时，它并不是直接拿 \\(k_j\\)，而是拿 \\(v_j\\)。  \nV 是实际参与加权求和的内容向量。\n\n可以类比数据库检索：  \n- Q 是查询条件；  \n- K 是索引键；  \n- V 是真正要读取的数据。\n\n在自注意力中，Q、K、V 都来自同一个输入序列，只是通过不同的线性变换得到：\n\n\\[\nQ = XW_Q,\\quad K = XW_K,\\quad V = XW_V\n\\]\n\n其中 \\(W_Q, W_K, W_V\\) 是可学习参数。\n\n---\n\n## 3. 缩放点积注意力的公式\n\n缩放点积注意力的标准公式是：\n\n\\[\n\\",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 1024,
+    "completion_tokens_details": {
+     "reasoning_tokens": 430
+    },
+    "prompt_tokens": 107,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 1131
+   },
+   "client_s": 11.77,
+   "engine_raw": "2026-10-14 09:53:08.227  INFO  req#17 done | openai-chat | output limit | prompt 107 | output 1,024 | cache 0 (0.0%) | TTFT 151 ms | total 11.8s | prefill 725.1 tok/s | decode 88.1 tok/s | mtp accepted 625/1,192 (52.4%)",
+   "engine_started": "2026-10-14 09:52:56.464  INFO  req#17 started | openai-chat non-stream | 1 message | max output 1,024 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 151,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "107",
+    "output_tokens": "1024",
+    "prefill_tps": "725.1",
+    "decode_tps": "88.1",
+    "mtp": null
+   }
+  },
+  {
+   "id": "Q2",
+   "kind": "长答-技术解释",
+   "run": 1,
+   "max_tokens": 1024,
+   "prompt_chars": 96,
+   "content": "虚拟内存是操作系统中一种非常重要的内存管理机制，它让每个进程都感觉自己拥有独立、连续且足够大的地址空间，而不必关心物理内存的真实大小和分布。下面从作用、实现机制、缺页中断、页面置换算法以及“为什么能超过物理内存”几个方面详细说明。\n\n---\n\n### 一、虚拟内存的作用\n\n1. **提供更大的地址空间**  \n   虚拟内存允许程序使用比物理内存更大的地址空间。例如，物理内存只有 8 GB，但 64 位程序可以拥有 TB 级别的虚拟地址空间。操作系统只把当前需要的部分页面放入物理内存，其余部分可以放在磁盘上。\n\n2. **实现地址隔离与保护**  \n   每个进程都有自己独立的虚拟地址空间，进程不能直接访问其他进程的内存。即使两个进程使用相同的虚拟地址，它们也会被映射到不同的物理地址，从而避免相互干扰。\n\n3. **简化编程模型**  \n   程序员可以假设自己拥有从 0 开始的连续地址空间，不需要关心物理内存是否连续、是否足够。操作系统负责把虚拟地址翻译成物理地址。\n\n4. **支持内存共享与复制**  \n   虚拟内存机制可以让多个进程共享同一物理页，例如共享库、父子进程复制等。通过页表权限位，还可以实现只读、可写、可执行等保护。\n\n5. **提高内存利用率**  \n   不是所有程序数据都需要同时驻留在物理内存中。虚拟内存可以只把当前活跃页面保留在内存中，不活跃页面换出到磁盘，从而让有限的物理内存服务更多进程。\n\n---\n\n### 二、虚拟内存的实现机制\n\n虚拟内存的核心思想是：**把虚拟地址空间划分为固定大小的页，把物理内存划分为同样大小的物理页框，通过页表建立虚拟页到物理页框的映射关系。**\n\n#### 1. 分页机制\n\n虚拟地址通常被拆分为两部分：\n\n- **页号**：表示虚拟地址属于哪一页。\n- **页内偏移**：表示该页内的具体位置。\n\n例如，如果页大小是 4 KB，那么虚拟地址的低 12 位是页内偏移，高位是页号。操作系统根据页号查找页表，得到对应的物理页框号，再拼上页内偏移，得到最终物理地址。\n\n#### 2. 页表\n\n页表是虚拟页到物理页框的映射表。每个进程都有自己的页表，页表项通常包含：\n\n- 物理页框号；\n- 有效位，表示该页是否在内存中；\n- 读写权限；\n- 脏位，表示页面是否被修改过；\n- 访问位，用于统计页面访问频率；\n- 其他控制信息。\n\n如果页表项中的有效位为 0，说明该页不在物理内存中，访问时会触发缺页中断。\n\n由于虚拟地址空间可能非常大，页表本身也可能很大，因此现代操作系统通常使用**多级页表**，例如 Linux 的四级页表。这样只有真正被访问的页表项才需要占用内存，可以节省空间。\n\n#### 3. TLB\n\n虽然页表解决了地址翻译问题，但每次访问内存都要查页表，会带来额外开销。因此 CPU 中通常设有 **TLB，即转换后备缓冲器**。\n\nTLB 是页表的高速缓存，保存最近使用的虚拟页号到物理页框号的映射。当 CPU 访问内存时，会先查 TLB：\n\n- 如果命中，则直接得到物理页框号，速度快；\n- 如果未命中，则",
+   "reasoning": "我们需要回答中文问题：详细解释操作系统里虚拟内存的作用与实现机制，覆盖页表、TLB、缺页中断与常见页面置换算法，并说明它为什么能让程序使用超过物理内存的地址空间。要求条理清晰、分点说明，不少于600字。需要最终答案中文，分点，详细。无需工具。先构思结构：1 作用：地址空间隔离、保护、简化编程、支持大于物理内存、交换、共享。2 实现机制：虚拟地址到物理地址转换，分页，页表，多级页表，TLB，MMU。3 缺页中断：访问不在内存页，触发异常，OS处理，分配物理页，磁盘读入，更新页表，重执行指令。4 页面置换算法：FIFO、LRU、Clock/Second Chance、LFU、OPT（理论）。5 为什么能超过物理内存：按需调页，只把活跃页放内存，不活跃页换出到磁盘，虚拟地址空间由页表映射，程序看到连续大地址空间，OS管理物理页。需要不少于600字。可以写约1000字。确保覆盖。最终直接给答案。\n",
+   "combined": "我们需要回答中文问题：详细解释操作系统里虚拟内存的作用与实现机制，覆盖页表、TLB、缺页中断与常见页面置换算法，并说明它为什么能让程序使用超过物理内存的地址空间。要求条理清晰、分点说明，不少于600字。需要最终答案中文，分点，详细。无需工具。先构思结构：1 作用：地址空间隔离、保护、简化编程、支持大于物理内存、交换、共享。2 实现机制：虚拟地址到物理地址转换，分页，页表，多级页表，TLB，MMU。3 缺页中断：访问不在内存页，触发异常，OS处理，分配物理页，磁盘读入，更新页表，重执行指令。4 页面置换算法：FIFO、LRU、Clock/Second Chance、LFU、OPT（理论）。5 为什么能超过物理内存：按需调页，只把活跃页放内存，不活跃页换出到磁盘，虚拟地址空间由页表映射，程序看到连续大地址空间，OS管理物理页。需要不少于600字。可以写约1000字。确保覆盖。最终直接给答案。\n虚拟内存是操作系统中一种非常重要的内存管理机制，它让每个进程都感觉自己拥有独立、连续且足够大的地址空间，而不必关心物理内存的真实大小和分布。下面从作用、实现机制、缺页中断、页面置换算法以及“为什么能超过物理内存”几个方面详细说明。\n\n---\n\n### 一、虚拟内存的作用\n\n1. **提供更大的地址空间**  \n   虚拟内存允许程序使用比物理内存更大的地址空间。例如，物理内存只有 8 GB，但 64 位程序可以拥有 TB 级别的虚拟地址空间。操作系统只把当前需要的部分页面放入物理内存，其余部分可以放在磁盘上。\n\n2. **实现地址隔离与保护**  \n   每个进程都有自己独立的虚拟地址空间，进程不能直接访问其他进程的内存。即使两个进程使用相同的虚拟地址，它们也会被映射到不同的物理地址，从而避免相互干扰。\n\n3. **简化编程模型**  \n   程序员可以假设自己拥有从 0 开始的连续地址空间，不需要关心物理内存是否连续、是否足够。操作系统负责把虚拟地址翻译成物理地址。\n\n4. **支持内存共享与复制**  \n   虚拟内存机制可以让多个进程共享同一物理页，例如共享库、父子进程复制等。通过页表权限位，还可以实现只读、可写、可执行等保护。\n\n5. **提高内存利用率**  \n   不是所有程序数据都需要同时驻留在物理内存中。虚拟内存可以只把当前活跃页面保留在内存中，不活跃页面换出到磁盘，从而让有限的物理内存服务更多进程。\n\n---\n\n### 二、虚拟内存的实现机制\n\n虚拟内存的核心思想是：**把虚拟地址空间划分为固定大小的页，把物理内存划分为同样大小的物理页框，通过页表建立虚拟页到物理页框的映射关系。**\n\n#### 1. 分页机制\n\n虚拟地址通常被拆分为两部分：\n\n- **页号**：表示虚拟地址属于哪一页。\n- **页内偏移**：表示该页内的具体位置。\n\n例如，如果页大小是 4 KB，那么虚拟地址的低 12 位是页内偏移，高位是页号。操作系统根据页号查找页表，得到对应的物理页框号，再拼上页内偏移，得到最终物理地址。\n\n#### 2. 页表\n\n页表是虚拟页到物理页框的映射表。每个进程都有自己的页表，页表项通常包含：\n\n- 物理页框号；\n- 有效位，表示该页是否在内存中；\n- 读写权限；\n- 脏位，表示页面是否被修改过；\n- 访问位，用于统计页面访问频率；\n- 其他控制信息。\n\n如果页表项中的有效位为 0，说明该页不在物理内存中，访问时会触发缺页中断。\n\n由于虚拟地址空间可能非常大，页表本身也可能很大，因此现代操作系统通常使用**多级页表**，例如 Linux 的四级页表。这样只有真正被访问的页表项才需要占用内存，可以节省空间。\n\n#### 3. TLB\n\n虽然页表解决了地址翻译问题，但每次访问内存都要查页表，会带来额外开销。因此 CPU 中通常设有 **TLB，即转换后备缓冲器**。\n\nTLB 是页表的高速缓存，保存最近使用的虚拟页号到物理页框号的映射。当 CPU 访问内存时，会先查 TLB：\n\n- 如果命中，则直接得到物理页框号，速度快；\n- 如果未命中，则",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 1024,
+    "completion_tokens_details": {
+     "reasoning_tokens": 256
+    },
+    "prompt_tokens": 110,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 1134
+   },
+   "client_s": 11.45,
+   "engine_raw": "2026-10-14 09:53:20.178  INFO  req#18 done | openai-chat | output limit | prompt 110 | output 1,024 | cache 0 (0.0%) | TTFT 151 ms | total 11.4s | prefill 741.4 tok/s | decode 90.6 tok/s | mtp accepted 636/1,158 (54.9%)",
+   "engine_started": "2026-10-14 09:53:08.732  INFO  req#18 started | openai-chat non-stream | 1 message | max output 1,024 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 151,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "110",
+    "output_tokens": "1024",
+    "prefill_tps": "741.4",
+    "decode_tps": "90.6",
+    "mtp": null
+   }
+  },
+  {
+   "id": "Q2",
+   "kind": "长答-技术解释",
+   "run": 2,
+   "max_tokens": 1024,
+   "prompt_chars": 96,
+   "content": "虚拟内存是操作系统中一种非常重要的内存管理机制，它让每个进程都感觉自己拥有独立、连续且足够大的地址空间，而不必关心物理内存的真实大小和分布。下面从作用、实现机制、缺页中断、页面置换算法以及“为什么能超过物理内存”几个方面详细说明。\n\n---\n\n### 一、虚拟内存的作用\n\n1. **提供更大的地址空间**  \n   虚拟内存允许程序使用比物理内存更大的地址空间。例如，物理内存只有 8 GB，但 64 位程序可以拥有 TB 级别的虚拟地址空间。操作系统只把当前需要的部分页面放入物理内存，其余部分可以放在磁盘上。\n\n2. **实现地址隔离与保护**  \n   每个进程都有自己独立的虚拟地址空间，进程不能直接访问其他进程的内存。即使两个进程使用相同的虚拟地址，它们也会被映射到不同的物理地址，从而避免相互干扰。\n\n3. **简化编程模型**  \n   程序员可以假设自己拥有从 0 开始的连续地址空间，不需要关心物理内存是否连续、是否足够。操作系统负责把虚拟地址翻译成物理地址。\n\n4. **支持内存共享与复制**  \n   虚拟内存机制可以让多个进程共享同一物理页，例如共享库、父子进程复制等。通过页表权限位，还可以实现只读、可写、可执行等保护。\n\n5. **提高内存利用率**  \n   不是所有程序数据都需要同时驻留在物理内存中。虚拟内存可以只把当前活跃页面保留在内存中，不活跃页面换出到磁盘，从而让有限的物理内存服务更多进程。\n\n---\n\n### 二、虚拟内存的实现机制\n\n虚拟内存的核心思想是：**把虚拟地址空间划分为固定大小的页，把物理内存划分为同样大小的物理页框，通过页表建立虚拟页到物理页框的映射关系。**\n\n#### 1. 分页机制\n\n虚拟地址通常被拆分为两部分：\n\n- **页号**：表示虚拟地址属于哪一页。\n- **页内偏移**：表示该页内的具体位置。\n\n例如，如果页大小是 4 KB，那么虚拟地址的低 12 位是页内偏移，高位是页号。操作系统根据页号查找页表，得到对应的物理页框号，再拼上页内偏移，得到最终物理地址。\n\n#### 2. 页表\n\n页表是虚拟页到物理页框的映射表。每个进程都有自己的页表，页表项通常包含：\n\n- 物理页框号；\n- 有效位，表示该页是否在内存中；\n- 读写权限；\n- 脏位，表示页面是否被修改过；\n- 访问位，用于统计页面访问频率；\n- 其他控制信息。\n\n如果页表项中的有效位为 0，说明该页不在物理内存中，访问时会触发缺页中断。\n\n由于虚拟地址空间可能非常大，页表本身也可能很大，因此现代操作系统通常使用**多级页表**，例如 Linux 的四级页表。这样只有真正被访问的页表项才需要占用内存，可以节省空间。\n\n#### 3. TLB\n\n虽然页表解决了地址翻译问题，但每次访问内存都要查页表，会带来额外开销。因此 CPU 中通常设有 **TLB，即转换后备缓冲器**。\n\nTLB 是页表的高速缓存，保存最近使用的虚拟页号到物理页框号的映射。当 CPU 访问内存时，会先查 TLB：\n\n- 如果命中，则直接得到物理页框号，速度快；\n- 如果未命中，则",
+   "reasoning": "我们需要回答中文问题：详细解释操作系统里虚拟内存的作用与实现机制，覆盖页表、TLB、缺页中断与常见页面置换算法，并说明它为什么能让程序使用超过物理内存的地址空间。要求条理清晰、分点说明，不少于600字。需要最终答案中文，分点，详细。无需工具。先构思结构：1 作用：地址空间隔离、保护、简化编程、支持大于物理内存、交换、共享。2 实现机制：虚拟地址到物理地址转换，分页，页表，多级页表，TLB，MMU。3 缺页中断：访问不在内存页，触发异常，OS处理，分配物理页，磁盘读入，更新页表，重执行指令。4 页面置换算法：FIFO、LRU、Clock/Second Chance、LFU、OPT（理论）。5 为什么能超过物理内存：按需调页，只把活跃页放内存，不活跃页换出到磁盘，虚拟地址空间由页表映射，程序看到连续大地址空间，OS管理物理页。需要不少于600字。可以写约1000字。确保覆盖。最终直接给答案。\n",
+   "combined": "我们需要回答中文问题：详细解释操作系统里虚拟内存的作用与实现机制，覆盖页表、TLB、缺页中断与常见页面置换算法，并说明它为什么能让程序使用超过物理内存的地址空间。要求条理清晰、分点说明，不少于600字。需要最终答案中文，分点，详细。无需工具。先构思结构：1 作用：地址空间隔离、保护、简化编程、支持大于物理内存、交换、共享。2 实现机制：虚拟地址到物理地址转换，分页，页表，多级页表，TLB，MMU。3 缺页中断：访问不在内存页，触发异常，OS处理，分配物理页，磁盘读入，更新页表，重执行指令。4 页面置换算法：FIFO、LRU、Clock/Second Chance、LFU、OPT（理论）。5 为什么能超过物理内存：按需调页，只把活跃页放内存，不活跃页换出到磁盘，虚拟地址空间由页表映射，程序看到连续大地址空间，OS管理物理页。需要不少于600字。可以写约1000字。确保覆盖。最终直接给答案。\n虚拟内存是操作系统中一种非常重要的内存管理机制，它让每个进程都感觉自己拥有独立、连续且足够大的地址空间，而不必关心物理内存的真实大小和分布。下面从作用、实现机制、缺页中断、页面置换算法以及“为什么能超过物理内存”几个方面详细说明。\n\n---\n\n### 一、虚拟内存的作用\n\n1. **提供更大的地址空间**  \n   虚拟内存允许程序使用比物理内存更大的地址空间。例如，物理内存只有 8 GB，但 64 位程序可以拥有 TB 级别的虚拟地址空间。操作系统只把当前需要的部分页面放入物理内存，其余部分可以放在磁盘上。\n\n2. **实现地址隔离与保护**  \n   每个进程都有自己独立的虚拟地址空间，进程不能直接访问其他进程的内存。即使两个进程使用相同的虚拟地址，它们也会被映射到不同的物理地址，从而避免相互干扰。\n\n3. **简化编程模型**  \n   程序员可以假设自己拥有从 0 开始的连续地址空间，不需要关心物理内存是否连续、是否足够。操作系统负责把虚拟地址翻译成物理地址。\n\n4. **支持内存共享与复制**  \n   虚拟内存机制可以让多个进程共享同一物理页，例如共享库、父子进程复制等。通过页表权限位，还可以实现只读、可写、可执行等保护。\n\n5. **提高内存利用率**  \n   不是所有程序数据都需要同时驻留在物理内存中。虚拟内存可以只把当前活跃页面保留在内存中，不活跃页面换出到磁盘，从而让有限的物理内存服务更多进程。\n\n---\n\n### 二、虚拟内存的实现机制\n\n虚拟内存的核心思想是：**把虚拟地址空间划分为固定大小的页，把物理内存划分为同样大小的物理页框，通过页表建立虚拟页到物理页框的映射关系。**\n\n#### 1. 分页机制\n\n虚拟地址通常被拆分为两部分：\n\n- **页号**：表示虚拟地址属于哪一页。\n- **页内偏移**：表示该页内的具体位置。\n\n例如，如果页大小是 4 KB，那么虚拟地址的低 12 位是页内偏移，高位是页号。操作系统根据页号查找页表，得到对应的物理页框号，再拼上页内偏移，得到最终物理地址。\n\n#### 2. 页表\n\n页表是虚拟页到物理页框的映射表。每个进程都有自己的页表，页表项通常包含：\n\n- 物理页框号；\n- 有效位，表示该页是否在内存中；\n- 读写权限；\n- 脏位，表示页面是否被修改过；\n- 访问位，用于统计页面访问频率；\n- 其他控制信息。\n\n如果页表项中的有效位为 0，说明该页不在物理内存中，访问时会触发缺页中断。\n\n由于虚拟地址空间可能非常大，页表本身也可能很大，因此现代操作系统通常使用**多级页表**，例如 Linux 的四级页表。这样只有真正被访问的页表项才需要占用内存，可以节省空间。\n\n#### 3. TLB\n\n虽然页表解决了地址翻译问题，但每次访问内存都要查页表，会带来额外开销。因此 CPU 中通常设有 **TLB，即转换后备缓冲器**。\n\nTLB 是页表的高速缓存，保存最近使用的虚拟页号到物理页框号的映射。当 CPU 访问内存时，会先查 TLB：\n\n- 如果命中，则直接得到物理页框号，速度快；\n- 如果未命中，则",
+   "finish": "length",
+   "usage": {
+    "completion_tokens": 1024,
+    "completion_tokens_details": {
+     "reasoning_tokens": 256
+    },
+    "prompt_tokens": 110,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 1134
+   },
+   "client_s": 11.44,
+   "engine_raw": "2026-10-14 09:53:32.123  INFO  req#19 done | openai-chat | output limit | prompt 110 | output 1,024 | cache 0 (0.0%) | TTFT 151 ms | total 11.4s | prefill 744.6 tok/s | decode 90.6 tok/s | mtp accepted 636/1,158 (54.9%)",
+   "engine_started": "2026-10-14 09:53:20.683  INFO  req#19 started | openai-chat non-stream | 1 message | max output 1,024 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 151,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "110",
+    "output_tokens": "1024",
+    "prefill_tps": "744.6",
+    "decode_tps": "90.6",
+    "mtp": null
+   }
+  },
+  {
+   "id": "R3",
+   "kind": "重复性(连跑3次)",
+   "run": 1,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\n",
+   "combined": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\ndef add(a, b):\n    return a + b",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "completion_tokens_details": {
+     "reasoning_tokens": 97
+    },
+    "prompt_tokens": 76,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 186
+   },
+   "client_s": 1.11,
+   "engine_raw": "2026-10-14 09:53:33.735  INFO  req#20 done | openai-chat | stop token | prompt 76 | output 110 | cache 0 (0.0%) | TTFT 145 ms | total 1.1s | prefill 533.7 tok/s | decode 113.3 tok/s | mtp accepted 77/99 (77.8%)",
+   "engine_started": "2026-10-14 09:53:32.628  INFO  req#20 started | openai-chat non-stream | 1 message | max output 160 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 145,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "76",
+    "output_tokens": "110",
+    "prefill_tps": "533.7",
+    "decode_tps": "113.3",
+    "mtp": "77/99 (77.8%)"
+   }
+  },
+  {
+   "id": "R3",
+   "kind": "重复性(连跑3次)",
+   "run": 2,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\n",
+   "combined": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\ndef add(a, b):\n    return a + b",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "completion_tokens_details": {
+     "reasoning_tokens": 97
+    },
+    "prompt_tokens": 76,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 186
+   },
+   "client_s": 1.11,
+   "engine_raw": "2026-10-14 09:53:35.348  INFO  req#21 done | openai-chat | stop token | prompt 76 | output 110 | cache 0 (0.0%) | TTFT 146 ms | total 1.1s | prefill 531.9 tok/s | decode 113.3 tok/s | mtp accepted 77/99 (77.8%)",
+   "engine_started": "2026-10-14 09:53:34.240  INFO  req#21 started | openai-chat non-stream | 1 message | max output 160 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 146,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "76",
+    "output_tokens": "110",
+    "prefill_tps": "531.9",
+    "decode_tps": "113.3",
+    "mtp": "77/99 (77.8%)"
+   }
+  },
+  {
+   "id": "R3",
+   "kind": "重复性(连跑3次)",
+   "run": 3,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\n",
+   "combined": "We need to respond to user: \"用 Python 写一个函数 add(a, b) 返回两数之和。只输出代码，不要解释。\" Means: Write a Python function add(a, b) returning sum of two numbers. Output only code, no explanation. Need final only code. Ensure no extra text. Could be:\ndef add(a, b):\n    return a + b\nMaybe include no docstring. Final only code.\ndef add(a, b):\n    return a + b",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "completion_tokens_details": {
+     "reasoning_tokens": 97
+    },
+    "prompt_tokens": 76,
+    "prompt_tokens_details": {
+     "cached_tokens": 71
+    },
+    "total_tokens": 186
+   },
+   "client_s": 1.02,
+   "engine_raw": "2026-10-14 09:53:36.868  INFO  req#22 done | openai-chat | stop token | prompt 76 | output 110 | cache 71 (93.4%, turn closure) | TTFT 52.4 ms | total 1.0s | prefill 100.9 tok/s | decode 113.2 tok/s | mtp accepted 77/99 (77.8%)",
+   "engine_started": "2026-10-14 09:53:35.853  INFO  req#22 started | openai-chat non-stream | 1 message | max output 160 | thinking xhigh",
+   "engine": {
+    "ttft_ms": 52,
+    "cache_tokens": "71",
+    "cache_pct": "93.4",
+    "cache_kind": "turn closure",
+    "prompt_tokens": "76",
+    "output_tokens": "110",
+    "prefill_tps": "100.9",
+    "decode_tps": "113.2",
+    "mtp": "77/99 (77.8%)"
+   }
+  }
+ ]
+}

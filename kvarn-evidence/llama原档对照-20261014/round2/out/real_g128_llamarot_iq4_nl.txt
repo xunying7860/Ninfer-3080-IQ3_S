@@ -1,0 +1,19 @@
+# mode=llama-rot dom=rot data=real_g128 group=128 iters=16 stage_f16=0 ref=f32(raw)  单位=一条 token 的 256-dim head 向量
+real_g128/llama-rot L35_k_h0_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9968705 cos_vec_mean=0.9968717 cos_vec_min=0.9962479 relL2=0.07911 maxAbs=0.4419
+real_g128/llama-rot L35_k_h1_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9969406 cos_vec_mean=0.9969551 cos_vec_min=0.9962874 relL2=0.07822 maxAbs=0.5146
+real_g128/llama-rot L35_k_h2_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9970315 cos_vec_mean=0.9970364 cos_vec_min=0.9963391 relL2=0.07704 maxAbs=0.5131
+real_g128/llama-rot L35_k_h3_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9969793 cos_vec_mean=0.9969845 cos_vec_min=0.9960045 relL2=0.07774 maxAbs=0.531
+real_g128/llama-rot L35_v_h0_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9968977 cos_vec_mean=0.9968893 cos_vec_min=0.9961200 relL2=0.07876 maxAbs=0.3538
+real_g128/llama-rot L35_v_h1_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9969212 cos_vec_mean=0.9969360 cos_vec_min=0.9961175 relL2=0.07848 maxAbs=0.46
+real_g128/llama-rot L35_v_h2_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9969991 cos_vec_mean=0.9969814 cos_vec_min=0.9962192 relL2=0.07748 maxAbs=0.4307
+real_g128/llama-rot L35_v_h3_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9969520 cos_vec_mean=0.9969258 cos_vec_min=0.9960597 relL2=0.07807 maxAbs=0.4726
+real_g128/llama-rot L63_k_h0_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9969450 cos_vec_mean=0.9969450 cos_vec_min=0.9963046 relL2=0.07818 maxAbs=0.7904
+real_g128/llama-rot L63_k_h1_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9969650 cos_vec_mean=0.9969442 cos_vec_min=0.9962191 relL2=0.07794 maxAbs=1.399
+real_g128/llama-rot L63_k_h2_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9969172 cos_vec_mean=0.9969188 cos_vec_min=0.9962710 relL2=0.07854 maxAbs=0.6426
+real_g128/llama-rot L63_k_h3_g0              type=iq4_nl 256x128 tok=col rec= 18432 B bpt= 72.000 | cos_glob=0.9968301 cos_vec_mean=0.9968431 cos_vec_min=0.9962442 relL2=0.07965 maxAbs=0.7924
+real_g128/llama-rot L63_v_h0_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9969310 cos_vec_mean=0.9969346 cos_vec_min=0.9962674 relL2=0.07835 maxAbs=1.862
+real_g128/llama-rot L63_v_h1_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9968419 cos_vec_mean=0.9968310 cos_vec_min=0.9961727 relL2=0.07947 maxAbs=2.691
+real_g128/llama-rot L63_v_h2_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9968883 cos_vec_mean=0.9968866 cos_vec_min=0.9960421 relL2=0.07890 maxAbs=1.526
+real_g128/llama-rot L63_v_h3_g0              type=iq4_nl 128x256 tok=row rec= 18432 B bpt= 72.000 | cos_glob=0.9969053 cos_vec_mean=0.9969082 cos_vec_min=0.9961829 relL2=0.07867 maxAbs=1.612
+>>> real_g128/llama-rot 汇总(8 个 256-dim head) K: cos_glob=0.9969349 cos_vec_mean=0.9969373 cos_vec_min(worst)=0.9962397 relL2=0.07830 bpt=72.000
+>>> real_g128/llama-rot 汇总(8 个 256-dim head) V: cos_glob=0.9969171 cos_vec_mean=0.9969116 cos_vec_min(worst)=0.9961477 relL2=0.07852 bpt=72.000

@@ -1,0 +1,21 @@
+build 8186a2e-dirty
+starting engine
+engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+loading weights | 12.1 GiB
+weights ready | 12.1 GiB | 3.9s | 3.09 GiB/s
+engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+preparing corpus
+corpus ready | 1 streams | 10,792 input tokens | 8,191 scored tokens | 1 windows | 5.35 ms
+scoring | 1 streams | 8,191 tokens | 1 windows
+[1/1] ppl_doc2.txt | 8,191 scored tokens | PPL 6.58849 | 5.9s
+scoring complete | 8,191 tokens | 1 windows | PPL 6.58849 | 5.9s | 1.39k tok/s
+Perplexity result
+artifact: qwen3.8-27b-coder390-Q2LynnStyle-Mtp
+kv: bf16, corpus: custom-ppl_doc2.txt / custom, context/stride: 8192/8192 (disjoint windows)
+
+domain                            tokens        mean_nll             ppl
+custom                              8191        1.885324        6.588490
+overall                             8191        1.885324        6.588490
+
+score rate: 1394.7 tok/s
+report: "/data/kvarn/g128-验收-20261014/ppl/bf16-B-ctx8192-20261014-120545/report.json"

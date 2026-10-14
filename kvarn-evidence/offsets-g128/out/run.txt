@@ -1,0 +1,49 @@
+== toolchain ==
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+host: Linux 56d043b40d12 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+
+== 0) 生成 oracle dump（dump_oracle.cpp dumprec，iters=0，tiles/real_g128.bin） ==
+dumprec: 32 records -> data/z0_real_k4v4.bin  (bits_k=4 bits_v=4 iters=0 stage_f16=1)
+dumprec: 32 records -> data/z0_real_k4v2.bin  (bits_k=4 bits_v=2 iters=0 stage_f16=1)
+dumprec: 32 records -> data/z0_real_k4v3.bin  (bits_k=4 bits_v=3 iters=0 stage_f16=1)
+dumprec: 32 records -> data/z0_real_k3v3.bin  (bits_k=3 bits_v=3 iters=0 stage_f16=1)
+dumprec: 32 records -> data/z0_real_k5v5.bin  (bits_k=5 bits_v=5 iters=0 stage_f16=1)
+dumprec: 32 records -> data/z0_real_k6v6.bin  (bits_k=6 bits_v=6 iters=0 stage_f16=1)
+
+== 1) 编译校验程序（纯 C++17，无 CUDA） ==
+build ok
+
+== 2) 跑校验（6 档真实数据 dump） ==
+================ P1 页自足几何 · leading/偏移 校验 ================
+[const] page=64 shift=6 heads=4 head_dim=256 record_dim=128 slices=2 tile_tokens=128
+[geom ] 4 平面 × 36 档 的 leading>0 与页 stride 自洽：PASS（fail=0）
+[dupl ] 维轴条目（K scale+zp、V other）=768 个，tile 两页各存一份 ⇒ 多花 1536 B/tile/head = 12 B/token/KV head；与 (P1 tile - record tile) 逐档对账：PASS（fail=0）
+[csv  ] out/offsets_p1_g128.csv（36 档字节账）、out/p1_slot_map_g128.csv（6 档逐槽偏移表）
+
+[file ] data/z0_real_k4v4.bin              kb=4 vb=4 tiles= 8 rec=35840 B/tile p1=37376 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+[file ] data/z0_real_k4v2.bin              kb=4 vb=2 tiles= 8 rec=27648 B/tile p1=29184 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+[file ] data/z0_real_k4v3.bin              kb=4 vb=3 tiles= 8 rec=31744 B/tile p1=33280 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+[file ] data/z0_real_k3v3.bin              kb=3 vb=3 tiles= 8 rec=27648 B/tile p1=29184 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+[file ] data/z0_real_k5v5.bin              kb=5 vb=5 tiles= 8 rec=44032 B/tile p1=45568 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+[file ] data/z0_real_k6v6.bin              kb=6 vb=6 tiles= 8 rec=52224 B/tile p1=53760 B/tile 多花=1536 B (= 12 B/token) | record 尺寸自检坏=0 | 逐元素码检查=524288 坏=0 | 轴向逐段=12288 坏=0
+
+================ 汇总（原始计数）================
+[① record 尺寸/形状自检]     checks=192 一致=192 不一致=0
+[② 轴向逐段字节比对]          checks=73728 一致=73728 不一致=0
+[① 码流逐位比对]              checks=3145728（每 record 每位） 不一致=0
+[③ P1->record 反向重建逐字节] checks=192 一致=192 不一致=0
+[④ 两页维轴副本一致性]        checks=73728 一致=73728 不一致=0
+
+总检查 = 3293568   不一致 = 0   文件 = 6
+判定：PASS（P1 与 record 布局可互相换算，且与 oracle record 逐段一致）
+
+================ 档位 × B/token（P1 落地） × 相对生产 rk4v4=280 ================
+档    Kb+Vb  P1 B/tok   record B/tok 差(B/tok) P1/280    P1 tile B    record tile B
+K4V4    8      292        280        12        104.29   % 37376        35840
+K4V2    6      228        216        12        81.43    % 29184        27648
+K4V3    7      260        248        12        92.86    % 33280        31744
+K3V3    6      228        216        12        81.43    % 29184        27648
+K5V5    10     356        344        12        127.14   % 45568        44032
+K6V6    12     420        408        12        150.00   % 53760        52224
+（P1 闭式：32*(Kb+Vb)+36 ；record 闭式：32*(Kb+Vb)+24 ；差恒为 12 B/token/KV head）
+run rc=0

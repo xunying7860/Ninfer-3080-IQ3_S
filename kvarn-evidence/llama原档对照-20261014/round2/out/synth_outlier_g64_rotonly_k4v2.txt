@@ -1,0 +1,35 @@
+# mode=rot-only dom=rot data=synth_outlier_g64 group=64 iters=0 stage_f16=0 ref=f32(raw)  单位=一条 token 的 256-dim head 向量
+synth_outlier_g64/rot-only  synth_outlier_k_h0_g0    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9867375 cos_vec_mean=0.8004985 cos_vec_min=0.7377603 relL2=0.16423 maxAbs=3.767
+synth_outlier_g64/rot-only  synth_outlier_k_h0_g1    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9959888 cos_vec_mean=0.9959367 cos_vec_min=0.9948802 relL2=0.08990 maxAbs=0.4915
+synth_outlier_g64/rot-only  synth_outlier_k_h0_g2    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960771 cos_vec_mean=0.9960267 cos_vec_min=0.9949125 relL2=0.08894 maxAbs=0.4582
+synth_outlier_g64/rot-only  synth_outlier_k_h0_g3    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960090 cos_vec_mean=0.9959646 cos_vec_min=0.9947041 relL2=0.08976 maxAbs=0.5001
+synth_outlier_g64/rot-only  synth_outlier_k_h1_g0    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9851084 cos_vec_mean=0.7903652 cos_vec_min=0.7238180 relL2=0.17463 maxAbs=4.85
+synth_outlier_g64/rot-only  synth_outlier_k_h1_g1    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960780 cos_vec_mean=0.9960336 cos_vec_min=0.9943743 relL2=0.08885 maxAbs=0.4597
+synth_outlier_g64/rot-only  synth_outlier_k_h1_g2    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9959747 cos_vec_mean=0.9958805 cos_vec_min=0.9942440 relL2=0.09003 maxAbs=0.4648
+synth_outlier_g64/rot-only  synth_outlier_k_h1_g3    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9959967 cos_vec_mean=0.9959422 cos_vec_min=0.9949042 relL2=0.08986 maxAbs=0.5129
+synth_outlier_g64/rot-only  synth_outlier_k_h2_g0    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9854406 cos_vec_mean=0.8051983 cos_vec_min=0.7397763 relL2=0.17257 maxAbs=3.989
+synth_outlier_g64/rot-only  synth_outlier_k_h2_g1    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9959780 cos_vec_mean=0.9958944 cos_vec_min=0.9936216 relL2=0.08997 maxAbs=0.4951
+synth_outlier_g64/rot-only  synth_outlier_k_h2_g2    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960018 cos_vec_mean=0.9959539 cos_vec_min=0.9947119 relL2=0.08970 maxAbs=0.4268
+synth_outlier_g64/rot-only  synth_outlier_k_h2_g3    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960163 cos_vec_mean=0.9959625 cos_vec_min=0.9944326 relL2=0.08949 maxAbs=0.4449
+synth_outlier_g64/rot-only  synth_outlier_k_h3_g0    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9859344 cos_vec_mean=0.8085960 cos_vec_min=0.7428627 relL2=0.16953 maxAbs=3.728
+synth_outlier_g64/rot-only  synth_outlier_k_h3_g1    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960208 cos_vec_mean=0.9959678 cos_vec_min=0.9939603 relL2=0.08954 maxAbs=0.5208
+synth_outlier_g64/rot-only  synth_outlier_k_h3_g2    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9959324 cos_vec_mean=0.9958563 cos_vec_min=0.9944531 relL2=0.09053 maxAbs=0.5186
+synth_outlier_g64/rot-only  synth_outlier_k_h3_g3    bits=4 256x64 tok=col rec=  9472 B bpt= 74.000 | cos_glob=0.9960732 cos_vec_mean=0.9959940 cos_vec_min=0.9941921 relL2=0.08901 maxAbs=0.4673
+synth_outlier_g64/rot-only  synth_outlier_v_h0_g0    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.9027780 cos_vec_mean=0.8984368 cos_vec_min=0.8663332 relL2=0.47608 maxAbs=44.2
+synth_outlier_g64/rot-only  synth_outlier_v_h0_g1    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8967605 cos_vec_mean=0.8975930 cos_vec_min=0.8742632 relL2=0.49832 maxAbs=3.241
+synth_outlier_g64/rot-only  synth_outlier_v_h0_g2    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8954441 cos_vec_mean=0.8959748 cos_vec_min=0.8655527 relL2=0.49967 maxAbs=3.529
+synth_outlier_g64/rot-only  synth_outlier_v_h0_g3    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8966318 cos_vec_mean=0.8967177 cos_vec_min=0.8582451 relL2=0.49856 maxAbs=3.006
+synth_outlier_g64/rot-only  synth_outlier_v_h1_g0    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8949232 cos_vec_mean=0.8955842 cos_vec_min=0.8579774 relL2=0.49687 maxAbs=40.62
+synth_outlier_g64/rot-only  synth_outlier_v_h1_g1    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8947090 cos_vec_mean=0.8944073 cos_vec_min=0.8658179 relL2=0.50423 maxAbs=2.764
+synth_outlier_g64/rot-only  synth_outlier_v_h1_g2    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8948127 cos_vec_mean=0.8956131 cos_vec_min=0.8624223 relL2=0.50716 maxAbs=3.161
+synth_outlier_g64/rot-only  synth_outlier_v_h1_g3    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8949726 cos_vec_mean=0.8956223 cos_vec_min=0.8685104 relL2=0.50221 maxAbs=2.997
+synth_outlier_g64/rot-only  synth_outlier_v_h2_g0    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8894224 cos_vec_mean=0.8980298 cos_vec_min=0.8668155 relL2=0.51628 maxAbs=51.07
+synth_outlier_g64/rot-only  synth_outlier_v_h2_g1    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8958561 cos_vec_mean=0.8961110 cos_vec_min=0.8649346 relL2=0.49914 maxAbs=2.808
+synth_outlier_g64/rot-only  synth_outlier_v_h2_g2    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8981264 cos_vec_mean=0.8983839 cos_vec_min=0.8705288 relL2=0.49992 maxAbs=3.7
+synth_outlier_g64/rot-only  synth_outlier_v_h2_g3    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.9015434 cos_vec_mean=0.9009345 cos_vec_min=0.8583361 relL2=0.48473 maxAbs=3.411
+synth_outlier_g64/rot-only  synth_outlier_v_h3_g0    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.9013991 cos_vec_mean=0.8963575 cos_vec_min=0.8657071 relL2=0.47651 maxAbs=50
+synth_outlier_g64/rot-only  synth_outlier_v_h3_g1    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8973832 cos_vec_mean=0.8973465 cos_vec_min=0.8670840 relL2=0.49661 maxAbs=2.695
+synth_outlier_g64/rot-only  synth_outlier_v_h3_g2    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8937928 cos_vec_mean=0.8941470 cos_vec_min=0.8586628 relL2=0.50557 maxAbs=3.084
+synth_outlier_g64/rot-only  synth_outlier_v_h3_g3    bits=2 64x256 tok=row rec=  5120 B bpt= 40.000 | cos_glob=0.8978400 cos_vec_mean=0.8982069 cos_vec_min=0.8594217 relL2=0.49891 maxAbs=2.661
+>>> synth_outlier_g64/rot-only 汇总(16 个 256-dim head) K: cos_glob=0.9934605 cos_vec_mean=0.9472544 cos_vec_min(worst)=0.9298505 relL2=0.10978 bpt=74.000
+>>> synth_outlier_g64/rot-only 汇总(16 个 256-dim head) V: cos_glob=0.8966497 cos_vec_mean=0.8968416 cos_vec_min(worst)=0.8644133 relL2=0.49755 bpt=40.000

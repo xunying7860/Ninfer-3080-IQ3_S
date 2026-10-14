@@ -1,0 +1,49 @@
+[gen-dump] 16 records -> data/gen.dump（含 K4V4/K4V2 × tok=128/51 × K/V，带真值）
+================ KVarN G128 引擎级对拍 · KVD1 engine-plane dump ================
+文件=data/gen.dump  records=16
+判据：cos(引擎解码输出, 主机反量化) ≥ 0.999（有 --decoded 时为主判据）；cos_adq_orig ≥ 0.999 才算编码端无病
+  K_k4v4_tok128_s0                   tok=128 | cos_adq_orig=0.995129238 cos_eng_orig=0.995129238 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  V_k4v4_tok128_s0                   tok=128 | cos_adq_orig=0.995162117 cos_eng_orig=0.995162117 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  K_k4v4_tok51_s0                    tok= 51 | cos_adq_orig=0.996425501 cos_eng_orig=0.996425501 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  V_k4v4_tok51_s0                    tok= 51 | cos_adq_orig=0.995111465 cos_eng_orig=0.995111465 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  K_k4v2_tok128_s0                   tok=128 | cos_adq_orig=0.898041024 cos_eng_orig=0.898041024 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  V_k4v2_tok128_s0                   tok=128 | cos_adq_orig=0.898149703 cos_eng_orig=0.898149703 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  K_k4v2_tok51_s0                    tok= 51 | cos_adq_orig=0.921342501 cos_eng_orig=0.921342501 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  V_k4v2_tok51_s0                    tok= 51 | cos_adq_orig=0.895298316 cos_eng_orig=0.895298316 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+
+================ 汇总 ================
+heads=8  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.895298316  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+cos_ENG_ADQ<0.999 的 head 数=0   cos_adq_orig<0.999 的 head 数=8（其中 bits>=4：0，bits=2：4）
+
+判据A（record 解码 == 主机反量化）：N/A(无 --decoded)→工具自洽见证 PASS
+判据B（无 nan/inf）：PASS
+总判定：PASS
+  -> [诊断·非故障] bits=2 的 cos≈0.90 是 2-bit 量化噪声本身（阶段 0 已定 K4V2 不上线）
+[make-dump] 32 records: data/real_k4v4.bin -> data/real_k4v4.dump
+================ KVarN G128 引擎级对拍 · KVD1 engine-plane dump ================
+文件=data/real_k4v4.dump  records=32
+判据：cos(引擎解码输出, 主机反量化) ≥ 0.999（有 --decoded 时为主判据）；cos_adq_orig ≥ 0.999 才算编码端无病
+  L35_k_h0_s0_g0                     tok=128 | cos_adq_orig=0.998096385 cos_eng_orig=0.998096385 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_k_h1_s0_g0                     tok=128 | cos_adq_orig=0.998171381 cos_eng_orig=0.998171381 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_k_h2_s0_g0                     tok=128 | cos_adq_orig=0.998062445 cos_eng_orig=0.998062445 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_k_h3_s0_g0                     tok=128 | cos_adq_orig=0.998131430 cos_eng_orig=0.998131430 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_v_h0_s0_g0                     tok=128 | cos_adq_orig=0.995470967 cos_eng_orig=0.995470967 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_v_h1_s0_g0                     tok=128 | cos_adq_orig=0.995589097 cos_eng_orig=0.995589097 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_v_h2_s0_g0                     tok=128 | cos_adq_orig=0.995553528 cos_eng_orig=0.995553528 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L35_v_h3_s0_g0                     tok=128 | cos_adq_orig=0.995436063 cos_eng_orig=0.995436063 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_k_h0_s0_g0                     tok=128 | cos_adq_orig=0.998121086 cos_eng_orig=0.998121086 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_k_h1_s0_g0                     tok=128 | cos_adq_orig=0.998222622 cos_eng_orig=0.998222622 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_k_h2_s0_g0                     tok=128 | cos_adq_orig=0.997928592 cos_eng_orig=0.997928592 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_k_h3_s0_g0                     tok=128 | cos_adq_orig=0.997918710 cos_eng_orig=0.997918710 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_v_h0_s0_g0                     tok=128 | cos_adq_orig=0.993815958 cos_eng_orig=0.993815958 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_v_h1_s0_g0                     tok=128 | cos_adq_orig=0.993589292 cos_eng_orig=0.993589292 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_v_h2_s0_g0                     tok=128 | cos_adq_orig=0.994163786 cos_eng_orig=0.994163786 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  L63_v_h3_s0_g0                     tok=128 | cos_adq_orig=0.994984632 cos_eng_orig=0.994984632 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+
+================ 汇总 ================
+heads=16  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=0.993589292  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+cos_ENG_ADQ<0.999 的 head 数=0   cos_adq_orig<0.999 的 head 数=16（其中 bits>=4：0，bits=2：0）
+
+判据A（record 解码 == 主机反量化）：N/A(无 --decoded)→工具自洽见证 PASS
+判据B（无 nan/inf）：PASS
+总判定：PASS

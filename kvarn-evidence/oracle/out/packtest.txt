@@ -1,0 +1,14 @@
+== pack_bits / unpack_bits_value 自检（bits 全覆盖）+ 每行打包等价性 ==
+bits=2 rows=128 cols=128 bytes=4096  roundtrip=OK  flat==perrow=OK
+bits=2 rows=128 cols=64 bytes=2048  roundtrip=OK  flat==perrow=OK
+bits=3 rows=128 cols=128 bytes=6144  roundtrip=OK  flat==perrow=OK
+bits=3 rows=128 cols=64 bytes=3072  roundtrip=OK  flat==perrow=OK
+bits=4 rows=128 cols=128 bytes=8192  roundtrip=OK  flat==perrow=OK
+bits=4 rows=128 cols=64 bytes=4096  roundtrip=OK  flat==perrow=OK
+bits=5 rows=128 cols=128 bytes=10240  roundtrip=OK  flat==perrow=OK
+bits=5 rows=128 cols=64 bytes=5120  roundtrip=OK  flat==perrow=OK
+bits=6 rows=128 cols=128 bytes=12288  roundtrip=OK  flat==perrow=OK
+bits=6 rows=128 cols=64 bytes=6144  roundtrip=OK  flat==perrow=OK
+bits=8 rows=128 cols=128 bytes=16384  roundtrip=OK  flat==perrow=OK
+bits=8 rows=128 cols=64 bytes=8192  roundtrip=OK  flat==perrow=OK
+失败项 = 0

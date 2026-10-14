@@ -1,0 +1,144 @@
+================ KVarN G128 引擎级对拍 · sweep ================
+口径：主机反量化 = record 的 rank-1 逐元素读法（oracle bee_dequant_tile）
+      record 解码 = 引擎口径（行内 merge 字节寻址 + 逐 token 组装 D256 + 折叠 + 逆旋转）
+旋转：norm_hadamard_256（(H256/16)²=I，自逆），与 ninfer normalized_hadamard_d256 同构
+stage：F16（beellama stage 口径）  iters=16  seed=20261013
+
+---- 臂 K4V4 · gauss · bits=4 ----
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995129324 | 反证 不逆旋转 vs 未旋转原值 cos=-0.008403976
+  gauss_K tok=128 b=4 it16           tok=128 | cos_adq_orig=0.995129238 cos_eng_orig=0.995129238 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=128 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.995129324
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995162085 | 反证 不逆旋转 vs 未旋转原值 cos=0.008882640
+  gauss_V tok=128 b=4 it16           tok=128 | cos_adq_orig=0.995162117 cos_eng_orig=0.995162117 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=128 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.995162085
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995141936 | 反证 不逆旋转 vs 未旋转原值 cos=-0.008352306
+  gauss_K tok=127 b=4 it16           tok=127 | cos_adq_orig=0.995141850 cos_eng_orig=0.995141850 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=127 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.995141936
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995155968 | 反证 不逆旋转 vs 未旋转原值 cos=0.008978129
+  gauss_V tok=127 b=4 it16           tok=127 | cos_adq_orig=0.995156084 cos_eng_orig=0.995156084 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=127 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.995155968
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.996425427 | 反证 不逆旋转 vs 未旋转原值 cos=-0.009425522
+  gauss_K tok=51 b=4 it16            tok= 51 | cos_adq_orig=0.996425501 cos_eng_orig=0.996425501 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=51 b=4 it16            [rot]  cos_逆旋转解码_vs_未旋转原值=0.996425427
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995111323 | 反证 不逆旋转 vs 未旋转原值 cos=-0.001592529
+  gauss_V tok=51 b=4 it16            tok= 51 | cos_adq_orig=0.995111465 cos_eng_orig=0.995111465 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=51 b=4 it16            [rot]  cos_逆旋转解码_vs_未旋转原值=0.995111323
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999999972 | 反证 不逆旋转 vs 未旋转原值 cos=-0.152105288
+  gauss_K tok=1 b=4 it16             tok=  1 | cos_adq_orig=0.999999991 cos_eng_orig=0.999999991 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=1 b=4 it16             [rot]  cos_逆旋转解码_vs_未旋转原值=0.999999972
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.996354681 | 反证 不逆旋转 vs 未旋转原值 cos=-0.039770642
+  gauss_V tok=1 b=4 it16             tok=  1 | cos_adq_orig=0.996355872 cos_eng_orig=0.996355872 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=1 b=4 it16             [rot]  cos_逆旋转解码_vs_未旋转原值=0.996354681
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+---- 臂 K4V2 · gauss · bits=2 ----
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.898040764 | 反证 不逆旋转 vs 未旋转原值 cos=-0.010631585
+  gauss_K tok=128 b=2 it16           tok=128 | cos_adq_orig=0.898041024 cos_eng_orig=0.898041024 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=128 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.898040764
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.898150179 | 反证 不逆旋转 vs 未旋转原值 cos=0.004682273
+  gauss_V tok=128 b=2 it16           tok=128 | cos_adq_orig=0.898149703 cos_eng_orig=0.898149703 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=128 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.898150179
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.898286423 | 反证 不逆旋转 vs 未旋转原值 cos=-0.009758750
+  gauss_K tok=127 b=2 it16           tok=127 | cos_adq_orig=0.898286687 cos_eng_orig=0.898286687 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=127 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.898286423
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.898140301 | 反证 不逆旋转 vs 未旋转原值 cos=0.005221712
+  gauss_V tok=127 b=2 it16           tok=127 | cos_adq_orig=0.898140000 cos_eng_orig=0.898140000 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=127 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.898140301
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.921343880 | 反证 不逆旋转 vs 未旋转原值 cos=-0.010145138
+  gauss_K tok=51 b=2 it16            tok= 51 | cos_adq_orig=0.921342501 cos_eng_orig=0.921342501 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=51 b=2 it16            [rot]  cos_逆旋转解码_vs_未旋转原值=0.921343880
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.895297624 | 反证 不逆旋转 vs 未旋转原值 cos=-0.001546888
+  gauss_V tok=51 b=2 it16            tok= 51 | cos_adq_orig=0.895298316 cos_eng_orig=0.895298316 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=51 b=2 it16            [rot]  cos_逆旋转解码_vs_未旋转原值=0.895297624
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999999967 | 反证 不逆旋转 vs 未旋转原值 cos=-0.152105628
+  gauss_K tok=1 b=2 it16             tok=  1 | cos_adq_orig=0.999999993 cos_eng_orig=0.999999993 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_K tok=1 b=2 it16             [rot]  cos_逆旋转解码_vs_未旋转原值=0.999999967
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.918671996 | 反证 不逆旋转 vs 未旋转原值 cos=-0.024434667
+  gauss_V tok=1 b=2 it16             tok=  1 | cos_adq_orig=0.918676828 cos_eng_orig=0.918676828 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  gauss_V tok=1 b=2 it16             [rot]  cos_逆旋转解码_vs_未旋转原值=0.918671996
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+---- 臂 K4V4 · outlier · bits=4 ----
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995184589 | 反证 不逆旋转 vs 未旋转原值 cos=-0.039761462
+  outlier_K tok=128 b=4 it16         tok=128 | cos_adq_orig=0.995185610 cos_eng_orig=0.995185610 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=128 b=4 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.995184589
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.996054640 | 反证 不逆旋转 vs 未旋转原值 cos=-0.062781766
+  outlier_V tok=128 b=4 it16         tok=128 | cos_adq_orig=0.996054282 cos_eng_orig=0.996054282 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=128 b=4 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.996054640
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995158153 | 反证 不逆旋转 vs 未旋转原值 cos=-0.039846362
+  outlier_K tok=127 b=4 it16         tok=127 | cos_adq_orig=0.995158610 cos_eng_orig=0.995158610 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=127 b=4 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.995158153
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.996273388 | 反证 不逆旋转 vs 未旋转原值 cos=-0.061883327
+  outlier_V tok=127 b=4 it16         tok=127 | cos_adq_orig=0.996272419 cos_eng_orig=0.996272419 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=127 b=4 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.996273388
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.996593425 | 反证 不逆旋转 vs 未旋转原值 cos=-0.100578197
+  outlier_K tok=51 b=4 it16          tok= 51 | cos_adq_orig=0.996593895 cos_eng_orig=0.996593895 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=51 b=4 it16          [rot]  cos_逆旋转解码_vs_未旋转原值=0.996593425
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.995773420 | 反证 不逆旋转 vs 未旋转原值 cos=-0.071927011
+  outlier_V tok=51 b=4 it16          tok= 51 | cos_adq_orig=0.995772455 cos_eng_orig=0.995772455 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=51 b=4 it16          [rot]  cos_逆旋转解码_vs_未旋转原值=0.995773420
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999999938 | 反证 不逆旋转 vs 未旋转原值 cos=-0.130475599
+  outlier_K tok=1 b=4 it16           tok=  1 | cos_adq_orig=0.999999963 cos_eng_orig=0.999999963 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=1 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.999999938
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999979775 | 反证 不逆旋转 vs 未旋转原值 cos=-0.037140838
+  outlier_V tok=1 b=4 it16           tok=  1 | cos_adq_orig=0.999979776 cos_eng_orig=0.999979776 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=1 b=4 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.999979775
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+---- 臂 K4V2 · outlier · bits=2 ----
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.897189403 | 反证 不逆旋转 vs 未旋转原值 cos=-0.034016631
+  outlier_K tok=128 b=2 it16         tok=128 | cos_adq_orig=0.897196214 cos_eng_orig=0.897196214 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=128 b=2 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.897189403
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.910366729 | 反证 不逆旋转 vs 未旋转原值 cos=-0.069012711
+  outlier_V tok=128 b=2 it16         tok=128 | cos_adq_orig=0.910363611 cos_eng_orig=0.910363611 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=128 b=2 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.910366729
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.896498232 | 反证 不逆旋转 vs 未旋转原值 cos=-0.031808559
+  outlier_K tok=127 b=2 it16         tok=127 | cos_adq_orig=0.896504025 cos_eng_orig=0.896504025 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=127 b=2 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.896498232
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.916811963 | 反证 不逆旋转 vs 未旋转原值 cos=-0.063843073
+  outlier_V tok=127 b=2 it16         tok=127 | cos_adq_orig=0.916808261 cos_eng_orig=0.916808261 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=127 b=2 it16         [rot]  cos_逆旋转解码_vs_未旋转原值=0.916811963
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.919173402 | 反证 不逆旋转 vs 未旋转原值 cos=-0.114615223
+  outlier_K tok=51 b=2 it16          tok= 51 | cos_adq_orig=0.919177782 cos_eng_orig=0.919177782 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=51 b=2 it16          [rot]  cos_逆旋转解码_vs_未旋转原值=0.919173402
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.910440048 | 反证 不逆旋转 vs 未旋转原值 cos=-0.065480572
+  outlier_V tok=51 b=2 it16          tok= 51 | cos_adq_orig=0.910439280 cos_eng_orig=0.910439280 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=51 b=2 it16          [rot]  cos_逆旋转解码_vs_未旋转原值=0.910440048
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999999927 | 反证 不逆旋转 vs 未旋转原值 cos=-0.130478022
+  outlier_K tok=1 b=2 it16           tok=  1 | cos_adq_orig=0.999999957 cos_eng_orig=0.999999957 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_K tok=1 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.999999927
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [rot] 逆旋转(解码) vs 未旋转原值 cos=0.999473977 | 反证 不逆旋转 vs 未旋转原值 cos=-0.036926416
+  outlier_V tok=1 b=2 it16           tok=  1 | cos_adq_orig=0.999474066 cos_eng_orig=0.999474066 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  outlier_V tok=1 b=2 it16           [rot]  cos_逆旋转解码_vs_未旋转原值=0.999473977
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+[注] 单条 record 只有 128 个 token 槽位；未满 tile（127/51/1）按【其余 token 置 0】量化，
+     统计只取前 N 个 token —— 与引擎 B/C 路（尾块先写 stage、封口时整 128 槽编码）同口径。

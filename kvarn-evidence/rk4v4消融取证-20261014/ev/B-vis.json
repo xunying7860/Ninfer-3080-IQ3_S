@@ -1,0 +1,115 @@
+{
+ "suite": "vis",
+ "tag": "vision-after-r1",
+ "nonce": "gate-prod",
+ "port": 18121,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "rounds": [
+  {
+   "round": 1,
+   "content": "上:红 下:蓝",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 8,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 124,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 132
+   },
+   "client_s": 0.33,
+   "engine": {
+    "ttft_ms": 245,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "124",
+    "output_tokens": "8",
+    "prefill_tps": null,
+    "decode_tps": "80.2",
+    "mtp": "7/9 (77.8%)",
+    "line": "2026-10-14 09:59:54.421  INFO  req#6 done | openai-chat | stop token | prompt 124 | output 8 | cache 0 (0.0%) | TTFT 245 ms | total 333 ms | queue 43.0 ms | prefill 1.09k tok/s | decode 80.2 tok/s | mtp accepted 7/9 (77.8%)"
+   }
+  },
+  {
+   "round": 2,
+   "content": "红",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 2,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 154,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 156
+   },
+   "client_s": 0.63,
+   "engine": {
+    "ttft_ms": 596,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "154",
+    "output_tokens": "2",
+    "prefill_tps": "315.7",
+    "decode_tps": "33.4",
+    "mtp": "3/3 (100.0%)",
+    "line": "2026-10-14 10:00:04.135  INFO  req#1 done | openai-chat | stop token | prompt 154 | output 2 | cache 0 (0.0%) | TTFT 596 ms | total 626 ms | queue 40.7 ms | prefill 315.7 tok/s | decode 33.4 tok/s | mtp accepted 3/3 (100.0%)"
+   }
+  },
+  {
+   "round": 3,
+   "content": "蓝",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 2,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 178,
+    "prompt_tokens_details": {
+     "cached_tokens": 155
+    },
+    "total_tokens": 180
+   },
+   "client_s": 0.14,
+   "engine": {
+    "ttft_ms": 108,
+    "cache_tokens": "155",
+    "cache_pct": "87.1",
+    "cache_kind": "private endpoint",
+    "prompt_tokens": "178",
+    "output_tokens": "2",
+    "prefill_tps": "240.2",
+    "decode_tps": "34.1",
+    "mtp": "2/3 (66.7%)",
+    "line": "2026-10-14 10:00:04.775  INFO  req#2 done | openai-chat | stop token | prompt 178 | output 2 | cache 155 (87.1%, private endpoint) | TTFT 108 ms | total 137 ms | prefill 240.2 tok/s | decode 34.1 tok/s | mtp accepted 2/3 (66.7%)"
+   }
+  }
+ ],
+ "restarts": [
+  {
+   "after_round": 1,
+   "restart_wall_s": 8.6,
+   "ready_after_restart_s": 6.1
+  }
+ ]
+}

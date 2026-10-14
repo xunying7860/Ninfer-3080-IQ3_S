@@ -1,0 +1,5 @@
+### suite=visctrl (vision-no-restart) model=qwen3.8-27b-coder390-q2lynn port=18122
+  R1 client=0.43s ttft=338 ms cache=0 (0.0%, None) prompt=124 out=8 finish=stop
+  R2 client=0.14s ttft=112 ms cache=131 (85.1%, private endpoint) prompt=154 out=2 finish=stop
+  R3 client=0.16s ttft=131 ms cache=155 (87.1%, private endpoint) prompt=178 out=2 finish=stop
+### evidence written: /data/kvarn/g128-rk4v4-test/ev/PRE-r2-visctrl.json

@@ -1,0 +1,133 @@
+########## E4 KV128 kv=kvarn128 port=18131 start 2026-10-14 12:40:44 ##########
+[armctl] pid 241291 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-124044.log
+[armctl] launched pid=244406 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-124044.log
+[wait] api base 出现在 8s
+    2026-10-14 12:40:51.359  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.3s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:40:51.359  INFO  capacity | KV 65,536 tokens, kvarn128, explicit | pages 1,024/1,024 | runtime 2.63 GiB | free 1.09 GiB
+    2026-10-14 12:40:51.530  INFO  api base http://127.0.0.1:18131/v1
+### nvidia-smi: 18987 MiB
+--- E4 KV128 runq3 ids=F1,F2,C1,C2,Z1,Z2,Q1,Q2 ---
+### arm=KV128 port=18131 model=qwen3.8-27b-coder390-q2lynn effort_env=None ids=['F1', 'F2', 'C1', 'C2', 'Z1', 'Z2', 'Q1', 'Q2']
+  F1 run1 client=0.2s ttft=127 cache=0(0.0%,None) prompt=62 out=16 finish=stop combined=21ch started=ax output 32 | thinking template default
+  F1 run2 client=0.2s ttft=65 cache=57(91.9%,turn closure) prompt=62 out=16 finish=stop combined=21ch started=ax output 32 | thinking template default
+  F2 run1 client=0.2s ttft=129 cache=0(0.0%,None) prompt=64 out=10 finish=stop combined=7ch started=ax output 16 | thinking template default
+  F2 run2 client=0.2s ttft=128 cache=0(0.0%,None) prompt=64 out=10 finish=stop combined=7ch started=ax output 16 | thinking template default
+  C1 run1 client=1.1s ttft=157 cache=0(0.0%,None) prompt=76 out=109 finish=stop combined=336ch started=x output 160 | thinking template default
+  C1 run2 client=1.1s ttft=155 cache=0(0.0%,None) prompt=76 out=109 finish=stop combined=336ch started=x output 160 | thinking template default
+  C2 run1 client=0.9s ttft=157 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  C2 run2 client=0.9s ttft=157 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  Z1 run1 client=6.0s ttft=156 cache=0(0.0%,None) prompt=80 out=512 finish=length combined=951ch started=x output 512 | thinking template default
+  Z1 run2 client=6.0s ttft=154 cache=0(0.0%,None) prompt=80 out=512 finish=length combined=951ch started=x output 512 | thinking template default
+  Z2 run1 client=4.5s ttft=155 cache=0(0.0%,None) prompt=81 out=512 finish=length combined=994ch started=x output 512 | thinking template default
+  Z2 run2 client=4.5s ttft=155 cache=0(0.0%,None) prompt=81 out=512 finish=length combined=994ch started=x output 512 | thinking template default
+  Q1 run1 client=10.6s ttft=159 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1820ch started=output 1,024 | thinking template default
+  Q1 run2 client=10.6s ttft=159 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1820ch started=output 1,024 | thinking template default
+  Q2 run1 client=12.7s ttft=159 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1637ch started=output 1,024 | thinking template default
+  Q2 run2 client=12.7s ttft=159 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1637ch started=output 1,024 | thinking template default
+### written /data/kvarn/g128-验收-20261014/ev/KV128-runq3.json (16 results)
+--- E4 KV128 needle (原 /data/ninfer/needle-test.py) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 回答='' 命中=False 墙钟=32.99s
+=== 大海捞针：196K 档 ===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+--- E4 KV128 needle2 (reasoning 版副本) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 finish=length 墙钟=33.00s
+     content=''
+     reasoning='The user provided a long list of lines, most of which are filler text. Line 000775 contains: "IMPORTANT MEMO: the secret access code is BLUE-FALCON-7419, do not share it." The question asks for the secret access code, with the code only'
+     命中(content)=False 命中(content+reasoning)=True
+=== 大海捞针：196K 档（本实例窗口 65536 ⇒ 预期 HTTP 400）===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+[armctl] 2026-10-14 12:43:17 SIGTERM -> pid=244406
+[armctl] pid=244406 exited after 2s
+### KV128 stopped 2026-10-14 12:43:18
+########## E4 RK4V4 kv=rk4v4 port=18132 start 2026-10-14 12:43:18 ##########
+[armctl] pid 241953 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-124318.log
+[armctl] launched pid=245388 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-124318.log
+[wait] api base 出现在 9s
+    2026-10-14 12:43:25.442  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:43:25.442  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.58 GiB | free 5.42 GiB
+    2026-10-14 12:43:25.934  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi: 14557 MiB
+--- E4 RK4V4 runq3 ids=F1,F2,C1,C2,Z1,Z2,Q1,Q2 ---
+### arm=RK4V4 port=18132 model=qwen3.8-27b-coder390-q2lynn effort_env=None ids=['F1', 'F2', 'C1', 'C2', 'Z1', 'Z2', 'Q1', 'Q2']
+  F1 run1 client=0.6s ttft=346 cache=0(0.0%,None) prompt=62 out=27 finish=stop combined=41ch started=ax output 32 | thinking template default
+  F1 run2 client=0.3s ttft=64 cache=57(91.9%,turn closure) prompt=62 out=27 finish=stop combined=41ch started=ax output 32 | thinking template default
+  F2 run1 client=0.3s ttft=127 cache=0(0.0%,None) prompt=64 out=16 finish=length combined=44ch started=ax output 16 | thinking template default
+  F2 run2 client=0.3s ttft=127 cache=0(0.0%,None) prompt=64 out=16 finish=length combined=44ch started=ax output 16 | thinking template default
+  C1 run1 client=1.1s ttft=152 cache=0(0.0%,None) prompt=76 out=110 finish=stop combined=341ch started=x output 160 | thinking template default
+  C1 run2 client=1.1s ttft=154 cache=0(0.0%,None) prompt=76 out=110 finish=stop combined=341ch started=x output 160 | thinking template default
+  C2 run1 client=0.9s ttft=155 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  C2 run2 client=0.9s ttft=155 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  Z1 run1 client=3.8s ttft=154 cache=0(0.0%,None) prompt=80 out=383 finish=stop combined=728ch started=x output 512 | thinking template default
+  Z1 run2 client=3.8s ttft=153 cache=0(0.0%,None) prompt=80 out=383 finish=stop combined=728ch started=x output 512 | thinking template default
+  Z2 run1 client=3.6s ttft=153 cache=0(0.0%,None) prompt=81 out=284 finish=stop combined=520ch started=x output 512 | thinking template default
+  Z2 run2 client=3.6s ttft=153 cache=0(0.0%,None) prompt=81 out=284 finish=stop combined=520ch started=x output 512 | thinking template default
+  Q1 run1 client=10.9s ttft=154 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1814ch started=output 1,024 | thinking template default
+  Q1 run2 client=10.9s ttft=156 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1814ch started=output 1,024 | thinking template default
+  Q2 run1 client=11.3s ttft=156 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1715ch started=output 1,024 | thinking template default
+  Q2 run2 client=11.3s ttft=156 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1715ch started=output 1,024 | thinking template default
+### written /data/kvarn/g128-验收-20261014/ev/RK4V4-runq3.json (16 results)
+--- E4 RK4V4 needle (原 /data/ninfer/needle-test.py) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 回答='' 命中=False 墙钟=23.79s
+=== 大海捞针：196K 档 ===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+--- E4 RK4V4 needle2 (reasoning 版副本) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 finish=length 墙钟=23.80s
+     content=''
+     reasoning="We need answer user's question. Need analyze. User provided many lines, one line 000775: IMPORTANT MEMO: the secret access code is BLUE-FALCON-7419, do not share it. Question: what is the secret access code mentioned above? Answer with code only"
+     命中(content)=False 命中(content+reasoning)=True
+=== 大海捞针：196K 档（本实例窗口 65536 ⇒ 预期 HTTP 400）===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+[armctl] 2026-10-14 12:45:25 SIGTERM -> pid=245388
+[armctl] pid=245388 exited after 2s
+### RK4V4 stopped 2026-10-14 12:45:26
+########## E4 INT8 kv=int8 port=18133 start 2026-10-14 12:45:26 ##########
+[armctl] pid 242555 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-124526.log
+[armctl] launched pid=246295 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-124526.log
+[wait] api base 出现在 9s
+    2026-10-14 12:45:33.792  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:45:33.792  INFO  capacity | KV 65,536 tokens, int8, explicit | pages 1,024/1,024 | runtime 3.61 GiB | free 4.39 GiB
+    2026-10-14 12:45:34.284  INFO  api base http://127.0.0.1:18133/v1
+### nvidia-smi: 15611 MiB
+--- E4 INT8 runq3 ids=F1,F2,C1,C2,Z1,Z2,Q1,Q2 ---
+### arm=INT8 port=18133 model=qwen3.8-27b-coder390-q2lynn effort_env=None ids=['F1', 'F2', 'C1', 'C2', 'Z1', 'Z2', 'Q1', 'Q2']
+  F1 run1 client=0.5s ttft=344 cache=0(0.0%,None) prompt=62 out=16 finish=stop combined=21ch started=ax output 32 | thinking template default
+  F1 run2 client=0.2s ttft=63 cache=57(91.9%,turn closure) prompt=62 out=16 finish=stop combined=21ch started=ax output 32 | thinking template default
+  F2 run1 client=0.2s ttft=127 cache=0(0.0%,None) prompt=64 out=10 finish=stop combined=7ch started=ax output 16 | thinking template default
+  F2 run2 client=0.2s ttft=127 cache=0(0.0%,None) prompt=64 out=10 finish=stop combined=7ch started=ax output 16 | thinking template default
+  C1 run1 client=1.1s ttft=155 cache=0(0.0%,None) prompt=76 out=109 finish=stop combined=336ch started=x output 160 | thinking template default
+  C1 run2 client=1.1s ttft=153 cache=0(0.0%,None) prompt=76 out=109 finish=stop combined=336ch started=x output 160 | thinking template default
+  C2 run1 client=0.9s ttft=155 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  C2 run2 client=0.9s ttft=155 cache=0(0.0%,None) prompt=93 out=95 finish=stop combined=183ch started=x output 240 | thinking template default
+  Z1 run1 client=4.5s ttft=153 cache=0(0.0%,None) prompt=80 out=512 finish=length combined=982ch started=x output 512 | thinking template default
+  Z1 run2 client=4.5s ttft=153 cache=0(0.0%,None) prompt=80 out=512 finish=length combined=982ch started=x output 512 | thinking template default
+  Z2 run1 client=3.2s ttft=153 cache=0(0.0%,None) prompt=81 out=291 finish=stop combined=532ch started=x output 512 | thinking template default
+  Z2 run2 client=3.2s ttft=152 cache=0(0.0%,None) prompt=81 out=291 finish=stop combined=532ch started=x output 512 | thinking template default
+  Q1 run1 client=11.1s ttft=156 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1808ch started=output 1,024 | thinking template default
+  Q1 run2 client=11.1s ttft=156 cache=0(0.0%,None) prompt=107 out=1024 finish=length combined=1808ch started=output 1,024 | thinking template default
+  Q2 run1 client=11.2s ttft=154 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1669ch started=output 1,024 | thinking template default
+  Q2 run2 client=11.2s ttft=157 cache=0(0.0%,None) prompt=110 out=1024 finish=length combined=1669ch started=output 1,024 | thinking template default
+### written /data/kvarn/g128-验收-20261014/ev/INT8-runq3.json (16 results)
+--- E4 INT8 needle (原 /data/ninfer/needle-test.py) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 回答='' 命中=False 墙钟=23.52s
+=== 大海捞针：196K 档 ===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+--- E4 INT8 needle2 (reasoning 版副本) ---
+=== 大海捞针：32K 档 ===
+[32K] prompt_tokens=32635 finish=length 墙钟=23.53s
+     content=''
+     reasoning="We need answer user's question. Need output code only. Need inspect provided lines. Line 000775: IMPORTANT MEMO: the secret access code is BLUE-FALCON-7419, do not share it. So answer BLUE-FALCON-7419 only. Ensure"
+     命中(content)=False 命中(content+reasoning)=True
+=== 大海捞针：196K 档（本实例窗口 65536 ⇒ 预期 HTTP 400）===
+[196K] 失败: <HTTPError 400: 'Bad Request'>
+[armctl] 2026-10-14 12:47:33 SIGTERM -> pid=246295
+[armctl] pid=246295 exited after 2s
+### INT8 stopped 2026-10-14 12:47:34
+########## E4 ALL DONE 2026-10-14 12:47:34 ##########

@@ -1,0 +1,19 @@
+[file] data/g_it0.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/g_it1.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=1.192e-07 maxd|s_row|=2.384e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/g_it2.bin               recs= 32 有差异record=  3 差异字节=    3 | maxd|s_col|=3.576e-07 maxd|s_row|=3.576e-07 maxd|deq|=3.984e-03 maxrel|deq|=9.557e-04
+[file] data/g_it4.bin               recs= 32 有差异record=  2 差异字节=    2 | maxd|s_col|=3.576e-07 maxd|s_row|=3.576e-07 maxd|deq|=2.835e-03 maxrel|deq|=6.361e-04
+[file] data/g_it8.bin               recs= 32 有差异record= 18 差异字节= 5135 | maxd|s_col|=2.941e-03 maxd|s_row|=3.077e-03 maxd|deq|=6.376e-03 maxrel|deq|=1.526e-03
+[file] data/g_it16.bin              recs= 32 有差异record= 17 差异字节= 4108 | maxd|s_col|=7.486e-03 maxd|s_row|=7.071e-03 maxd|deq|=3.069e-01 maxrel|deq|=7.320e-02
+[file] data/o_it0.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/o_it1.bin               recs= 32 有差异record=  1 差异字节=    1 | maxd|s_col|=2.861e-06 maxd|s_row|=9.537e-07 maxd|deq|=8.899e-03 maxrel|deq|=7.670e-05
+[file] data/o_it2.bin               recs= 32 有差异record=  1 差异字节=    1 | maxd|s_col|=5.722e-06 maxd|s_row|=2.861e-06 maxd|deq|=6.323e-02 maxrel|deq|=3.748e-04
+[file] data/o_it4.bin               recs= 32 有差异record=  2 差异字节=    2 | maxd|s_col|=7.629e-06 maxd|s_row|=3.815e-06 maxd|deq|=4.964e-03 maxrel|deq|=3.436e-04
+[file] data/o_it8.bin               recs= 32 有差异record=  5 差异字节=  863 | maxd|s_col|=5.003e-03 maxd|s_row|=1.945e-03 maxd|deq|=4.415e-01 maxrel|deq|=5.210e-02
+[file] data/o_it16.bin              recs= 32 有差异record= 13 差异字节= 3910 | maxd|s_col|=7.426e-02 maxd|s_row|=3.475e-03 maxd|deq|=1.142e-01 maxrel|deq|=1.413e-03
+[file] data/r_it0.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/r_it1.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=4.768e-07 maxd|s_row|=5.960e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/r_it2.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=4.768e-07 maxd|s_row|=5.960e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/r_it4.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=4.768e-07 maxd|s_row|=5.960e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/r_it8.bin               recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=4.768e-07 maxd|s_row|=5.960e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/r_it16.bin              recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=4.768e-07 maxd|s_row|=5.960e-07 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+records=576  files=18  字节不完全一致的 record 数=62  差异字节总数=14025

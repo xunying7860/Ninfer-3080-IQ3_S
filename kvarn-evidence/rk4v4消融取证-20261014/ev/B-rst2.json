@@ -1,0 +1,153 @@
+{
+ "suite": "rst2",
+ "tag": "restart-twice",
+ "nonce": "gate-prod",
+ "port": 18121,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "rounds": [
+  {
+   "round": 1,
+   "content": "1200",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 5,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25249,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 25254
+   },
+   "client_s": 17.88,
+   "engine": {
+    "ttft_ms": 17800,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "25249",
+    "output_tokens": "5",
+    "prefill_tps": null,
+    "decode_tps": "64.4",
+    "mtp": "3/6 (50.0%)",
+    "line": "2026-10-14 09:57:12.877  INFO  req#4 done | openai-chat | stop token | prompt 25,249 | output 5 | cache 0 (0.0%) | TTFT 17.8s | total 17.9s | prefill 1.42k tok/s | decode 64.4 tok/s | mtp accepted 3/6 (50.0%)"
+   }
+  },
+  {
+   "round": 2,
+   "content": "Line 000600: MARK-7731-KXQ at 600",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 24,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25289,
+    "prompt_tokens_details": {
+     "cached_tokens": 25253
+    },
+    "total_tokens": 25313
+   },
+   "client_s": 0.36,
+   "engine": {
+    "ttft_ms": 161,
+    "cache_tokens": "25253",
+    "cache_pct": "99.9",
+    "cache_kind": "private endpoint",
+    "prompt_tokens": "25289",
+    "output_tokens": "24",
+    "prefill_tps": "265.2",
+    "decode_tps": "123.0",
+    "mtp": "18/18 (100.0%)",
+    "line": "2026-10-14 09:57:13.737  INFO  req#5 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 25,253 (99.9%, private endpoint) | TTFT 161 ms | total 356 ms | prefill 265.2 tok/s | decode 123.0 tok/s | mtp accepted 18/18 (100.0%)"
+   }
+  },
+  {
+   "round": 3,
+   "content": "第 000007 行提到 EARLY-4417-ZZ early note，第 001193 行提到 LATE-9082-QQ late note。",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 47,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25358,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 25405
+   },
+   "client_s": 18.76,
+   "engine": {
+    "ttft_ms": 18400,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "25358",
+    "output_tokens": "47",
+    "prefill_tps": null,
+    "decode_tps": "122.8",
+    "mtp": "36/36 (100.0%)",
+    "line": "2026-10-14 09:57:41.531  INFO  req#1 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 0 (0.0%) | TTFT 18.4s | total 18.8s | prefill 1.38k tok/s | decode 122.8 tok/s | mtp accepted 36/36 (100.0%)"
+   }
+  },
+  {
+   "round": 4,
+   "content": "文档含大量例行维护记录，第600行暗号为MARK-7731-KXQ。",
+   "id_slot": null,
+   "session_digest": null,
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 25,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25445,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 25470
+   },
+   "client_s": 18.86,
+   "engine": {
+    "ttft_ms": 18500,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "25445",
+    "output_tokens": "25",
+    "prefill_tps": null,
+    "decode_tps": "76.9",
+    "mtp": "15/30 (50.0%)",
+    "line": "2026-10-14 09:58:09.439  INFO  req#1 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 0 (0.0%) | TTFT 18.5s | total 18.9s | prefill 1.37k tok/s | decode 76.9 tok/s | mtp accepted 15/30 (50.0%)"
+   }
+  }
+ ],
+ "restarts": [
+  {
+   "after_round": 2,
+   "restart_wall_s": 8.5,
+   "ready_after_restart_s": 6.0
+  },
+  {
+   "after_round": 3,
+   "restart_wall_s": 8.5,
+   "ready_after_restart_s": 6.0
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+A=/data/kvarn/g128-验收-20261014/ev/KV128NG-ng0-toolsctrl.json (toolsctrl, nonce=gate-prod)
+B=/data/kvarn/g128-验收-20261014/ev/KV128NG-ng0-tools.json (tools, nonce=gate-prod)
+  R1 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=1200
+ B_out=1200
+</thinking>
+1200
+<tool_call>
+
+     A: '1200\n'
+     B: '1200\n</thinking>\n1200\n<tool_call>\n'
+  R2 OK  content_equal=True tools_equal(去 id)=True reasoning_equal=True  A_out=Line 000600: MARK-7731-KXQ at 600 B_out=Line 000600: MARK-7731-KXQ at 600
+  R3 OK  content_equal=True tools_equal(去 id)=True reasoning_equal=True  A_out=第 000007 行提到 EARLY-4417-ZZ early note，第  B_out=第 000007 行提到 EARLY-4417-ZZ early note，第 
+  R4 MISMATCH  content_equal=False tools_equal(去 id)=True reasoning_equal=True  A_out=文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。 B_out=文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。
+     A: '文档含1200行，第600行暗号MARK-7731-KXQ，其余为常规维护记录。'
+     B: '文档共1200行，多为维护记录，第600行含暗号MARK-7731-KXQ。'
+### VERDICT: FAIL(逐 token 不一致)

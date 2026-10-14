@@ -1,0 +1,6 @@
+ptxas info    : Compiling entry function '_Z18decode_page_kernelILb0ELi8EEvPKhiiPKtiiPKiiibP13__nv_bfloat16Pf' for 'sm_86'
+ptxas info    : Used 56 registers, used 0 barriers, 424 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z18decode_page_kernelILb1ELi8EEvPKhiiPKtiiPKiiibP13__nv_bfloat16Pf' for 'sm_86'
+ptxas info    : Used 56 registers, used 0 barriers, 424 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z25hadamard_selfcheck_kernelPKfPf' for 'sm_86'
+ptxas info    : Used 28 registers, used 0 barriers, 368 bytes cmem[0]

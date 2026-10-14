@@ -1,0 +1,4 @@
+[crosscheck] 内嵌副本 vs 引擎真头：元素 1048576，逐位不一致 = 0，max|Δ| = 0.000e+00
+[crosscheck] 引擎版 H∘H 自逆 max|Δ| = 1.431e-06
+[crosscheck] 判定：PASS（内嵌副本与引擎真头逐位相同）
+3d00813a0a3c112484ef5a12c0011ec7ee8d0848aa17fadccaf9fbdeb0b14fa7  /eng/src/ops/kv_cache/hadamard_d256.cuh

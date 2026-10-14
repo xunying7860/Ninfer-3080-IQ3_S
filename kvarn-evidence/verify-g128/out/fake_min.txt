@@ -1,0 +1,48 @@
+[gen-fake] data/fake_min.dump : 4 records (K s0/s1 + V s0/s1, bits=4, rows=cols=128)
+[gen-fake] data/fake_min.dump.dec : 2 heads（正确引擎解码, domain=0） -> 应 PASS
+[gen-fake] data/fake_min.dump.bad : 2 heads（K 的 token7 取反）     -> 应 FAIL(解码端)
+[gen-fake] 解析式预期：解码值 = (q*1 + 0)*2 = 2q，q=(3r+5c+7s+1)&15；三路 cosine 全 1.0，maxabs=0
+### 6a-1 正确引擎解码（应 PASS）
+================ KVarN G128 引擎级对拍 · KVD1 engine-plane dump ================
+文件=data/fake_min.dump  records=4  引擎解码文件=data/fake_min.dump.dec  heads=2
+判据：cos(引擎解码输出, 主机反量化) ≥ 0.999（有 --decoded 时为主判据）；cos_adq_orig ≥ 0.999 才算编码端无病
+      [dec ] per-token cos(引擎解码文件, 主机反量化) min=1.000000000 mean=1.000000000 max=1.000000000 maxabs=0.000e+00 nonfinite=0
+  fake_K_s0                          tok=128 | cos_adq_orig=1.000000000 cos_eng_orig=1.000000000 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  fake_K_s0                          [主判据] cos(引擎解码输出, 主机反量化)=1.000000000   cos(引擎解码输出, 原值)=1.000000000
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [dec ] per-token cos(引擎解码文件, 主机反量化) min=1.000000000 mean=1.000000000 max=1.000000000 maxabs=0.000e+00 nonfinite=0
+  fake_V_s0                          tok=128 | cos_adq_orig=1.000000000 cos_eng_orig=1.000000000 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  fake_V_s0                          [主判据] cos(引擎解码输出, 主机反量化)=1.000000000   cos(引擎解码输出, 原值)=1.000000000
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+================ 汇总 ================
+heads=2  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=1.000000000  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+min cos(引擎解码输出, 主机反量化)=1.000000000  <0.999 的 head 数=0
+cos_ENG_ADQ<0.999 的 head 数=0   cos_adq_orig<0.999 的 head 数=0（其中 bits>=4：0，bits=2：0）
+
+判据A（record 解码 == 主机反量化）：PASS
+判据B（无 nan/inf）：PASS
+总判定：PASS
+### 6a-2 投毒引擎解码（K 的 token7 取反，应 FAIL 且指向解码端）
+================ KVarN G128 引擎级对拍 · KVD1 engine-plane dump ================
+文件=data/fake_min.dump  records=4  引擎解码文件=data/fake_min.dump.bad  heads=2
+判据：cos(引擎解码输出, 主机反量化) ≥ 0.999（有 --decoded 时为主判据）；cos_adq_orig ≥ 0.999 才算编码端无病
+      [dec ] per-token cos(引擎解码文件, 主机反量化) min=-1.000000000 mean=0.984375000 max=1.000000000 maxabs=6.000e+01 nonfinite=0
+  fake_K_s0                          tok=128 | cos_adq_orig=1.000000000 cos_eng_orig=1.000000000 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  fake_K_s0                          [主判据] cos(引擎解码输出, 主机反量化)=0.984375000   cos(引擎解码输出, 原值)=0.984375000
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+      [dec ] per-token cos(引擎解码文件, 主机反量化) min=1.000000000 mean=1.000000000 max=1.000000000 maxabs=0.000e+00 nonfinite=0
+  fake_V_s0                          tok=128 | cos_adq_orig=1.000000000 cos_eng_orig=1.000000000 | cos_ENG_ADQ=1.000000000 | maxabs=0.000e+00 maxrel=0.000e+00 nonfinite=0
+  fake_V_s0                          [主判据] cos(引擎解码输出, 主机反量化)=1.000000000   cos(引擎解码输出, 原值)=1.000000000
+      per-token cos(ENG,ADQ): min=1.000000000 mean=1.000000000 max=1.000000000
+
+================ 汇总 ================
+heads=2  min cos_ENG_ADQ=1.000000000  min cos_adq_orig=1.000000000  maxabs_ENG_ADQ=0.000e+00  nonfinite=0
+min cos(引擎解码输出, 主机反量化)=0.984375000  <0.999 的 head 数=1
+cos_ENG_ADQ<0.999 的 head 数=0   cos_adq_orig<0.999 的 head 数=0（其中 bits>=4：0，bits=2：0）
+
+判据A（record 解码 == 主机反量化）：FAIL
+判据B（无 nan/inf）：PASS
+总判定：FAIL
+  -> 病灶在【解码端】：cos(引擎解码输出, 主机反量化) < 0.999（引擎读路径：列因子/行 scale 折叠、位序寻址、逆旋转）
+[ok] 投毒样本被判 FAIL（判据有效）

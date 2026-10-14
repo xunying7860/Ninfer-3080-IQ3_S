@@ -1,0 +1,2 @@
+[selftest] data/real_k4v4_it0.bin : records=32 iters=0 不一致=0 差异字节=0
+[selftest] 结论：PASS —— import 的量化器副本逐字节复现 GATE2 dump，副本没走样

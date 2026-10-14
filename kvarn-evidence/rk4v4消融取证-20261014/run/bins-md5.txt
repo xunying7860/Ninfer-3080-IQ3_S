@@ -1,0 +1,2 @@
+2cbd88ab06318c81b695ec64c72b433d  /data/ninfer/bundle/bin/ninfer-serve
+2532acf8fefbcca01e429095c4bdf173  /data/kvarn/g128-engine/bin/ninfer-serve

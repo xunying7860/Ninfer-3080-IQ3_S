@@ -1,0 +1,15 @@
+### probe arm=bf16 ctx=32768 corpus=/data/kvarn/ppl_doc2.txt start 2026-10-14 12:01:25
+0, 21 MiB
+1, 18805 MiB
+build 8186a2e-dirty
+starting engine
+engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+loading weights | 12.1 GiB
+weights ready | 12.1 GiB | 3.9s | 3.09 GiB/s
+engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 5.0s | weights 12.1 GiB | CUDA sync auto
+preparing corpus
+error: stream is shorter than one window
+### exit=1 elapsed=5s end 2026-10-14 12:01:30
+0, 21 MiB
+1, 18805 MiB
+### DONE 2026-10-14 12:01:30

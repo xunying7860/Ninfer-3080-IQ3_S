@@ -1,0 +1,5 @@
+### suite=apitoolctrl (tool-call-no-restart) model=qwen3.8-27b-coder390-q2lynn port=18131
+  R1 client=0.66s ttft=421 ms cache=0 (0.0%, None) prompt=366 out=26 finish=tool_calls tools=[{"function": {"arguments": "{\"city\":\"北京\"}", "name": "ge
+  R2 client=0.29s ttft=254 ms cache=0 (0.0%, None) prompt=116 out=3 finish=stop
+  R3 client=0.29s ttft=137 ms cache=118 (83.7%, private endpoint) prompt=141 out=10 finish=stop
+### evidence written: /data/kvarn/g128-验收-20261014/ev/KV128-r1-apitoolctrl.json

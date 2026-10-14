@@ -1,0 +1,50 @@
+# oracle/manifest.txt —— 阶段 1 标量 oracle 的输入/产物指纹（2026-10-13）
+
+## 运行环境
+容器镜像 : nvidia/cuda:13.1.2-devel-ubuntu24.04  (digest 见 `docker images`，无 GPU 需求)
+宿主     : Windows 11 / git-bash；torch 2.13.0a0 (Python 3.12) 仅用于 make_tiles.py
+编译     : g++ -O2 -std=c++17 -w  (--version 见 out/build.txt)
+未使用   : 主控容器 kvarn-build / 主控卷 kvarnbuild / x99
+
+## 上游源码原文（ref/，curl --ssl-no-revoke raw.githubusercontent.com，main 分支 @2026-10-13）
+dfaa62b40e80a2951a3bf1fd1d642e83ce00a2f691d55081a523bf1f3da3dd54  ref/beellama_kvarn.cu
+d97db5b2b43c88257395400ce75728f8bcbd8bad652079e16f89106314b91782  ref/beellama_llama-kvarn.cpp
+5762ac3754612356b46d7233bccea923d435ec647fe702711d60df0669235462  ref/beellama_llama-kvarn.h
+7b7fe35d1ee90eb0ff330d23bff33485ab866c909b30ac2f28428d63cd55a88a  ref/beellama_llama-kv-cache-kvarn.cpp
+
+## 本 oracle 源文件与脚本
+2c1cb2470a21e0a5965a3d9bcb431b62d6bbd14c101944cfd07257a565fda3a2  bee_oracle.cpp
+152e83eca468c9be068bb2a01175df56269734b43c8d2ea83106dfecf477bb6a  f16_check.cu
+9c8010230e91f37295739f1c12b2cd97ad9f80e46171ad67320082bbd82894c8  make_tiles.py
+2c2146751fe774a518729314909ad0452fd8831d4e02eab10594e48ce99c3389  aggregate.py
+61fab781c249a6af119fc8439fa4291ec2f62e564e0f6ac36c44f833e81082b6  run.sh
+
+## 数据产物（真实 tile；由 make_tiles.py 从 layer35/63_{k,v}_proj.pt 生成）
+77ae2a6055c790e21cd19e9c26f8ebfcbb3e448f69f66ddb227b2a7b0455a8e7  data/real_g128.bin   (32 tiles, G=128)
+2f62dd1f0ed91cdc99e791d2c038a9a98be2d905c23ccac31c103f1dfe9c9bc8  data/real_g64.bin    (64 tiles, G=64 )
+
+数据来源（只读，未改动）：
+  C:\Users\xunying\AppData\Local\hermes\cache\scratch\kvarn-tiles\layer{35,63}_{k,v}_proj.pt
+  [1, 256, 1024] = 256 token x 4 head x 256 dim, float32, pre-RoPE 抓取
+
+## 实验原始输出
+out/table.txt                       36 格三口径字节账 + 三段偏移
+out/packtest.txt                    位串往返/每行等价（失败项 0）
+out/f16check.txt                    fp16 vs nvcc __float2half_rn（0 / 6,000,021）
+out/sinktest.txt                    Sinkhorn GPU/CPU 口径逐迭代对照
+out/real_g128_k4v2.txt              K4V2_g128 真实数据
+out/real_g128_k4v4.txt              K4V4_g128 真实数据
+out/real_g64_k4v2.txt               K4V2_g64  真实数据
+out/real_g64_k4v4.txt               K4V4_g64  真实数据
+out/real_g128_k4v4_iters8.txt       iters=8 敏感性
+out/real_g128_k4v4_cpuorder.txt     CPU 口径对照
+out/synth_{gauss,outlier}_g{64,128}_k{2v2,4v2,4v4}.txt   合成数据
+
+## 关键结论数字（一一对应报告 §一/§三）
+doc02 表 vs make_layout            : 0 / 36 不一致
+record 口径 vs doc02               : 每格 +6 B/token（0 格相等）
+K4V2  B/token                      : doc02 210 → arena 216（327680ctx/4head: 262.5 → 270.0 MiB）
+K4V4  B/token                      : doc02 274 → arena 280（= 生产 rk4v4 280，零代价）
+旧引擎实测(§30) K4V4 292 / K4V2 228 → beellama record 280 / 216（每侧省 6 B/token）
+G128 vs G64（真实，K4V4）           : K cos −0.0004221, V cos +0.0001841
+G128 vs G64（真实，K4V2）           : K cos −0.0004221, V cos +0.0026976

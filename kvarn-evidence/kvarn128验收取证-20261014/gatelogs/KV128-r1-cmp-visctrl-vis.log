@@ -1,0 +1,6 @@
+A=/data/kvarn/g128-验收-20261014/ev/KV128-r1-visctrl.json (visctrl, nonce=gate-prod)
+B=/data/kvarn/g128-验收-20261014/ev/KV128-r1-vis.json (vis, nonce=gate-prod)
+  R1 OK  content_equal=True tools_equal(去 id)=True reasoning_equal=True  A_out=上:红 下:蓝 B_out=上:红 下:蓝
+  R2 OK  content_equal=True tools_equal(去 id)=True reasoning_equal=True  A_out=红 B_out=红
+  R3 OK  content_equal=True tools_equal(去 id)=True reasoning_equal=True  A_out=蓝 B_out=蓝
+### VERDICT: PASS(逐 token 一致)

@@ -1,0 +1,110 @@
+{
+  "artifact": {
+    "architecture": "Qwen3_5ForCausalLM",
+    "formats": [
+      "bf16",
+      "fp32",
+      "gguf_iq2_s",
+      "gguf_iq3_s",
+      "gguf_iq3_xxs",
+      "gguf_iq4_xs",
+      "gguf_q2_k",
+      "gguf_q4_k",
+      "gguf_q5_k",
+      "int32"
+    ],
+    "name": "qwen3.8-27b-coder390-Q2LynnStyle-Mtp",
+    "path": "/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer",
+    "prefill_signature": "35e3410c7990c59223d2646e2bdeb5d88042b607bff79a374c624f6a62ea0f97"
+  },
+  "corpus": {
+    "id": "custom-ppl_doc.txt",
+    "mode": "custom",
+    "source": "/data/kvarn/ppl_doc.txt",
+    "stream_count": 1
+  },
+  "domains": [
+    {
+      "domain": "custom",
+      "mean_nll": 1.766429144734394,
+      "perplexity": 5.849926778878417,
+      "scored_tokens": 16382,
+      "total_nll": 28937.642249038843
+    }
+  ],
+  "execution": {
+    "context_tokens": 8192,
+    "device": 0,
+    "fast_prefill_kernel": false,
+    "kv_dtype": "rotated-lloyd4g64-v4g32",
+    "prefill_chunk_tokens": 1024,
+    "purpose": "causal_scoring",
+    "rope_scaling_factor": 1.0,
+    "rope_scaling_original_context": 0,
+    "rope_yarn": false,
+    "rope_yarn_factor": 1.0,
+    "score_tile_tokens": 1024,
+    "stride_tokens": 8192,
+    "windows": "disjoint"
+  },
+  "metric": {
+    "log_base": "natural",
+    "name": "fixed-window truncated-context causal perplexity"
+  },
+  "overall": {
+    "mean_nll": 1.766429144734394,
+    "perplexity": 5.849926778878417,
+    "scored_tokens": 16382,
+    "total_nll": 28937.642249038843
+  },
+  "schema_version": 4,
+  "streams": [
+    {
+      "domain": "custom",
+      "id": "ppl_doc.txt",
+      "input_tokens": 18992,
+      "mean_nll": 1.766429144734394,
+      "path": "/data/kvarn/ppl_doc.txt",
+      "perplexity": 5.849926778878417,
+      "scored_tokens": 16382,
+      "seconds": 11.295994611,
+      "total_nll": 28937.642249038843,
+      "unscored_tokens": 1,
+      "windows": [
+        {
+          "first_target": 1,
+          "index": 0,
+          "input_begin": 0,
+          "input_end": 8192,
+          "mean_nll": 1.627097379293917,
+          "perplexity": 5.089081585910248,
+          "scored_tokens": 8191,
+          "seconds": 5.745639196,
+          "target_begin": 1,
+          "target_end": 8192,
+          "total_nll": 13327.554633796473
+        },
+        {
+          "first_target": 1,
+          "index": 1,
+          "input_begin": 8192,
+          "input_end": 16384,
+          "mean_nll": 1.9057609101748711,
+          "perplexity": 6.724522438977136,
+          "scored_tokens": 8191,
+          "seconds": 5.550291366,
+          "target_begin": 8193,
+          "target_end": 16384,
+          "total_nll": 15610.08761524237
+        }
+      ]
+    }
+  ],
+  "timing": {
+    "load_seconds": 4.708571626,
+    "read_and_tokenize_seconds": 0.008600685,
+    "score_seconds": 11.296019957,
+    "scored_tokens_per_second": 1450.2453131599048,
+    "total_seconds": 16.251594888
+  }
+}

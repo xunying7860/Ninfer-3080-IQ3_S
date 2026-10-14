@@ -1,0 +1,21 @@
+[file] data/z0_gauss_k2v2.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_gauss_k3v3.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_gauss_k4v2.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_gauss_k4v4.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_gauss_k5v5.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_gauss_k6v6.bin       recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k2v2.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k3v3.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k4v2.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k4v4.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k5v5.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_outlier_k6v6.bin     recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k2v2.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k3v3.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k4v2.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k4v4.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k5v5.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+[file] data/z0_real_k6v6.bin        recs= 32 有差异record=  0 差异字节=    0 | maxd|s_col|=0.000e+00 maxd|s_row|=0.000e+00 maxd|deq|=0.000e+00 maxrel|deq|=0.000e+00
+records=576  files=18  字节不完全一致的 record 数=0  差异字节总数=0
+required dynamic smem = 69704 B (68.07 KB)  |  设备 opt-in 上限 = 101376 B (99.00 KB)  |  余量 = 31672 B
+判定：PASS（全部 record 逐字节一致）

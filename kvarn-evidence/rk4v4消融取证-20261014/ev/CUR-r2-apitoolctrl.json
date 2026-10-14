@@ -1,0 +1,110 @@
+{
+ "suite": "apitoolctrl",
+ "tag": "tool-call-no-restart",
+ "nonce": "gate-prod",
+ "port": 18123,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "rounds": [
+  {
+   "round": 1,
+   "content": "",
+   "id_slot": 1,
+   "session_digest": "80aa4a45d004522e",
+   "reasoning": "",
+   "tool_calls": "[{\"function\": {\"arguments\": \"{\\\"city\\\":\\\"北京\\\"}\", \"name\": \"get_weather\"}, \"id\": \"call_f8d1cb006263093e\", \"type\": \"function\"}]",
+   "finish": "tool_calls",
+   "usage": {
+    "completion_tokens": 26,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 366,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 392
+   },
+   "client_s": 0.57,
+   "engine": {
+    "ttft_ms": 369,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "366",
+    "output_tokens": "26",
+    "prefill_tps": null,
+    "decode_tps": "122.0",
+    "mtp": "21/21 (100.0%)",
+    "line": "2026-10-14 10:51:43.828  INFO  req#4 done | openai-chat | tool calls 1 | prompt 366 | output 26 | cache 0 (0.0%) | TTFT 369 ms | total 574 ms | prefill 1.04k tok/s | decode 122.0 tok/s | mtp accepted 21/21 (100.0%)"
+   },
+   "tool_result_appended": true
+  },
+  {
+   "round": 2,
+   "content": "23",
+   "id_slot": 1,
+   "session_digest": "cec7c933ba386741",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 3,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 116,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 119
+   },
+   "client_s": 0.29,
+   "engine": {
+    "ttft_ms": 255,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "116",
+    "output_tokens": "3",
+    "prefill_tps": "491.5",
+    "decode_tps": "67.6",
+    "mtp": "3/3 (100.0%)",
+    "line": "2026-10-14 10:51:44.616  INFO  req#5 done | openai-chat | stop token | prompt 116 | output 3 | cache 0 (0.0%) | TTFT 255 ms | total 284 ms | prefill 491.5 tok/s | decode 67.6 tok/s | mtp accepted 3/3 (100.0%)"
+   }
+  },
+  {
+   "round": 3,
+   "content": "不用带伞，明天北京是晴天。",
+   "id_slot": 1,
+   "session_digest": "626602662aee34ba",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 10,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 141,
+    "prompt_tokens_details": {
+     "cached_tokens": 118
+    },
+    "total_tokens": 151
+   },
+   "client_s": 0.26,
+   "engine": {
+    "ttft_ms": 117,
+    "cache_tokens": "118",
+    "cache_pct": "83.7",
+    "cache_kind": "private endpoint",
+    "prompt_tokens": "141",
+    "output_tokens": "10",
+    "prefill_tps": "239.8",
+    "decode_tps": "61.5",
+    "mtp": "6/15 (40.0%)",
+    "line": "2026-10-14 10:51:45.382  INFO  req#6 done | openai-chat | stop token | prompt 141 | output 10 | cache 118 (83.7%, private endpoint) | TTFT 117 ms | total 263 ms | prefill 239.8 tok/s | decode 61.5 tok/s | mtp accepted 6/15 (40.0%)"
+   }
+  }
+ ],
+ "restarts": []
+}

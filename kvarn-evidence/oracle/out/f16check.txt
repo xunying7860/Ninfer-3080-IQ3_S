@@ -1,0 +1,23 @@
+edge 0                        mine=0000 cuda=0000 
+edge -0                       mine=8000 cuda=8000 
+edge 1                        mine=3c00 cuda=3c00 
+edge -1                       mine=bc00 cuda=bc00 
+edge 65504                    mine=7bff cuda=7bff 
+edge 65519.9883               mine=7bff cuda=7bff 
+edge 65520                    mine=7c00 cuda=7c00 
+edge 65536                    mine=7c00 cuda=7c00 
+edge 1.00000002e+30           mine=7c00 cuda=7c00 
+edge 5.96046448e-08           mine=0001 cuda=0001 
+edge 2.98023224e-08           mine=0000 cuda=0000 
+edge 1.49011612e-08           mine=0000 cuda=0000 
+edge 6.09755516e-05           mine=03ff cuda=03ff 
+edge 3.04877758e-05           mine=0200 cuda=0200 
+edge 9.99999994e-09           mine=0000 cuda=0000 
+edge 0.100000001              mine=2e66 cuda=2e66 
+edge 6.10351562e-05           mine=0400 cuda=0400 
+edge 2049                     mine=6800 cuda=6800 
+edge 2050                     mine=6801 cuda=6801 
+edge 0.000122070312           mine=0800 cuda=0800 
+edge 3.40282347e+38           mine=7c00 cuda=7c00 
+
+总计不一致 = 0 / 6000021

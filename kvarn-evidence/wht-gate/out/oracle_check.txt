@@ -1,0 +1,1 @@
+(容器内无 torch -> 该步必须在宿主跑：cd wht-gate && python check_oracle.py | tee out/oracle_check.txt)

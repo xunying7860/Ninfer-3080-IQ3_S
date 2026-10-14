@@ -1,0 +1,31 @@
+== 1. WHT128 自逆性 ==
+  max|WHT(WHT(x))-x| = 3.576e-07  OK
+== 2. rot_pair 往返（forward 后 inverse 应还原）==
+  max|a'-a| = 4.768e-07  max|b'-b| = 4.768e-07  OK
+== 3. 真实 tile 的 unrotate 往返（对 raw 再 forward，应逐元素还原入库态）==
+  tiles=32 对=16  max|forward(unrotate(rot)) - rot| = 3.815e-06  OK
+== 4. llama 码本往返自检（量化→反量化后重跑，码字应不变）==
+  q4_0  n= 32 bytes= 18 bpw=4.500  幂等=OK max|d1-d2|=0.000e+00
+  q4_1  n= 32 bytes= 20 bpw=5.000  幂等=OK max|d1-d2|=0.000e+00
+  iq4_nl n= 32 bytes= 18 bpw=4.500  幂等=OK max|d1-d2|=0.000e+00
+  q5_0  n= 32 bytes= 22 bpw=5.500  幂等=OK max|d1-d2|=0.000e+00
+  q5_1  n= 32 bytes= 24 bpw=6.000  幂等=OK max|d1-d2|=0.000e+00
+  q8_0  n= 32 bytes= 34 bpw=8.500  幂等=OK max|d1-d2|=0.000e+00
+  q3_0  n= 32 bytes= 14 bpw=3.500  幂等=OK max|d1-d2|=0.000e+00
+  q3_1  n= 32 bytes= 16 bpw=4.000  幂等=OK max|d1-d2|=0.000e+00
+  q4_K  n=256 bytes=144 bpw=4.500  幂等=OK max|d1-d2|=0.000e+00
+== 5. 字节账自检（对照 ggml-common.h 的 static_assert 值）==
+  q4_0  blk= 32 block_bytes= 18 (期望  18) OK
+  q4_1  blk= 32 block_bytes= 20 (期望  20) OK
+  iq4_nl blk= 32 block_bytes= 18 (期望  18) OK
+  q5_0  blk= 32 block_bytes= 22 (期望  22) OK
+  q5_1  blk= 32 block_bytes= 24 (期望  24) OK
+  q8_0  blk= 32 block_bytes= 34 (期望  34) OK
+  q3_0  blk= 32 block_bytes= 14 (期望  14) OK
+  q3_1  blk= 32 block_bytes= 16 (期望  16) OK
+  q4_K  blk=256 block_bytes=144 (期望 144) OK
+== 6. 误差度量在正交旋转下的不变性（等字节跨档对照成立的前提）==
+  对=16  max|Δcos_glob(rot域 - raw域)| = 1.057e-10  max|ΔrelL2| = 2.410e-09  OK
+  （cos 与 relL2 在正交变换下不变 ⇒ 各档在不同码域测出的数可直接横向比；maxAbs 不是不变量，本文件统一在 raw 域测）
+
+失败项 = 0

@@ -1,0 +1,10 @@
+gate.cu(31): warning #177-D: variable "kDim" was declared but never referenced
+  static constexpr int kDim = 256;
+                       ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+gate.cu(32): warning #177-D: variable "kSlice" was declared but never referenced
+  static constexpr int kSlice = 128;
+                       ^
+

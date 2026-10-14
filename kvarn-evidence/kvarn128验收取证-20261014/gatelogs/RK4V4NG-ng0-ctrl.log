@@ -1,0 +1,6 @@
+### suite=ctrl (no-restart) model=qwen3.8-27b-coder390-q2lynn port=18135
+  R1 client=17.84s ttft=17800 ms cache=0 (0.0%, None) prompt=25249 out=5 finish=stop
+  R2 client=0.75s ttft=562 ms cache=25253 (99.9%, private endpoint) prompt=25289 out=24 finish=stop
+  R3 client=0.74s ttft=362 ms cache=25312 (99.8%, private endpoint) prompt=25358 out=47 finish=stop
+  R4 client=0.53s ttft=208 ms cache=25404 (99.8%, private endpoint) prompt=25445 out=25 finish=stop
+### evidence written: /data/kvarn/g128-验收-20261014/ev/RK4V4NG-ng0-ctrl.json

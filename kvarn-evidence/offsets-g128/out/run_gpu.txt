@@ -1,0 +1,26 @@
+== nvcc ==
+Cuda compilation tools, release 13.1, V13.1.115
+Build cuda_13.1.r13.1/compiler.37061995_0
+include: /eng/src/ops/kernel/paged_kv_address.cuh  (+ /eng/include)
+-rwxrwxrwx 1 root root 2639 Oct 12 21:37 /eng/src/ops/kernel/paged_kv_address.cuh
+
+build ok
+
+================ 引擎真头 offset 探针 ================
+[device] NVIDIA GeForce RTX 3080 sm_86 | kPagedKVPageSize=64 | KVPlaneGeometry::alignment=256 | page shift=6
+[tpl  ] code plane, kb/vb=2        Leading=64   Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane, kb/vb=3        Leading=96   Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane, kb/vb=4        Leading=128  Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane, kb/vb=5        Leading=160  Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane, kb/vb=6        Leading=192  Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane, kb/vb=8        Leading=256  Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] k_scale 平面（10 half/行） Leading=10   Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] v_scale 平面（8 half/行） Leading=8    Heads=4  引擎模板 vs CPU 表：512 格，不一致=0
+[tpl  ] code plane kb=8, KV head=2 Leading=256  Heads=2  引擎模板 vs CPU 表：256 格，不一致=0
+[sib  ] 引擎重载 <128,4>：128 个位置（1 tile = 2 页）不一致=0
+        公式 = Leading*64*(head + Heads*block_table[position>>6]) + Leading*(position&63) + leading
+        页内任一位置的地址只由**它自己那一页**（block_table[position>>6]）决定，无 sibling 项 ⇒ P1 下消费核不需要 sibling
+
+引擎模板 × CPU 表 全格核对：不一致总数 = 0
+判定：PASS
+run rc=0

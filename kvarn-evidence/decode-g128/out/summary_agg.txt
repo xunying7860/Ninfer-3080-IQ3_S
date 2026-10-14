@@ -1,0 +1,54 @@
+page 行数 = 120 （计入判据的 token 总数 = 5856 ）
+A) 主判据 device_bf16 vs 期望_bf16:  min=1.000000000  max=1.000000000 ; ==1.0 的页数=120/120
+B) 反证 不逆旋转 vs 期望: cos_min in [-0.261717688, 0.150829630] ; max|cos_min|=0.261717688 ; cos_mean in [-0.142552659, 0.150829630]
+C) vs 未旋转原值, 逆旋转后: cos_min in [0.855180537, 0.999999407]
+D) vs 未旋转原值, 不逆旋转: cos_min in [-0.252813456, 0.086430762] ; max|cos_min|=0.252813456
+
+  K4V2   K gauss            tok=  1  main_min=1.000000000  vs原值_min=0.999998672  反证max|cos|=0.017992641
+  K4V2   K gauss            tok= 51  main_min=1.000000000  vs原值_min=0.995861916  反证max|cos|=0.236641326
+  K4V2   K gauss            tok= 64  main_min=1.000000000  vs原值_min=0.995568550  反证max|cos|=0.231600594
+  K4V2   K gauss            tok=128  main_min=1.000000000  vs原值_min=0.994001437  反证max|cos|=0.261717688
+  K4V2   K outlier          tok=  1  main_min=1.000000000  vs原值_min=0.999999143  反证max|cos|=0.141728764
+  K4V2   K outlier          tok= 51  main_min=1.000000000  vs原值_min=0.993845759  反证max|cos|=0.187595917
+  K4V2   K outlier          tok= 64  main_min=1.000000000  vs原值_min=0.993474726  反证max|cos|=0.185737295
+  K4V2   K outlier          tok=128  main_min=1.000000000  vs原值_min=0.992543808  反证max|cos|=0.199288412
+  K4V2   K real L35_k_h0    tok=  1  main_min=1.000000000  vs原值_min=0.999999407  反证max|cos|=0.021384704
+  K4V2   K real L35_k_h0    tok= 51  main_min=1.000000000  vs原值_min=0.998285403  反证max|cos|=0.222827041
+  K4V2   K real L35_k_h0    tok= 64  main_min=1.000000000  vs原值_min=0.998128672  反证max|cos|=0.216427755
+  K4V2   K real L35_k_h0    tok=128  main_min=1.000000000  vs原值_min=0.997781685  反证max|cos|=0.219576211
+  K4V2   V gauss            tok=  1  main_min=1.000000000  vs原值_min=0.903513260  反证max|cos|=0.150829630
+  K4V2   V gauss            tok= 51  main_min=1.000000000  vs原值_min=0.857848242  反证max|cos|=0.187933597
+  K4V2   V gauss            tok= 64  main_min=1.000000000  vs原值_min=0.857848242  反证max|cos|=0.187933597
+  K4V2   V gauss            tok=128  main_min=1.000000000  vs原值_min=0.862592860  反证max|cos|=0.239289075
+  K4V2   V outlier          tok=  1  main_min=1.000000000  vs原值_min=0.905817767  反证max|cos|=0.137106657
+  K4V2   V outlier          tok= 51  main_min=1.000000000  vs原值_min=0.896528275  反证max|cos|=0.167168821
+  K4V2   V outlier          tok= 64  main_min=1.000000000  vs原值_min=0.895492001  反证max|cos|=0.169657307
+  K4V2   V outlier          tok=128  main_min=1.000000000  vs原值_min=0.882177044  反证max|cos|=0.176804996
+  K4V2   V real L35_v_h0    tok=  1  main_min=1.000000000  vs原值_min=0.951618598  反证max|cos|=0.012289561
+  K4V2   V real L35_v_h0    tok= 51  main_min=1.000000000  vs原值_min=0.860405240  反证max|cos|=0.202009487
+  K4V2   V real L35_v_h0    tok= 64  main_min=1.000000000  vs原值_min=0.857837032  反证max|cos|=0.203150286
+  K4V2   V real L35_v_h0    tok=128  main_min=1.000000000  vs原值_min=0.855180537  反证max|cos|=0.258597933
+  K4V4   K gauss            tok=  1  main_min=1.000000000  vs原值_min=0.999998672  反证max|cos|=0.017992641
+  K4V4   K gauss            tok= 51  main_min=1.000000000  vs原值_min=0.995861916  反证max|cos|=0.236641326
+  K4V4   K gauss            tok= 64  main_min=1.000000000  vs原值_min=0.995568550  反证max|cos|=0.231600594
+  K4V4   K gauss            tok=128  main_min=1.000000000  vs原值_min=0.994001437  反证max|cos|=0.261717688
+  K4V4   K outlier          tok=  1  main_min=1.000000000  vs原值_min=0.999999143  反证max|cos|=0.141728764
+  K4V4   K outlier          tok= 51  main_min=1.000000000  vs原值_min=0.993845759  反证max|cos|=0.187595917
+  K4V4   K outlier          tok= 64  main_min=1.000000000  vs原值_min=0.993474726  反证max|cos|=0.185737295
+  K4V4   K outlier          tok=128  main_min=1.000000000  vs原值_min=0.992543808  反证max|cos|=0.199288412
+  K4V4   K real L35_k_h0    tok=  1  main_min=1.000000000  vs原值_min=0.999999407  反证max|cos|=0.021384704
+  K4V4   K real L35_k_h0    tok= 51  main_min=1.000000000  vs原值_min=0.998285403  反证max|cos|=0.222827041
+  K4V4   K real L35_k_h0    tok= 64  main_min=1.000000000  vs原值_min=0.998128672  反证max|cos|=0.216427755
+  K4V4   K real L35_k_h0    tok=128  main_min=1.000000000  vs原值_min=0.997781685  反证max|cos|=0.219576211
+  K4V4   V gauss            tok=  1  main_min=1.000000000  vs原值_min=0.995747143  反证max|cos|=0.033835322
+  K4V4   V gauss            tok= 51  main_min=1.000000000  vs原值_min=0.993091994  反证max|cos|=0.246942743
+  K4V4   V gauss            tok= 64  main_min=1.000000000  vs原值_min=0.993091994  反证max|cos|=0.246942743
+  K4V4   V gauss            tok=128  main_min=1.000000000  vs原值_min=0.992914546  反证max|cos|=0.250064087
+  K4V4   V outlier          tok=  1  main_min=1.000000000  vs原值_min=0.995928900  反证max|cos|=0.142552659
+  K4V4   V outlier          tok= 51  main_min=1.000000000  vs原值_min=0.994744504  反证max|cos|=0.189769480
+  K4V4   V outlier          tok= 64  main_min=1.000000000  vs原值_min=0.994762599  反证max|cos|=0.192078101
+  K4V4   V outlier          tok=128  main_min=1.000000000  vs原值_min=0.994845051  反证max|cos|=0.189002045
+  K4V4   V real L35_v_h0    tok=  1  main_min=1.000000000  vs原值_min=0.998373803  反证max|cos|=0.058663096
+  K4V4   V real L35_v_h0    tok= 51  main_min=1.000000000  vs原值_min=0.993228708  反证max|cos|=0.209517808
+  K4V4   V real L35_v_h0    tok= 64  main_min=1.000000000  vs原值_min=0.992505096  反证max|cos|=0.221851125
+  K4V4   V real L35_v_h0    tok=128  main_min=1.000000000  vs原值_min=0.993208897  反证max|cos|=0.214704848

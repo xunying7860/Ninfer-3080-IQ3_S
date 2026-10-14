@@ -1,0 +1,19 @@
+# mode=kvarn dom=rot data=real_g128 group=128 iters=16 stage_f16=0 ref=f32(raw)  单位=一条 token 的 256-dim head 向量
+real_g128/kvarn     L35_k_h0_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995540 cos_vec_mean=0.9995561 cos_vec_min=0.9994951 relL2=0.02989 maxAbs=0.227
+real_g128/kvarn     L35_k_h1_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995721 cos_vec_mean=0.9995744 cos_vec_min=0.9994964 relL2=0.02927 maxAbs=0.1697
+real_g128/kvarn     L35_k_h2_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995484 cos_vec_mean=0.9995493 cos_vec_min=0.9994637 relL2=0.03006 maxAbs=0.1913
+real_g128/kvarn     L35_k_h3_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995607 cos_vec_mean=0.9995630 cos_vec_min=0.9994976 relL2=0.02965 maxAbs=0.2104
+real_g128/kvarn     L35_v_h0_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9989367 cos_vec_mean=0.9989157 cos_vec_min=0.9984516 relL2=0.04615 maxAbs=0.2233
+real_g128/kvarn     L35_v_h1_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9989737 cos_vec_mean=0.9989443 cos_vec_min=0.9979022 relL2=0.04536 maxAbs=0.2755
+real_g128/kvarn     L35_v_h2_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9989595 cos_vec_mean=0.9989294 cos_vec_min=0.9984000 relL2=0.04565 maxAbs=0.2738
+real_g128/kvarn     L35_v_h3_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9989263 cos_vec_mean=0.9988948 cos_vec_min=0.9980707 relL2=0.04638 maxAbs=0.243
+real_g128/kvarn     L63_k_h0_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995562 cos_vec_mean=0.9995601 cos_vec_min=0.9994678 relL2=0.02981 maxAbs=0.2995
+real_g128/kvarn     L63_k_h1_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995840 cos_vec_mean=0.9995890 cos_vec_min=0.9995156 relL2=0.02885 maxAbs=0.5469
+real_g128/kvarn     L63_k_h2_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995118 cos_vec_mean=0.9995140 cos_vec_min=0.9994415 relL2=0.03126 maxAbs=0.2335
+real_g128/kvarn     L63_k_h3_g0              bits=5 256x128 tok=col rec= 22016 B bpt= 86.000 | cos_glob=0.9995143 cos_vec_mean=0.9995148 cos_vec_min=0.9994175 relL2=0.03118 maxAbs=0.2964
+real_g128/kvarn     L63_v_h0_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9985505 cos_vec_mean=0.9985514 cos_vec_min=0.9980881 relL2=0.05392 maxAbs=1.106
+real_g128/kvarn     L63_v_h1_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9984805 cos_vec_mean=0.9984604 cos_vec_min=0.9979055 relL2=0.05520 maxAbs=1.67
+real_g128/kvarn     L63_v_h2_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9986316 cos_vec_mean=0.9986319 cos_vec_min=0.9977835 relL2=0.05239 maxAbs=1.151
+real_g128/kvarn     L63_v_h3_g0              bits=5 128x256 tok=row rec= 22016 B bpt= 86.000 | cos_glob=0.9988029 cos_vec_mean=0.9988062 cos_vec_min=0.9985256 relL2=0.04898 maxAbs=1.194
+>>> real_g128/kvarn 汇总(8 个 256-dim head) K: cos_glob=0.9995502 cos_vec_mean=0.9995526 cos_vec_min(worst)=0.9994744 relL2=0.03000 bpt=86.000
+>>> real_g128/kvarn 汇总(8 个 256-dim head) V: cos_glob=0.9987827 cos_vec_mean=0.9987668 cos_vec_min(worst)=0.9981409 relL2=0.04925 bpt=86.000

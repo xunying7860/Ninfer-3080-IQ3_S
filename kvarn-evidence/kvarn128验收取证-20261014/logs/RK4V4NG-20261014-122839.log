@@ -1,0 +1,335 @@
+[armctl] 2026-10-14 12:28:39 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:28:40.052  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:28:40.135  INFO  starting engine
+2026-10-14 12:28:40.279  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:28:41.026  INFO  loading weights | 12.3 GiB
+2026-10-14 12:28:45.215  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:28:45.416  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:28:45.440  INFO  host state pinned | 74.8 MiB | 23.9 ms
+2026-10-14 12:28:45.440  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:28:45.522  INFO  host KV pinned | 256.0 MiB | 82.1 ms
+2026-10-14 12:28:46.285  INFO  CUDA graphs ready | 763 ms
+2026-10-14 12:28:46.287  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:28:46.287  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:28:46.287  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:28:46.287  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:28:46.963  INFO  warmup complete | 676 ms
+2026-10-14 12:28:46.963  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:28:46.963  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:28:47.094  INFO  req#1 started | openai-chat non-stream | 2 messages | max output 16 | thinking off
+2026-10-14 12:28:51.963  INFO  throughput | 5.0s | prefill 1.44k tok/s (7,190 tok) | running 1 (prefill 1) | host 38.1% (1.9s)
+2026-10-14 12:28:56.963  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.2% (2.0s)
+2026-10-14 12:29:01.963  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 41.0% (2.0s)
+2026-10-14 12:29:04.905  INFO  req#1 done | openai-chat | stop token | prompt 25,249 | output 5 | cache 0 (0.0%) | TTFT 17.8s | total 17.8s | prefill 1.42k tok/s | decode 126.5 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:29:05.430  INFO  req#2 started | openai-chat non-stream | 4 messages | max output 96 | thinking off
+2026-10-14 12:29:06.160  INFO  req#2 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 25,253 (99.9%, private endpoint) | TTFT 562 ms | total 750 ms | prefill 67.6 tok/s | decode 123.1 tok/s | mtp accepted 18/18 (100.0%)
+2026-10-14 12:29:06.685  INFO  req#3 started | openai-chat non-stream | 6 messages | max output 128 | thinking off
+2026-10-14 12:29:06.963  INFO  throughput | 5.0s | prefill 751.8 tok/s (3,759 tok) | decode 5.4 tok/s (27 tok) | running 1 (prefill 1) | batch 1.00 | host 37.5% (1.9s)
+2026-10-14 12:29:07.403  INFO  req#3 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 25,312 (99.8%, private endpoint) | TTFT 362 ms | total 738 ms | prefill 136.3 tok/s | decode 123.0 tok/s | mtp accepted 36/36 (100.0%)
+2026-10-14 12:29:07.972  INFO  req#4 started | openai-chat non-stream | 8 messages | max output 128 | thinking off
+2026-10-14 12:29:08.432  INFO  req#4 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 25,404 (99.8%, private endpoint) | TTFT 208 ms | total 522 ms | queue 16.9 ms | prefill 301.8 tok/s | decode 77.0 tok/s | mtp accepted 15/30 (50.0%)
+2026-10-14 12:29:09.040  INFO  req#5 started | openai-chat non-stream | 2 messages | max output 16 | thinking off
+2026-10-14 12:29:11.963  INFO  throughput | 5.0s | prefill 836.6 tok/s (4,183 tok) | decode 14.0 tok/s (70 tok) | running 1 (prefill 1) | batch 1.00 | host 28.0% (1.4s)
+2026-10-14 12:29:16.963  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 38.4% (1.9s)
+2026-10-14 12:29:21.963  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.2% (2.0s)
+2026-10-14 12:29:26.601  INFO  req#5 done | openai-chat | stop token | prompt 25,249 | output 5 | cache 0 (0.0%) | TTFT 17.5s | total 17.6s | prefill 1.44k tok/s | decode 64.6 tok/s | mtp accepted 3/6 (50.0%)
+2026-10-14 12:29:26.963  INFO  throughput | 5.0s | prefill 1.36k tok/s (6,817 tok) | decode 0.8 tok/s (4 tok) | running 0 | batch 1.00 | host 41.7% (2.1s)
+2026-10-14 12:29:27.108  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:29:27.108  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f39e8331f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f39da9b7a76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f39da9b7bbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f39da99a1d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f39da99a28b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f39e8331b35]
+[armctl] 2026-10-14 12:29:28 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:29:28.205  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:29:28.287  INFO  starting engine
+2026-10-14 12:29:28.433  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:29:29.196  INFO  loading weights | 12.3 GiB
+2026-10-14 12:29:33.381  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:29:33.583  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:29:33.608  INFO  host state pinned | 74.8 MiB | 24.1 ms
+2026-10-14 12:29:33.608  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:29:33.690  INFO  host KV pinned | 256.0 MiB | 82.3 ms
+2026-10-14 12:29:34.452  INFO  CUDA graphs ready | 762 ms
+2026-10-14 12:29:34.454  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:29:34.454  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:29:34.454  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:29:34.454  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:29:35.099  INFO  warmup complete | 645 ms
+2026-10-14 12:29:35.099  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:29:35.099  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:29:35.713  INFO  req#1 started | openai-chat non-stream | 4 messages | max output 96 | thinking off
+2026-10-14 12:29:40.099  INFO  throughput | 5.0s | prefill 1.23k tok/s (6,166 tok) | running 1 (prefill 1) | host 32.7% (1.6s)
+2026-10-14 12:29:45.099  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.0% (1.9s)
+2026-10-14 12:29:50.099  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.7% (2.0s)
+2026-10-14 12:29:53.976  INFO  req#1 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 0 (0.0%) | TTFT 18.1s | total 18.3s | prefill 1.40k tok/s | decode 122.4 tok/s | mtp accepted 18/18 (100.0%)
+2026-10-14 12:29:54.501  INFO  req#2 started | openai-chat non-stream | 6 messages | max output 128 | thinking off
+2026-10-14 12:29:55.099  INFO  throughput | 5.0s | prefill 966.6 tok/s (4,833 tok) | decode 11.0 tok/s (55 tok) | running 1 (decode-ready 1) | batch 1.00 | host 44.0% (2.2s)
+2026-10-14 12:29:55.213  INFO  req#2 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 25,312 (99.8%, private endpoint) | TTFT 359 ms | total 733 ms | prefill 140.3 tok/s | decode 123.1 tok/s | mtp accepted 36/36 (100.0%)
+2026-10-14 12:29:55.740  INFO  req#3 started | openai-chat non-stream | 8 messages | max output 128 | thinking off
+2026-10-14 12:29:56.155  INFO  req#3 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 25,404 (99.8%, private endpoint) | TTFT 157 ms | total 437 ms | prefill 313.2 tok/s | decode 85.6 tok/s | mtp accepted 16/27 (59.3%)
+2026-10-14 12:29:56.763  INFO  req#4 started | openai-chat non-stream | 2 messages | max output 16 | thinking off
+2026-10-14 12:30:00.099  INFO  throughput | 5.0s | prefill 1.03k tok/s (5,161 tok) | decode 7.6 tok/s (38 tok) | running 1 (prefill 1) | batch 1.00 | host 27.8% (1.4s)
+2026-10-14 12:30:05.099  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 38.7% (1.9s)
+2026-10-14 12:30:10.099  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.5% (2.0s)
+2026-10-14 12:30:14.325  INFO  req#4 done | openai-chat | stop token | prompt 25,249 | output 5 | cache 0 (0.0%) | TTFT 17.5s | total 17.6s | prefill 1.44k tok/s | decode 64.6 tok/s | mtp accepted 3/6 (50.0%)
+2026-10-14 12:30:14.848  INFO  req#5 started | openai-chat non-stream | 4 messages | max output 96 | thinking off
+2026-10-14 12:30:15.099  INFO  throughput | 5.0s | prefill 1.16k tok/s (5,793 tok) | decode 0.8 tok/s (4 tok) | running 1 (prefill 1) | batch 1.00 | host 36.0% (1.8s)
+2026-10-14 12:30:15.387  INFO  req#5 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 25,253 (99.9%, private endpoint) | TTFT 370 ms | total 557 ms | prefill 106.8 tok/s | decode 123.1 tok/s | mtp accepted 18/18 (100.0%)
+2026-10-14 12:30:15.893  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:30:15.893  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f93df3f6f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f93d1acea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f93d1acebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f93d1ab11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f93d1ab128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f93df3f6b35]
+[armctl] 2026-10-14 12:30:16 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:30:16.985  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:30:17.066  INFO  starting engine
+2026-10-14 12:30:17.216  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:30:17.980  INFO  loading weights | 12.3 GiB
+2026-10-14 12:30:22.172  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:30:22.379  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:30:22.403  INFO  host state pinned | 74.8 MiB | 24.5 ms
+2026-10-14 12:30:22.404  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:30:22.487  INFO  host KV pinned | 256.0 MiB | 83.1 ms
+2026-10-14 12:30:23.263  INFO  CUDA graphs ready | 776 ms
+2026-10-14 12:30:23.265  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:30:23.265  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:30:23.265  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:30:23.265  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:30:23.922  INFO  warmup complete | 657 ms
+2026-10-14 12:30:23.922  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:30:23.922  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:30:24.510  INFO  req#1 started | openai-chat non-stream | 6 messages | max output 128 | thinking off
+2026-10-14 12:30:28.922  INFO  throughput | 5.0s | prefill 1.23k tok/s (6,166 tok) | running 1 (prefill 1) | host 32.7% (1.6s)
+2026-10-14 12:30:33.922  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.0% (1.9s)
+2026-10-14 12:30:38.922  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.7% (2.0s)
+2026-10-14 12:30:43.284  INFO  req#1 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 0 (0.0%) | TTFT 18.4s | total 18.8s | prefill 1.38k tok/s | decode 122.8 tok/s | mtp accepted 36/36 (100.0%)
+2026-10-14 12:30:43.791  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:30:43.792  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f31e5c89f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f31d82cea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f31d82cebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f31d82b11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f31d82b128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f31e5c89b35]
+[armctl] 2026-10-14 12:30:44 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:30:44.890  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:30:44.980  INFO  starting engine
+2026-10-14 12:30:45.129  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:30:45.877  INFO  loading weights | 12.3 GiB
+2026-10-14 12:30:50.064  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:30:50.267  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:30:50.291  INFO  host state pinned | 74.8 MiB | 24.0 ms
+2026-10-14 12:30:50.291  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:30:50.372  INFO  host KV pinned | 256.0 MiB | 81.4 ms
+2026-10-14 12:30:51.142  INFO  CUDA graphs ready | 769 ms
+2026-10-14 12:30:51.144  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:30:51.144  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:30:51.144  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:30:51.144  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:30:51.792  INFO  warmup complete | 649 ms
+2026-10-14 12:30:51.793  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:30:51.793  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:30:52.396  INFO  req#1 started | openai-chat non-stream | 8 messages | max output 128 | thinking off
+2026-10-14 12:30:56.793  INFO  throughput | 5.0s | prefill 1.23k tok/s (6,166 tok) | running 1 (prefill 1) | host 32.8% (1.6s)
+2026-10-14 12:31:01.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.0% (1.9s)
+2026-10-14 12:31:06.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.7% (2.0s)
+2026-10-14 12:31:11.082  INFO  req#1 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 0 (0.0%) | TTFT 18.4s | total 18.7s | prefill 1.39k tok/s | decode 76.8 tok/s | mtp accepted 15/30 (50.0%)
+2026-10-14 12:31:11.691  INFO  req#2 started | openai-chat non-stream | 2 messages | max output 16 | thinking off | tools 1
+2026-10-14 12:31:11.793  INFO  throughput | 5.0s | prefill 988.6 tok/s (4,943 tok) | decode 4.8 tok/s (24 tok) | running 1 (prefill 1) | batch 1.00 | host 41.5% (2.1s)
+2026-10-14 12:31:16.793  INFO  throughput | 5.0s | prefill 1.50k tok/s (7,507 tok) | running 1 (prefill 1) | host 40.1% (2.0s)
+2026-10-14 12:31:21.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.3% (2.0s)
+2026-10-14 12:31:26.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 41.1% (2.1s)
+2026-10-14 12:31:29.507  INFO  req#2 done | openai-chat | stop token | prompt 25,566 | output 5 | cache 0 (0.0%) | TTFT 17.8s | total 17.8s | prefill 1.44k tok/s | decode 129.8 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:31:30.030  INFO  req#3 started | openai-chat non-stream | 4 messages | max output 96 | thinking off
+2026-10-14 12:31:31.793  INFO  throughput | 5.0s | prefill 1.16k tok/s (5,793 tok) | decode 0.8 tok/s (4 tok) | running 1 (prefill 1) | batch 1.00 | host 35.2% (1.8s)
+2026-10-14 12:31:36.793  INFO  throughput | 5.0s | prefill 1.64k tok/s (8,192 tok) | running 1 (prefill 1) | host 43.5% (2.2s)
+2026-10-14 12:31:41.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.0% (2.0s)
+2026-10-14 12:31:46.793  INFO  throughput | 5.0s | prefill 1.23k tok/s (6,144 tok) | running 1 (prefill 1) | host 35.7% (1.8s)
+2026-10-14 12:31:47.865  INFO  req#3 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 0 (0.0%) | TTFT 17.7s | total 17.9s | queue 10.0 ms | prefill 1.43k tok/s | decode 123.3 tok/s | mtp accepted 18/18 (100.0%)
+2026-10-14 12:31:48.390  INFO  req#4 started | openai-chat non-stream | 6 messages | max output 128 | thinking off
+2026-10-14 12:31:49.112  INFO  req#4 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 25,312 (99.8%, private endpoint) | TTFT 368 ms | total 742 ms | prefill 136.2 tok/s | decode 123.1 tok/s | mtp accepted 36/36 (100.0%)
+2026-10-14 12:31:49.636  INFO  req#5 started | openai-chat non-stream | 8 messages | max output 128 | thinking off
+2026-10-14 12:31:50.058  INFO  req#5 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 25,404 (99.8%, private endpoint) | TTFT 161 ms | total 442 ms | prefill 314.0 tok/s | decode 85.6 tok/s | mtp accepted 16/27 (59.3%)
+2026-10-14 12:31:50.666  INFO  req#6 started | openai-chat non-stream | 2 messages | max output 16 | thinking off | tools 1
+2026-10-14 12:31:51.793  INFO  throughput | 5.0s | prefill 565.2 tok/s (2,826 tok) | decode 18.6 tok/s (93 tok) | running 1 (prefill 1) | batch 1.00 | host 24.3% (1.2s)
+2026-10-14 12:31:56.793  INFO  throughput | 5.0s | prefill 1.64k tok/s (8,192 tok) | running 1 (prefill 1) | host 43.2% (2.2s)
+2026-10-14 12:32:01.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.7% (2.0s)
+2026-10-14 12:32:06.793  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 41.5% (2.1s)
+2026-10-14 12:32:08.371  INFO  req#6 done | openai-chat | stop token | prompt 25,566 | output 5 | cache 0 (0.0%) | TTFT 17.7s | total 17.7s | prefill 1.45k tok/s | decode 129.5 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:32:08.878  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:32:08.878  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7fa20a9fef1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7fa1fd0cea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7fa1fd0cebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7fa1fd0b11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7fa1fd0b128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7fa20a9feb35]
+[armctl] 2026-10-14 12:32:09 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:32:09.977  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:32:10.060  INFO  starting engine
+2026-10-14 12:32:10.212  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:32:10.959  INFO  loading weights | 12.3 GiB
+2026-10-14 12:32:15.153  INFO  weights ready | 12.3 GiB | 4.2s | 2.94 GiB/s
+2026-10-14 12:32:15.359  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:32:15.383  INFO  host state pinned | 74.8 MiB | 24.6 ms
+2026-10-14 12:32:15.384  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:32:15.467  INFO  host KV pinned | 256.0 MiB | 82.9 ms
+2026-10-14 12:32:16.243  INFO  CUDA graphs ready | 776 ms
+2026-10-14 12:32:16.245  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:32:16.245  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:32:16.245  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:32:16.245  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:32:16.892  INFO  warmup complete | 647 ms
+2026-10-14 12:32:16.892  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:32:16.892  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:32:17.488  INFO  req#1 started | openai-chat non-stream | 4 messages | max output 96 | thinking off
+2026-10-14 12:32:21.893  INFO  throughput | 5.0s | prefill 1.23k tok/s (6,166 tok) | running 1 (prefill 1) | host 32.7% (1.6s)
+2026-10-14 12:32:26.893  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 39.0% (1.9s)
+2026-10-14 12:32:31.893  INFO  throughput | 5.0s | prefill 1.43k tok/s (7,168 tok) | running 1 (prefill 1) | host 40.7% (2.0s)
+2026-10-14 12:32:35.761  INFO  req#1 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 0 (0.0%) | TTFT 18.1s | total 18.3s | prefill 1.40k tok/s | decode 122.5 tok/s | mtp accepted 18/18 (100.0%)
+2026-10-14 12:32:36.286  INFO  req#2 started | openai-chat non-stream | 6 messages | max output 128 | thinking off
+2026-10-14 12:32:36.893  INFO  throughput | 5.0s | prefill 966.6 tok/s (4,833 tok) | decode 11.0 tok/s (55 tok) | running 1 (decode-ready 1) | batch 1.00 | host 44.2% (2.2s)
+2026-10-14 12:32:37.001  INFO  req#2 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 25,312 (99.8%, private endpoint) | TTFT 361 ms | total 736 ms | prefill 139.3 tok/s | decode 123.1 tok/s | mtp accepted 36/36 (100.0%)
+2026-10-14 12:32:37.528  INFO  req#3 started | openai-chat non-stream | 8 messages | max output 128 | thinking off
+2026-10-14 12:32:37.944  INFO  req#3 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 25,404 (99.8%, private endpoint) | TTFT 157 ms | total 438 ms | prefill 313.3 tok/s | decode 85.6 tok/s | mtp accepted 16/27 (59.3%)
+2026-10-14 12:32:38.533  INFO  req#4 started | openai-chat non-stream | 2 messages | max output 128 | thinking off | tools 1
+2026-10-14 12:32:39.088  INFO  req#4 done | openai-chat | tool calls 1 | prompt 366 | output 26 | cache 0 (0.0%) | TTFT 353 ms | total 558 ms | prefill 1.05k tok/s | decode 122.1 tok/s | mtp accepted 21/21 (100.0%)
+2026-10-14 12:32:39.596  INFO  req#5 started | openai-chat non-stream | 5 messages | max output 32 | thinking off
+2026-10-14 12:32:39.861  INFO  req#5 done | openai-chat | stop token | prompt 116 | output 3 | cache 0 (0.0%) | TTFT 240 ms | total 269 ms | prefill 494.5 tok/s | decode 67.9 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:32:40.369  INFO  req#6 started | openai-chat non-stream | 7 messages | max output 64 | thinking off
+2026-10-14 12:32:40.611  INFO  req#6 done | openai-chat | stop token | prompt 141 | output 10 | cache 118 (83.7%, private endpoint) | TTFT 101 ms | total 247 ms | prefill 241.6 tok/s | decode 61.5 tok/s | mtp accepted 6/15 (40.0%)
+2026-10-14 12:32:41.199  INFO  req#7 started | openai-chat non-stream | 2 messages | max output 128 | thinking off | tools 1
+2026-10-14 12:32:41.714  INFO  req#7 done | openai-chat | tool calls 1 | prompt 366 | output 26 | cache 0 (0.0%) | TTFT 313 ms | total 518 ms | prefill 1.20k tok/s | decode 122.5 tok/s | mtp accepted 21/21 (100.0%)
+2026-10-14 12:32:41.893  INFO  throughput | 5.0s | prefill 182.4 tok/s (912 tok) | decode 19.8 tok/s (99 tok) | running 0 | batch 1.00 | host 9.2% (458 ms)
+2026-10-14 12:32:42.221  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:32:42.222  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f3fc5c1ff1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f3fb82cea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f3fb82cebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f3fb82b11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f3fb82b128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f3fc5c1fb35]
+[armctl] 2026-10-14 12:32:43 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:32:43.320  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:32:43.404  INFO  starting engine
+2026-10-14 12:32:43.552  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:32:44.304  INFO  loading weights | 12.3 GiB
+2026-10-14 12:32:48.493  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:32:48.700  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:32:48.724  INFO  host state pinned | 74.8 MiB | 24.6 ms
+2026-10-14 12:32:48.724  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:32:48.808  INFO  host KV pinned | 256.0 MiB | 83.1 ms
+2026-10-14 12:32:49.585  INFO  CUDA graphs ready | 777 ms
+2026-10-14 12:32:49.587  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:32:49.587  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:32:49.587  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:32:49.587  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:32:50.218  INFO  warmup complete | 631 ms
+2026-10-14 12:32:50.218  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:32:50.218  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:32:50.812  INFO  req#1 started | openai-chat non-stream | 5 messages | max output 32 | thinking off
+2026-10-14 12:32:51.316  INFO  req#1 done | openai-chat | stop token | prompt 116 | output 3 | cache 0 (0.0%) | TTFT 478 ms | total 508 ms | prefill 248.3 tok/s | decode 68.1 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:32:51.824  INFO  req#2 started | openai-chat non-stream | 7 messages | max output 64 | thinking off
+2026-10-14 12:32:52.073  INFO  req#2 done | openai-chat | stop token | prompt 141 | output 10 | cache 118 (83.7%, private endpoint) | TTFT 107 ms | total 253 ms | prefill 242.0 tok/s | decode 61.5 tok/s | mtp accepted 6/15 (40.0%)
+2026-10-14 12:32:52.664  INFO  req#3 started | openai-chat non-stream | 2 messages | max output 32 | thinking off | media 1, prepared 5.20 ms
+2026-10-14 12:32:52.949  INFO  req#3 done | openai-chat | stop token | prompt 124 | output 8 | cache 0 (0.0%) | TTFT 203 ms | total 290 ms | queue 42.9 ms | prefill 1.11k tok/s | decode 80.3 tok/s | mtp accepted 7/9 (77.8%)
+2026-10-14 12:32:53.456  INFO  req#4 started | openai-chat non-stream | 4 messages | max output 32 | thinking off | media 1, prepared 3.30 ms
+2026-10-14 12:32:53.580  INFO  req#4 done | openai-chat | stop token | prompt 154 | output 2 | cache 131 (85.1%, private endpoint) | TTFT 98.5 ms | total 128 ms | prefill 243.7 tok/s | decode 34.4 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:32:54.087  INFO  req#5 started | openai-chat non-stream | 6 messages | max output 32 | thinking off | media 1, prepared 4.35 ms
+2026-10-14 12:32:54.212  INFO  req#5 done | openai-chat | stop token | prompt 178 | output 2 | cache 155 (87.1%, private endpoint) | TTFT 99.2 ms | total 129 ms | prefill 243.7 tok/s | decode 34.2 tok/s | mtp accepted 2/3 (66.7%)
+2026-10-14 12:32:54.801  INFO  req#6 started | openai-chat non-stream | 2 messages | max output 32 | thinking off | media 1, prepared 2.36 ms
+2026-10-14 12:32:55.126  INFO  req#6 done | openai-chat | stop token | prompt 124 | output 8 | cache 0 (0.0%) | TTFT 240 ms | total 327 ms | queue 12.3 ms | prefill 1.11k tok/s | decode 80.3 tok/s | mtp accepted 7/9 (77.8%)
+2026-10-14 12:32:55.218  INFO  throughput | 5.0s | prefill 86.6 tok/s (433 tok) | decode 5.4 tok/s (27 tok) | running 0 | batch 1.00 | host 11.8% (588 ms)
+2026-10-14 12:32:55.633  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:32:55.634  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f9aea950f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f9adcfb7a76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f9adcfb7bbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f9adcf9a1d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f9adcf9a28b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f9aea950b35]
+[armctl] 2026-10-14 12:32:56 launch name=RK4V4NG bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18135 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=65536 extra='--ngram-draft-tokens 0' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4NG-20261014-122839.log
+2026-10-14 12:32:56.731  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:32:56.813  INFO  starting engine
+2026-10-14 12:32:56.957  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:32:57.715  INFO  loading weights | 12.3 GiB
+2026-10-14 12:33:01.901  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:33:02.108  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:33:02.133  INFO  host state pinned | 74.8 MiB | 24.3 ms
+2026-10-14 12:33:02.133  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:33:02.215  INFO  host KV pinned | 256.0 MiB | 81.9 ms
+2026-10-14 12:33:02.978  INFO  CUDA graphs ready | 763 ms
+2026-10-14 12:33:02.980  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.2s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:33:02.980  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.55 GiB | free 5.47 GiB
+2026-10-14 12:33:02.980  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:33:02.980  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:33:03.625  INFO  warmup complete | 646 ms
+2026-10-14 12:33:03.625  INFO  listening on http://127.0.0.1:18135 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:33:03.625  INFO  api base http://127.0.0.1:18135/v1
+2026-10-14 12:33:04.222  INFO  req#1 started | openai-chat non-stream | 4 messages | max output 32 | thinking off | media 1, prepared 6.33 ms
+2026-10-14 12:33:04.796  INFO  req#1 done | openai-chat | stop token | prompt 154 | output 2 | cache 0 (0.0%) | TTFT 551 ms | total 581 ms | queue 43.4 ms | prefill 385.8 tok/s | decode 33.5 tok/s | mtp accepted 3/3 (100.0%)
+2026-10-14 12:33:05.304  INFO  req#2 started | openai-chat non-stream | 6 messages | max output 32 | thinking off | media 1, prepared 4.36 ms
+2026-10-14 12:33:05.436  INFO  req#2 done | openai-chat | stop token | prompt 178 | output 2 | cache 155 (87.1%, private endpoint) | TTFT 107 ms | total 136 ms | prefill 241.2 tok/s | decode 34.4 tok/s | mtp accepted 2/3 (66.7%)
+2026-10-14 12:33:06.314  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:33:06.315  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f8dffdfdf1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f8df24cea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f8df24cebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f8df24b11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f8df24b128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f8dffdfdb35]

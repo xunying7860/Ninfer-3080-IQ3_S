@@ -1,0 +1,519 @@
+{
+ "arm": "A",
+ "port": 18093,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "log": "/data/kvarn/g128-rk4v4-test/logs/armA-20261014-091719.log",
+ "prompts_file": "/data/kvarn/g128-rk4v4-test/prompts.json",
+ "results": [
+  {
+   "id": "F1",
+   "kind": "事实",
+   "run": 1,
+   "max_tokens": 32,
+   "prompt_chars": 21,
+   "content": "1949",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 5,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 22,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 27
+   },
+   "client_s": 0.51,
+   "engine_raw": "2026-10-14 09:17:39.781  INFO  req#1 done | openai-chat | stop token | prompt 22 | output 5 | cache 0 (0.0%) | TTFT 478 ms | total 508 ms | prefill 47.8 tok/s | decode 134.1 tok/s | mtp accepted 3/3 (100.0%)",
+   "engine": {
+    "ttft_ms": 478,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "22",
+    "output_tokens": "5",
+    "prefill_tps": "47.8",
+    "decode_tps": "134.1",
+    "mtp": "3/3 (100.0%)"
+   }
+  },
+  {
+   "id": "F1",
+   "kind": "事实",
+   "run": 2,
+   "max_tokens": 32,
+   "prompt_chars": 21,
+   "content": "1949",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 5,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 22,
+    "prompt_tokens_details": {
+     "cached_tokens": 15
+    },
+    "total_tokens": 27
+   },
+   "client_s": 0.11,
+   "engine_raw": "2026-10-14 09:17:40.394  INFO  req#2 done | openai-chat | stop token | prompt 22 | output 5 | cache 15 (68.2%, turn closure) | TTFT 74.0 ms | total 110 ms | prefill 127.1 tok/s | decode 135.8 tok/s | mtp accepted 3/3 (100.0%)",
+   "engine": {
+    "ttft_ms": 74,
+    "cache_tokens": "15",
+    "cache_pct": "68.2",
+    "cache_kind": "turn closure",
+    "prompt_tokens": "22",
+    "output_tokens": "5",
+    "prefill_tps": "127.1",
+    "decode_tps": "135.8",
+    "mtp": "3/3 (100.0%)"
+   }
+  },
+  {
+   "id": "F2",
+   "kind": "事实",
+   "run": 1,
+   "max_tokens": 16,
+   "prompt_chars": 19,
+   "content": "H₂O",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 4,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 24,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 28
+   },
+   "client_s": 0.15,
+   "engine_raw": "2026-10-14 09:17:41.045  INFO  req#3 done | openai-chat | stop token | prompt 24 | output 4 | cache 0 (0.0%) | TTFT 120 ms | total 149 ms | prefill 234.7 tok/s | decode 102.6 tok/s | mtp accepted 3/3 (100.0%)",
+   "engine": {
+    "ttft_ms": 120,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "24",
+    "output_tokens": "4",
+    "prefill_tps": "234.7",
+    "decode_tps": "102.6",
+    "mtp": "3/3 (100.0%)"
+   }
+  },
+  {
+   "id": "F2",
+   "kind": "事实",
+   "run": 2,
+   "max_tokens": 16,
+   "prompt_chars": 19,
+   "content": "H₂O",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 4,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 24,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 28
+   },
+   "client_s": 0.15,
+   "engine_raw": "2026-10-14 09:17:41.694  INFO  req#4 done | openai-chat | stop token | prompt 24 | output 4 | cache 0 (0.0%) | TTFT 118 ms | total 147 ms | prefill 237.5 tok/s | decode 103.1 tok/s | mtp accepted 3/3 (100.0%)",
+   "engine": {
+    "ttft_ms": 118,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "24",
+    "output_tokens": "4",
+    "prefill_tps": "237.5",
+    "decode_tps": "103.1",
+    "mtp": "3/3 (100.0%)"
+   }
+  },
+  {
+   "id": "C1",
+   "kind": "代码",
+   "run": 1,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 13,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 36,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 49
+   },
+   "client_s": 0.21,
+   "engine_raw": "2026-10-14 09:17:42.405  INFO  req#5 done | openai-chat | stop token | prompt 36 | output 13 | cache 0 (0.0%) | TTFT 120 ms | total 208 ms | prefill 349.2 tok/s | decode 136.6 tok/s | mtp accepted 9/9 (100.0%)",
+   "engine": {
+    "ttft_ms": 120,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "36",
+    "output_tokens": "13",
+    "prefill_tps": "349.2",
+    "decode_tps": "136.6",
+    "mtp": "9/9 (100.0%)"
+   }
+  },
+  {
+   "id": "C1",
+   "kind": "代码",
+   "run": 2,
+   "max_tokens": 160,
+   "prompt_chars": 43,
+   "content": "def add(a, b):\n    return a + b",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 13,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 36,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 49
+   },
+   "client_s": 0.22,
+   "engine_raw": "2026-10-14 09:17:43.121  INFO  req#6 done | openai-chat | stop token | prompt 36 | output 13 | cache 0 (0.0%) | TTFT 120 ms | total 214 ms | prefill 349.8 tok/s | decode 137.4 tok/s | mtp accepted 9/9 (100.0%)",
+   "engine": {
+    "ttft_ms": 120,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "36",
+    "output_tokens": "13",
+    "prefill_tps": "349.8",
+    "decode_tps": "137.4",
+    "mtp": "9/9 (100.0%)"
+   }
+  },
+  {
+   "id": "C2",
+   "kind": "代码",
+   "run": 1,
+   "max_tokens": 240,
+   "prompt_chars": 69,
+   "content": "```python\ndef fib(n):\n    if n == 0:\n        return 0\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b\n```",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 63,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 53,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 116
+   },
+   "client_s": 0.6,
+   "engine_raw": "2026-10-14 09:17:44.221  INFO  req#7 done | openai-chat | stop token | prompt 53 | output 63 | cache 0 (0.0%) | TTFT 131 ms | total 598 ms | prefill 458.4 tok/s | decode 132.8 tok/s | mtp accepted 46/48 (95.8%)",
+   "engine": {
+    "ttft_ms": 131,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "53",
+    "output_tokens": "63",
+    "prefill_tps": "458.4",
+    "decode_tps": "132.8",
+    "mtp": "46/48 (95.8%)"
+   }
+  },
+  {
+   "id": "C2",
+   "kind": "代码",
+   "run": 2,
+   "max_tokens": 240,
+   "prompt_chars": 69,
+   "content": "```python\ndef fib(n):\n    if n == 0:\n        return 0\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b\n```",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 63,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 53,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 116
+   },
+   "client_s": 0.61,
+   "engine_raw": "2026-10-14 09:17:45.329  INFO  req#8 done | openai-chat | stop token | prompt 53 | output 63 | cache 0 (0.0%) | TTFT 132 ms | total 605 ms | prefill 459.1 tok/s | decode 132.8 tok/s | mtp accepted 46/48 (95.8%)",
+   "engine": {
+    "ttft_ms": 132,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "53",
+    "output_tokens": "63",
+    "prefill_tps": "459.1",
+    "decode_tps": "132.8",
+    "mtp": "46/48 (95.8%)"
+   }
+  },
+  {
+   "id": "Z1",
+   "kind": "中文长答",
+   "run": 1,
+   "max_tokens": 512,
+   "prompt_chars": 46,
+   "content": "KV 缓存（Key-Value Cache）是大语言模型推理过程中的一项关键技术。在自回归生成文本时，模型每生成一个新词，都需要计算该词与之前所有已生成词的注意力关系。若每次都重新计算历史序列的键（Key）和值（Value）向量，计算量将随序列长度呈平方级增长，效率极低。\n\nKV 缓存通过存储历史 Token 对应的 Key 和 Value 矩阵，使得生成新 Token 时只需计算当前 Token 的 Q 向量，并直接复用缓存中的 K/V 进行点积运算。这将时间复杂度从 O(n²) 降低至 O(n)，极大提升了推理速度。\n\n在长上下文场景中，这一优化尤为关键。处理数万甚至数十万 Token 的输入时，若无 KV 缓存，显存占用和计算延迟会迅速超出硬件极限，导致推理不可行或极度缓慢。因此，KV 缓存是支撑大模型高效处理长文档、代码库或对话历史的核心机制，也是实现实时交互体验的基础。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 217,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 40,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 257
+   },
+   "client_s": 2.82,
+   "engine_raw": "2026-10-14 09:17:48.649  INFO  req#9 done | openai-chat | stop token | prompt 40 | output 217 | cache 0 (0.0%) | TTFT 131 ms | total 2.8s | prefill 348.7 tok/s | decode 80.4 tok/s | mtp accepted 125/276 (45.3%)",
+   "engine": {
+    "ttft_ms": 131,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "40",
+    "output_tokens": "217",
+    "prefill_tps": "348.7",
+    "decode_tps": "80.4",
+    "mtp": "125/276 (45.3%)"
+   }
+  },
+  {
+   "id": "Z1",
+   "kind": "中文长答",
+   "run": 2,
+   "max_tokens": 512,
+   "prompt_chars": 46,
+   "content": "KV 缓存（Key-Value Cache）是大语言模型推理过程中的一项关键技术。在自回归生成文本时，模型每生成一个新词，都需要计算该词与之前所有已生成词的注意力关系。若每次都重新计算历史序列的键（Key）和值（Value）向量，计算量将随序列长度呈平方级增长，效率极低。\n\nKV 缓存通过存储历史 Token 对应的 Key 和 Value 矩阵，使得生成新 Token 时只需计算当前 Token 的 Q 向量，并直接复用缓存中的 K/V 进行点积运算。这将时间复杂度从 O(n²) 降低至 O(n)，极大提升了推理速度。\n\n在长上下文场景中，这一优化尤为关键。处理数万甚至数十万 Token 的输入时，若无 KV 缓存，显存占用和计算延迟会迅速超出硬件极限，导致推理不可行或极度缓慢。因此，KV 缓存是支撑大模型高效处理长文档、代码库或对话历史的核心机制，也是实现实时交互体验的基础。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 217,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 40,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 257
+   },
+   "client_s": 2.82,
+   "engine_raw": "2026-10-14 09:17:51.969  INFO  req#10 done | openai-chat | stop token | prompt 40 | output 217 | cache 0 (0.0%) | TTFT 130 ms | total 2.8s | prefill 349.9 tok/s | decode 80.4 tok/s | mtp accepted 125/276 (45.3%)",
+   "engine": {
+    "ttft_ms": 130,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "40",
+    "output_tokens": "217",
+    "prefill_tps": "349.9",
+    "decode_tps": "80.4",
+    "mtp": "125/276 (45.3%)"
+   }
+  },
+  {
+   "id": "Z2",
+   "kind": "中文长答",
+   "run": 1,
+   "max_tokens": 512,
+   "prompt_chars": 60,
+   "content": "Tensor Core 是 NVIDIA 专为深度学习和高性能计算设计的专用硬件单元，首次出现在 Volta 架构中。它并非通用的 CUDA 核心，而是专门针对矩阵运算进行了深度优化。\n\n在传统的 GPU 计算中，执行一次浮点乘加（FMA）操作需要占用一个通用核心。而 Tensor Core 能够在一个时钟周期内完成一个 $4 \\times 4$ 的矩阵乘加操作（即 $D = A \\times B + C$）。这种“宏指令”设计极大地提高了数据吞吐量，同时显著降低了功耗和延迟。\n\n对于神经网络训练和推理而言，核心瓶颈往往在于大量的矩阵乘法。Tensor Core 通过并行处理小块矩阵，将原本需要数百个周期的计算压缩至几个周期，从而实现了数倍甚至数十倍的加速。此外，它还支持 FP16、INT8 等低精度格式，进一步提升了能效比，使得大规模 AI 模型能在更短的时间内完成训练与部署。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 201,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 41,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 242
+   },
+   "client_s": 2.64,
+   "engine_raw": "2026-10-14 09:17:55.112  INFO  req#11 done | openai-chat | stop token | prompt 41 | output 201 | cache 0 (0.0%) | TTFT 130 ms | total 2.6s | prefill 357.5 tok/s | decode 79.7 tok/s | mtp accepted 116/258 (45.0%)",
+   "engine": {
+    "ttft_ms": 130,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "41",
+    "output_tokens": "201",
+    "prefill_tps": "357.5",
+    "decode_tps": "79.7",
+    "mtp": "116/258 (45.0%)"
+   }
+  },
+  {
+   "id": "Z2",
+   "kind": "中文长答",
+   "run": 2,
+   "max_tokens": 512,
+   "prompt_chars": 60,
+   "content": "Tensor Core 是 NVIDIA 专为深度学习和高性能计算设计的专用硬件单元，首次出现在 Volta 架构中。它并非通用的 CUDA 核心，而是专门针对矩阵运算进行了深度优化。\n\n在传统的 GPU 计算中，执行一次浮点乘加（FMA）操作需要占用一个通用核心。而 Tensor Core 能够在一个时钟周期内完成一个 $4 \\times 4$ 的矩阵乘加操作（即 $D = A \\times B + C$）。这种“宏指令”设计极大地提高了数据吞吐量，同时显著降低了功耗和延迟。\n\n对于神经网络训练和推理而言，核心瓶颈往往在于大量的矩阵乘法。Tensor Core 通过并行处理小块矩阵，将原本需要数百个周期的计算压缩至几个周期，从而实现了数倍甚至数十倍的加速。此外，它还支持 FP16、INT8 等低精度格式，进一步提升了能效比，使得大规模 AI 模型能在更短的时间内完成训练与部署。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 201,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 41,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 242
+   },
+   "client_s": 2.64,
+   "engine_raw": "2026-10-14 09:17:58.259  INFO  req#12 done | openai-chat | stop token | prompt 41 | output 201 | cache 0 (0.0%) | TTFT 132 ms | total 2.6s | prefill 357.0 tok/s | decode 79.7 tok/s | mtp accepted 116/258 (45.0%)",
+   "engine": {
+    "ttft_ms": 132,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "41",
+    "output_tokens": "201",
+    "prefill_tps": "357.0",
+    "decode_tps": "79.7",
+    "mtp": "116/258 (45.0%)"
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 1,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "这份文档一共有 2000 行。\n\n第 1000 行的原文是：\nLine 001000: MARK-7731-KXQ at 1000\n\n第 1500 行的原文是：\nLine 001500: LATE-9082-QQ at 1500\n\n关于这份文档的主题总结，虽然表面上看它充满了大量重复的“例行维护笔记、库存记录和日志条目”，但实际上这是一份典型的**系统日志或数据流文件**。其核心主题并非真正的日常维护记录，而是通过海量的填充文本（Padding）来模拟真实环境下的数据负载，或者用于测试数据处理系统的性能与稳定性。\n\n首先，从结构上看，文档采用了标准的行号前缀格式（如 `Line 000000:`），这符合大多数计算机日志、调试输出或数据导出文件的规范。这种格式便于程序逐行解析和定位特定信息。绝大多数行（从第 0 行到第 999 行，以及第 1001 行到第 1499 行，还有第 1501 行到第 1999 行）的内容完全相同，均为“routine maintenance notes, inventory records and log entries follow.”。这种高度重复性表明这些行可能是占位符，或者是某种自动化脚本生成的背景噪音，目的是填满特定的数据块或时间窗口，而不包含实质性的业务逻辑变化。\n\n然而，文档中隐藏着两个关键的异常点，即第 1000 行和第 1500 行。这两行打破了重复的模式，分别出现了独特的标识符：“MARK-7731-KXQ”和“LATE-9082-QQ”。在工业控制、物联网设备监控或软件调试场景中，这类独特的字符串通常代表**事件标记（Event Markers）**、**检查点（Checkpoints）**或**特定状态码**。例如，“MARK-7731-KXQ”可能表示在第 1000 个周期或时间点发生了一次特定的硬件校准、传感器读数异常或软件版本更新；而“LATE-9082-QQ”则可能暗示在第 1500 行对应的时间点出现了一个延迟警告、超时错误或是另一个独立的系统事件。\n\n因此，这份文档的真实主题可以概括为：**一个包含稀疏关键事件的密集日志流**。它展示了如何在大量常规、无变化的背景数据中嵌入少量高价值的诊断信息。对于分析人员而言，重点不在于阅读那近两千行重复的维护说明，而在于识别并提取那些打破常规的“信号”行。这种数据结构常见于压力测试、数据完整性校验或分布式系统中的心跳包记录，其中大部分数据用于维持连接或验证传输通道是否正常，而少数几行则承载着真正需要被处理和响应的业务逻辑或故障警报。综上所述，该文档是一个以重复填充为主、以关键事件标记为辅的技术日志样本，旨在演示或记录系统在长时间运行中的状态快照及突发异常。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 649,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 42071,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 42720
+   },
+   "client_s": 39.89,
+   "engine_raw": "2026-10-14 09:18:38.656  INFO  req#13 done | openai-chat | stop token | prompt 42,071 | output 649 | cache 0 (0.0%) | TTFT 30.8s | total 39.9s | prefill 1.37k tok/s | decode 71.3 tok/s | mixed speculation accepted 373/879 (42.4%) | ngram 27/60 accepted, 4 rounds",
+   "engine": {
+    "ttft_ms": 30800,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "42071",
+    "output_tokens": "649",
+    "prefill_tps": null,
+    "decode_tps": "71.3",
+    "mtp": null
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 2,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "这份文档一共有 2000 行。\n\n第 1000 行的原文是：\nLine 001000: MARK-7731-KXQ at 1000\n\n第 1500 行的原文是：\nLine 001500: LATE-9082-QQ at 1500\n\n关于这份文档的主题总结，虽然表面上看它充满了大量重复的“例行维护笔记、库存记录和日志条目”，但实际上这是一份典型的**系统日志或数据流文件**。其核心主题并非真正的日常维护记录，而是通过海量的填充文本（Padding）来模拟真实环境下的数据负载，或者用于测试数据处理系统的性能与稳定性。\n\n首先，从结构上看，文档采用了标准的行号前缀格式（如 `Line 000000:`），这符合大多数计算机日志、调试输出或数据导出文件的规范。这种格式便于程序逐行解析和定位特定信息。绝大多数行（从第 0 行到第 999 行，以及第 1001 行到第 1499 行，还有第 1501 行到第 1999 行）的内容完全相同，均为“routine maintenance notes, inventory records and log entries follow.”。这种高度重复性表明这些行可能是占位符，或者是某种自动化脚本生成的背景噪音，目的是填满特定的数据块或时间窗口，而不包含实质性的业务逻辑变化。\n\n然而，文档中隐藏着两个关键的异常点，即第 1000 行和第 1500 行。这两行打破了重复的模式，分别出现了独特的标识符：“MARK-7731-KXQ”和“LATE-9082-QQ”。在工业控制、物联网设备监控或软件调试场景中，这类独特的字符串通常代表**事件标记（Event Markers）**、**检查点（Checkpoints）**或**特定状态码**。例如，“MARK-7731-KXQ”可能表示在第 1000 个周期或时间点发生了一次特定的硬件校准、传感器读数异常或软件版本更新；而“LATE-9082-QQ”则可能暗示在第 1500 行对应的时间点出现了一个延迟警告、超时错误或是另一个独立的系统事件。\n\n因此，这份文档的真实主题可以概括为：**一个包含稀疏关键事件的密集日志流**。它展示了如何在大量常规、无变化的背景数据中嵌入少量高价值的诊断信息。对于分析人员而言，重点不在于阅读那近两千行重复的维护说明，而在于识别并提取那些打破常规的“信号”行。这种数据结构常见于压力测试、数据完整性校验或分布式系统中的心跳包记录，其中大部分数据用于维持连接或验证传输通道是否正常，而少数几行则承载着真正需要被处理和响应的业务逻辑或故障警报。综上所述，该文档是一个以重复填充为主、以关键事件标记为辅的技术日志样本，旨在演示或记录系统在长时间运行中的状态快照及突发异常。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 649,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 42071,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 42720
+   },
+   "client_s": 39.9,
+   "engine_raw": "2026-10-14 09:19:19.054  INFO  req#14 done | openai-chat | stop token | prompt 42,071 | output 649 | cache 0 (0.0%) | TTFT 30.8s | total 39.9s | queue 14.5 ms | prefill 1.37k tok/s | decode 71.4 tok/s | mixed speculation accepted 373/879 (42.4%) | ngram 27/60 accepted, 4 rounds",
+   "engine": {
+    "ttft_ms": 30800,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "42071",
+    "output_tokens": "649",
+    "prefill_tps": null,
+    "decode_tps": "71.4",
+    "mtp": null
+   }
+  },
+  {
+   "id": "L1",
+   "kind": "长上下文+重复性",
+   "run": 3,
+   "max_tokens": 900,
+   "prompt_chars": 163979,
+   "content": "这份文档一共有 2000 行。\n\n第 1000 行的原文是：\nLine 001000: MARK-7731-KXQ at 1000\n\n第 1500 行的原文是：\nLine 001500: LATE-9082-QQ at 1500\n\n关于这份文档的主题总结，虽然表面上看它充满了大量重复的“例行维护笔记、库存记录和日志条目”，但实际上这是一份典型的**系统日志或数据流文件**。其核心主题并非真正的日常维护记录，而是通过海量的填充文本（Padding）来模拟真实环境下的数据负载，或者用于测试数据处理系统的性能与稳定性。\n\n首先，从结构上看，文档采用了标准的行号前缀格式（如 `Line 000000:`），这符合大多数计算机日志、调试输出或数据导出文件的规范。这种格式便于程序逐行解析和定位特定信息。绝大多数行（从第 0 行到第 999 行，以及第 1001 行到第 1499 行，还有第 1501 行到第 1999 行）的内容完全相同，均为“routine maintenance notes, inventory records and log entries follow.”。这种高度重复性表明这些行可能是占位符，或者是某种自动化脚本生成的背景噪音，目的是填满特定的数据块或时间窗口，而不包含实质性的业务逻辑变化。\n\n然而，文档中隐藏着两个关键的异常点，即第 1000 行和第 1500 行。这两行打破了重复的模式，分别记录了 `MARK-7731-KXQ at 1000` 和 `LATE-9082-QQ at 1500`。这里的 `at 1000` 和 `at 1500` 很可能对应着行号本身，暗示这是一种基于索引或时间戳的事件标记。`MARK` 可能代表某种检查点、里程碑或状态变更，而 `LATE` 则可能表示延迟事件、超时警告或后期处理的任务。后面的代码（如 `7731-KXQ` 和 `9082-QQ`）看起来像是唯一的标识符、批次号或设备序列号。因此，这份文档的真实主题可以解读为：**在一个看似常规的系统运行过程中，于特定节点（第 1000 和第 1500 个周期/行）触发了两个特定的、带有唯一标识符的事件或状态更新。**\n\n此外，这种文档形式常见于软件测试中的“压力测试”或“基准测试”。开发者可能会生成数千行甚至数百万行这样的数据，以验证日志记录系统、数据库写入性能或网络传输带宽是否能承受高吞吐量的数据流。在这种情况下，那两行特殊的记录可能是故意植入的“金丝雀”（Canary）或校验点，用来确认数据在传输或存储过程中没有丢失或错位。如果接收端能准确找到第 1000 行和第 1500 行的特殊内容，就证明整个数据流的完整性得到了保证。\n\n最后，从库存管理的角度来看，如果我们将“inventory records”视为字面意思，那么这份文档可能是一个大型仓库管理系统的后台日志。大部分时间是正常的库存盘点和维护操作，而在第 1000 次和第 1500 次操作时，系统记录了两个特定的物品（由 KXQ 和 QQ 标识）的状态变化或位置移动。但鉴于其他行的内容过于泛化且缺乏具体细节，这种解释的可能性较低。更合理的推断是，这是一份用于技术演示或测试的合成数据文件，其主题在于展示如何在大量冗余数据中识别和处理关键事件。",
+   "reasoning": "",
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 808,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 42071,
+    "prompt_tokens_details": {
+     "cached_tokens": 42064
+    },
+    "total_tokens": 42879
+   },
+   "client_s": 10.86,
+   "engine_raw": "2026-10-14 09:19:30.416  INFO  req#15 done | openai-chat | stop token | prompt 42,071 | output 808 | cache 42,064 (100.0%, turn closure) | TTFT 114 ms | total 10.9s | queue 13.6 ms | prefill 110.2 tok/s | decode 75.1 tok/s | mixed speculation accepted 484/1,062 (45.6%) | ngram 32/105 accepted, 7 rounds",
+   "engine": {
+    "ttft_ms": 114,
+    "cache_tokens": "42064",
+    "cache_pct": "100.0",
+    "cache_kind": "turn closure",
+    "prompt_tokens": "42071",
+    "output_tokens": "808",
+    "prefill_tps": "110.2",
+    "decode_tps": "75.1",
+    "mtp": null
+   }
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+########## E1 arm=kvarn128 corpus=A ctx=8192 start 2026-10-14 12:04:00 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype kvarn128 --output /data/kvarn/g128-验收-20261014/ppl/kvarn128-A-ctx8192-20261014-120400
+### rc=0 elapsed=20s log=/data/kvarn/g128-验收-20261014/logs/e1-kvarn128-A-20261014-120400.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 5.1s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 18,992 input tokens | 16,382 scored tokens | 2 windows | 8.82 ms
+    scoring complete | 16,382 tokens | 2 windows | PPL 5.84802 | 14.9s | 1.10k tok/s
+    Perplexity result
+    kv: kvarn128, corpus: custom-ppl_doc.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                             16382        1.766104        5.848024
+    overall                            16382        1.766104        5.848024
+    score rate: 1102.8 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/kvarn128-A-ctx8192-20261014-120400/report.json"
+
+########## E1 arm=rk4v4 corpus=A ctx=8192 start 2026-10-14 12:04:20 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype rk4v4 --output /data/kvarn/g128-验收-20261014/ppl/rk4v4-A-ctx8192-20261014-120420
+### rc=0 elapsed=17s log=/data/kvarn/g128-验收-20261014/logs/e1-rk4v4-A-20261014-120420.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 18,992 input tokens | 16,382 scored tokens | 2 windows | 8.60 ms
+    scoring complete | 16,382 tokens | 2 windows | PPL 5.84993 | 11.3s | 1.45k tok/s
+    Perplexity result
+    kv: rotated-lloyd4g64-v4g32, corpus: custom-ppl_doc.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                             16382        1.766429        5.849927
+    overall                            16382        1.766429        5.849927
+    score rate: 1450.2 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/rk4v4-A-ctx8192-20261014-120420/report.json"
+
+########## E1 arm=int8 corpus=A ctx=8192 start 2026-10-14 12:04:37 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype int8 --output /data/kvarn/g128-验收-20261014/ppl/int8-A-ctx8192-20261014-120437
+### rc=0 elapsed=16s log=/data/kvarn/g128-验收-20261014/logs/e1-int8-A-20261014-120437.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 18,992 input tokens | 16,382 scored tokens | 2 windows | 8.70 ms
+    scoring complete | 16,382 tokens | 2 windows | PPL 5.83103 | 11.3s | 1.45k tok/s
+    Perplexity result
+    kv: int8-g64, corpus: custom-ppl_doc.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                             16382        1.763194        5.831034
+    overall                            16382        1.763194        5.831034
+    score rate: 1453.8 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/int8-A-ctx8192-20261014-120437/report.json"
+
+########## E1 arm=bf16 corpus=A ctx=8192 start 2026-10-14 12:04:53 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype bf16 --output /data/kvarn/g128-验收-20261014/ppl/bf16-A-ctx8192-20261014-120453
+### rc=0 elapsed=17s log=/data/kvarn/g128-验收-20261014/logs/e1-bf16-A-20261014-120453.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 18,992 input tokens | 16,382 scored tokens | 2 windows | 8.51 ms
+    scoring complete | 16,382 tokens | 2 windows | PPL 5.82984 | 11.6s | 1.42k tok/s
+    Perplexity result
+    kv: bf16, corpus: custom-ppl_doc.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                             16382        1.762989        5.829839
+    overall                            16382        1.762989        5.829839
+    score rate: 1417.7 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/bf16-A-ctx8192-20261014-120453/report.json"
+
+########## E1 arm=kvarn128 corpus=B ctx=8192 start 2026-10-14 12:05:10 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc2.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype kvarn128 --output /data/kvarn/g128-验收-20261014/ppl/kvarn128-B-ctx8192-20261014-120510
+### rc=0 elapsed=13s log=/data/kvarn/g128-验收-20261014/logs/e1-kvarn128-B-20261014-120510.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 5.0s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 10,792 input tokens | 8,191 scored tokens | 1 windows | 5.42 ms
+    scoring complete | 8,191 tokens | 1 windows | PPL 6.60954 | 7.5s | 1.09k tok/s
+    Perplexity result
+    kv: kvarn128, corpus: custom-ppl_doc2.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                              8191        1.888514        6.609538
+    overall                             8191        1.888514        6.609538
+    score rate: 1088.3 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/kvarn128-B-ctx8192-20261014-120510/report.json"
+
+########## E1 arm=rk4v4 corpus=B ctx=8192 start 2026-10-14 12:05:23 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc2.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype rk4v4 --output /data/kvarn/g128-验收-20261014/ppl/rk4v4-B-ctx8192-20261014-120523
+### rc=0 elapsed=11s log=/data/kvarn/g128-验收-20261014/logs/e1-rk4v4-B-20261014-120523.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 10,792 input tokens | 8,191 scored tokens | 1 windows | 5.71 ms
+    scoring complete | 8,191 tokens | 1 windows | PPL 6.61063 | 5.7s | 1.43k tok/s
+    Perplexity result
+    kv: rotated-lloyd4g64-v4g32, corpus: custom-ppl_doc2.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                              8191        1.888680        6.610634
+    overall                             8191        1.888680        6.610634
+    score rate: 1425.3 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/rk4v4-B-ctx8192-20261014-120523/report.json"
+
+########## E1 arm=int8 corpus=B ctx=8192 start 2026-10-14 12:05:34 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc2.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype int8 --output /data/kvarn/g128-验收-20261014/ppl/int8-B-ctx8192-20261014-120534
+### rc=0 elapsed=11s log=/data/kvarn/g128-验收-20261014/logs/e1-int8-B-20261014-120534.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 10,792 input tokens | 8,191 scored tokens | 1 windows | 5.50 ms
+    scoring complete | 8,191 tokens | 1 windows | PPL 6.59543 | 5.7s | 1.43k tok/s
+    Perplexity result
+    kv: int8-g64, corpus: custom-ppl_doc2.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                              8191        1.886377        6.595432
+    overall                             8191        1.886377        6.595432
+    score rate: 1429.1 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/int8-B-ctx8192-20261014-120534/report.json"
+
+########## E1 arm=bf16 corpus=B ctx=8192 start 2026-10-14 12:05:45 ##########
+### cmd: ninfer-perplexity /data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer --text /data/kvarn/ppl_doc2.txt --device 0 --context 8192 --disjoint --gdn-state-fp16 --kv-dtype bf16 --output /data/kvarn/g128-验收-20261014/ppl/bf16-B-ctx8192-20261014-120545
+### rc=0 elapsed=11s log=/data/kvarn/g128-验收-20261014/logs/e1-bf16-B-20261014-120545.log
+    engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 4.9s | weights 12.1 GiB | CUDA sync auto
+    corpus ready | 1 streams | 10,792 input tokens | 8,191 scored tokens | 1 windows | 5.35 ms
+    scoring complete | 8,191 tokens | 1 windows | PPL 6.58849 | 5.9s | 1.39k tok/s
+    Perplexity result
+    kv: bf16, corpus: custom-ppl_doc2.txt / custom, context/stride: 8192/8192 (disjoint windows)
+    domain                            tokens        mean_nll             ppl
+    custom                              8191        1.885324        6.588490
+    overall                             8191        1.885324        6.588490
+    score rate: 1394.7 tok/s
+    report: "/data/kvarn/g128-验收-20261014/ppl/bf16-B-ctx8192-20261014-120545/report.json"
+
+########## E1 ALL DONE 2026-10-14 12:05:56 ##########

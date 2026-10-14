@@ -1,0 +1,27 @@
+[armctl] 2026-10-14 12:35:06 launch name=KV128 bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18131 kv=kvarn128 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json ctx=196608 extra='' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123506.log
+2026-10-14 12:35:07.043  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:35:07.131  INFO  starting engine
+2026-10-14 12:35:07.294  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:35:08.050  INFO  loading weights | 12.3 GiB
+2026-10-14 12:35:12.249  INFO  weights ready | 12.3 GiB | 4.2s | 2.94 GiB/s
+2026-10-14 12:35:12.545  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:35:12.570  INFO  host state pinned | 74.8 MiB | 25.5 ms
+2026-10-14 12:35:12.571  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:35:12.655  INFO  host KV pinned | 256.0 MiB | 84.4 ms
+ninfer: KVarN128 窗口已分配 #0 pages=3072 heads=4 384.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #1 pages=3072 heads=4 384.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #2 pages=3072 heads=4 384.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口 cudaMalloc 失败（402653184 B × 2）
+ninfer: KVarN128 消费端窗口不可用 ⇒ 拒绝 append
+2026-10-14 12:35:12.926  ERROR startup failed | preparing CUDA graphs | 270 ms
+ninfer-serve: 启动失败: text/layers/15 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+2026-10-14 12:35:13.431  ERROR text/layers/15 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+ninfer-serve: main_inner 返回 rc=1
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f9116546f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f9108bb7a76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f9108bb7bbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f9108b9a1d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f9108b9a28b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f9116546b35]

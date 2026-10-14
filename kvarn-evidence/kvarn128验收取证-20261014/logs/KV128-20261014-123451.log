@@ -1,0 +1,50 @@
+[armctl] 2026-10-14 12:34:51 launch name=KV128 bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18131 kv=kvarn128 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-kvarn128.json ctx=65536 extra='' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123451.log
+2026-10-14 12:34:51.917  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:34:52.081  INFO  starting engine
+2026-10-14 12:34:52.258  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:34:53.003  INFO  loading weights | 12.3 GiB
+2026-10-14 12:34:57.203  INFO  weights ready | 12.3 GiB | 4.2s | 2.94 GiB/s
+2026-10-14 12:34:57.403  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:34:57.427  INFO  host state pinned | 74.8 MiB | 24.1 ms
+2026-10-14 12:34:57.428  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:34:57.510  INFO  host KV pinned | 256.0 MiB | 82.2 ms
+ninfer: KVarN128 窗口已分配 #0 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #1 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #2 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #3 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #4 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #5 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #6 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #7 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #8 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #9 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #10 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #11 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #12 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #13 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #14 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #15 pages=1024 heads=4 128.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #16 pages=1025 heads=4 128.1 MiB×2（真解码，与量化平面同页表）
+2026-10-14 12:34:58.351  INFO  CUDA graphs ready | 841 ms
+2026-10-14 12:34:58.353  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.3s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:34:58.353  INFO  capacity | KV 65,536 tokens, kvarn128, explicit | pages 1,024/1,024 | runtime 2.63 GiB | free 1.09 GiB
+2026-10-14 12:34:58.353  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:34:58.353  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+2026-10-14 12:34:58.353  WARN  CUDA graphs used 4.31 GiB but the KV sizing allowed 1.00 GiB; leave more room with --kv-headroom-mib or --cuda-graph-allowance-mib, or a smaller --kv-capacity
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:34:58.524  INFO  listening on http://127.0.0.1:18131 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:34:58.524  INFO  api base http://127.0.0.1:18131/v1
+2026-10-14 12:34:58.879  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:34:58.879  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f5b9074af1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f5b82db7a76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f5b82db7bbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f5b82d9a1d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f5b82d9a28b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f5b9074ab35]

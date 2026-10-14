@@ -1,0 +1,274 @@
+########## E3 KV128 ctx=65536 start 2026-10-14 12:34:51 ##########
+[armctl] pid 231283 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-123451.log
+[armctl] launched pid=240751 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123451.log
+### ctx=65536 RESULT=OK (ready in 8s)
+    2026-10-14 12:34:58.353  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.3s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:34:58.353  INFO  capacity | KV 65,536 tokens, kvarn128, explicit | pages 1,024/1,024 | runtime 2.63 GiB | free 1.09 GiB
+    2026-10-14 12:34:58.524  INFO  api base http://127.0.0.1:18131/v1
+### nvidia-smi: 18987 MiB
+[armctl] 2026-10-14 12:34:58 SIGTERM -> pid=240751
+[armctl] pid=240751 exited after 2s
+### KV128 ctx=65536 stopped 2026-10-14 12:34:59
+########## E3 KV128 ctx=131072 start 2026-10-14 12:34:59 ##########
+[armctl] pid 240751 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-123459.log
+[armctl] launched pid=240881 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123459.log
+### ctx=131072 RESULT=FAIL
+    2026-10-14 12:35:05.850  ERROR startup failed | preparing CUDA graphs | 307 ms
+    2026-10-14 12:35:06.280  ERROR text/layers/35 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    --- last 12 lines ---
+    2026-10-14 12:35:05.850  ERROR startup failed | preparing CUDA graphs | 307 ms
+    ninfer-serve: 启动失败: text/layers/35 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    2026-10-14 12:35:06.280  ERROR text/layers/35 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f0950428f1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f0942acea76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f0942acebbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f0942ab11d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f0942ab128b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f0950428b35]
+### nvidia-smi: 21 MiB
+[armctl] pid 240881 not alive
+### KV128 ctx=131072 stopped 2026-10-14 12:35:06
+########## E3 KV128 ctx=196608 start 2026-10-14 12:35:06 ##########
+[armctl] pid 240881 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-123506.log
+[armctl] launched pid=240998 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123506.log
+### ctx=196608 RESULT=FAIL
+    2026-10-14 12:35:12.926  ERROR startup failed | preparing CUDA graphs | 270 ms
+    2026-10-14 12:35:13.431  ERROR text/layers/15 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    --- last 12 lines ---
+    2026-10-14 12:35:12.926  ERROR startup failed | preparing CUDA graphs | 270 ms
+    ninfer-serve: 启动失败: text/layers/15 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    2026-10-14 12:35:13.431  ERROR text/layers/15 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f9116546f1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f9108bb7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f9108bb7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f9108b9a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f9108b9a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f9116546b35]
+### nvidia-smi: 21 MiB
+[armctl] pid 240998 not alive
+### KV128 ctx=196608 stopped 2026-10-14 12:35:14
+########## E3 KV128 ctx=262144 start 2026-10-14 12:35:14 ##########
+[armctl] pid 240998 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-123514.log
+[armctl] launched pid=241174 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123514.log
+### ctx=262144 RESULT=FAIL
+    2026-10-14 12:35:19.982  ERROR startup failed | preparing CUDA graphs | 260 ms
+    2026-10-14 12:35:20.543  ERROR text/layers/7 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    --- last 12 lines ---
+    2026-10-14 12:35:19.982  ERROR startup failed | preparing CUDA graphs | 260 ms
+    ninfer-serve: 启动失败: text/layers/7 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    2026-10-14 12:35:20.543  ERROR text/layers/7 verify columns=4: kv_cache_append: KVarN128 consumer window unavailable
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f3cd06bff1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f3cc2db7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f3cc2db7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f3cc2d9a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f3cc2d9a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f3cd06bfb35]
+### nvidia-smi: 21 MiB
+[armctl] pid 241174 not alive
+### KV128 ctx=262144 stopped 2026-10-14 12:35:21
+########## E3 KV128 ctx=317440 start 2026-10-14 12:35:21 ##########
+[armctl] pid 241174 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/KV128-20261014-123521.log
+[armctl] launched pid=241291 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-123521.log
+### ctx=317440 RESULT=FAIL
+    2026-10-14 12:35:26.489  ERROR startup failed | finalizing target | 137 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 7821150720 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:35:26.746  ERROR requested Engine runtime reservation requires 7821150720 bytes, but only 7553613824 bytes are available for runtime capacity
+    --- last 12 lines ---
+    2026-10-14 12:35:26.489  ERROR startup failed | finalizing target | 137 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 7821150720 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:35:26.746  ERROR requested Engine runtime reservation requires 7821150720 bytes, but only 7553613824 bytes are available for runtime capacity
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f8254d3cf1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f82473b7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f82473b7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f824739a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f824739a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f8254d3cb35]
+### nvidia-smi: 21 MiB
+[armctl] pid 241291 not alive
+### KV128 ctx=317440 stopped 2026-10-14 12:35:27
+########## E3 RK4V4 ctx=65536 start 2026-10-14 12:35:27 ##########
+[armctl] pid 233324 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123527.log
+[armctl] launched pid=241407 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123527.log
+### ctx=65536 RESULT=OK (ready in 9s)
+    2026-10-14 12:35:34.106  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:35:34.106  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.58 GiB | free 5.42 GiB
+    2026-10-14 12:35:34.572  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi: 14557 MiB
+[armctl] 2026-10-14 12:35:35 SIGTERM -> pid=241407
+[armctl] pid=241407 exited after 2s
+### RK4V4 ctx=65536 stopped 2026-10-14 12:35:36
+########## E3 RK4V4 ctx=131072 start 2026-10-14 12:35:36 ##########
+[armctl] pid 241407 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123536.log
+[armctl] launched pid=241543 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123536.log
+### ctx=131072 RESULT=OK (ready in 9s)
+    2026-10-14 12:35:43.183  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:35:43.183  INFO  capacity | KV 131,072 tokens, rk4v4, explicit | pages 2,048/2,048 | runtime 3.74 GiB | free 4.26 GiB
+    2026-10-14 12:35:43.674  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi: 15747 MiB
+[armctl] 2026-10-14 12:35:44 SIGTERM -> pid=241543
+[armctl] pid=241543 exited after 2s
+### RK4V4 ctx=131072 stopped 2026-10-14 12:35:45
+########## E3 RK4V4 ctx=196608 start 2026-10-14 12:35:45 ##########
+[armctl] pid 241543 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123545.log
+[armctl] launched pid=241679 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123545.log
+### ctx=196608 RESULT=OK (ready in 9s)
+    2026-10-14 12:35:52.338  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.9s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:35:52.338  INFO  capacity | KV 196,608 tokens, rk4v4, explicit | pages 3,072/3,072 | runtime 4.90 GiB | free 3.10 GiB
+    2026-10-14 12:35:52.832  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi: 16937 MiB
+[armctl] 2026-10-14 12:35:53 SIGTERM -> pid=241679
+[armctl] pid=241679 exited after 2s
+### RK4V4 ctx=196608 stopped 2026-10-14 12:35:54
+########## E3 RK4V4 ctx=262144 start 2026-10-14 12:35:54 ##########
+[armctl] pid 241679 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123554.log
+[armctl] launched pid=241817 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123554.log
+### ctx=262144 RESULT=OK (ready in 9s)
+    2026-10-14 12:36:01.409  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.9s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:36:01.409  INFO  capacity | KV 262,144 tokens, rk4v4, explicit | pages 4,096/4,096 | runtime 6.06 GiB | free 1.93 GiB
+    2026-10-14 12:36:01.900  INFO  api base http://127.0.0.1:18132/v1
+### nvidia-smi: 18127 MiB
+[armctl] 2026-10-14 12:36:02 SIGTERM -> pid=241817
+[armctl] pid=241817 exited after 2s
+### RK4V4 ctx=262144 stopped 2026-10-14 12:36:03
+########## E3 RK4V4 ctx=317440 start 2026-10-14 12:36:03 ##########
+[armctl] pid 241817 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123603.log
+[armctl] launched pid=241953 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123603.log
+### ctx=317440 RESULT=FAIL
+    2026-10-14 12:36:08.806  ERROR startup failed | finalizing target | 140 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:09.064  ERROR requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+    --- last 12 lines ---
+    2026-10-14 12:36:08.806  ERROR startup failed | finalizing target | 140 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:09.064  ERROR requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7fad1eeb6f1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7fad115b7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7fad115b7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7fad1159a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7fad1159a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7fad1eeb6b35]
+### nvidia-smi: 21 MiB
+[armctl] pid 241953 not alive
+### RK4V4 ctx=317440 stopped 2026-10-14 12:36:09
+########## E3 INT8 ctx=65536 start 2026-10-14 12:36:09 ##########
+[armctl] pid 235362 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-123609.log
+[armctl] launched pid=242062 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-123609.log
+### ctx=65536 RESULT=OK (ready in 9s)
+    2026-10-14 12:36:16.470  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:36:16.470  INFO  capacity | KV 65,536 tokens, int8, explicit | pages 1,024/1,024 | runtime 3.61 GiB | free 4.39 GiB
+    2026-10-14 12:36:16.965  INFO  api base http://127.0.0.1:18133/v1
+### nvidia-smi: 15611 MiB
+[armctl] 2026-10-14 12:36:17 SIGTERM -> pid=242062
+[armctl] pid=242062 exited after 2s
+### INT8 ctx=65536 stopped 2026-10-14 12:36:18
+########## E3 INT8 ctx=131072 start 2026-10-14 12:36:18 ##########
+[armctl] pid 242062 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-123618.log
+[armctl] launched pid=242198 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-123618.log
+### ctx=131072 RESULT=OK (ready in 9s)
+    2026-10-14 12:36:25.601  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.9s | weights 12.3 GiB | CUDA sync auto
+    2026-10-14 12:36:25.601  INFO  capacity | KV 131,072 tokens, int8, explicit | pages 2,048/2,048 | runtime 5.80 GiB | free 2.20 GiB
+    2026-10-14 12:36:26.091  INFO  api base http://127.0.0.1:18133/v1
+### nvidia-smi: 17855 MiB
+[armctl] 2026-10-14 12:36:26 SIGTERM -> pid=242198
+[armctl] pid=242198 exited after 2s
+### INT8 ctx=131072 stopped 2026-10-14 12:36:27
+########## E3 INT8 ctx=196608 start 2026-10-14 12:36:27 ##########
+[armctl] pid 242198 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-123627.log
+[armctl] launched pid=242332 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-123627.log
+### ctx=196608 RESULT=FAIL
+    2026-10-14 12:36:33.026  ERROR startup failed | finalizing target | 141 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 8577120768 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:33.295  ERROR requested Engine runtime reservation requires 8577120768 bytes, but only 7553613824 bytes are available for runtime capacity
+    --- last 12 lines ---
+    2026-10-14 12:36:33.026  ERROR startup failed | finalizing target | 141 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 8577120768 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:33.295  ERROR requested Engine runtime reservation requires 8577120768 bytes, but only 7553613824 bytes are available for runtime capacity
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7fcf24f72f1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7fcf175b7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7fcf175b7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7fcf1759a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7fcf1759a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7fcf24f72b35]
+### nvidia-smi: 21 MiB
+[armctl] pid 242332 not alive
+### INT8 ctx=196608 stopped 2026-10-14 12:36:33
+########## E3 INT8 ctx=262144 start 2026-10-14 12:36:33 ##########
+[armctl] pid 242332 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-123633.log
+[armctl] launched pid=242446 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-123633.log
+### ctx=262144 RESULT=FAIL
+    2026-10-14 12:36:39.072  ERROR startup failed | finalizing target | 142 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 10930133504 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:39.342  ERROR requested Engine runtime reservation requires 10930133504 bytes, but only 7553613824 bytes are available for runtime capacity
+    --- last 12 lines ---
+    2026-10-14 12:36:39.072  ERROR startup failed | finalizing target | 142 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 10930133504 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:39.342  ERROR requested Engine runtime reservation requires 10930133504 bytes, but only 7553613824 bytes are available for runtime capacity
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f188e175f1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f18807b7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f18807b7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f188079a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f188079a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f188e175b35]
+### nvidia-smi: 21 MiB
+[armctl] pid 242446 not alive
+### INT8 ctx=262144 stopped 2026-10-14 12:36:39
+########## E3 INT8 ctx=317440 start 2026-10-14 12:36:39 ##########
+[armctl] pid 242446 not alive
+[armctl] new log: /data/kvarn/g128-验收-20261014/logs/INT8-20261014-123639.log
+[armctl] launched pid=242555 log=/data/kvarn/g128-验收-20261014/logs/INT8-20261014-123639.log
+### ctx=317440 RESULT=FAIL
+    2026-10-14 12:36:45.151  ERROR startup failed | finalizing target | 140 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 12915488256 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:45.416  ERROR requested Engine runtime reservation requires 12915488256 bytes, but only 7553613824 bytes are available for runtime capacity
+    --- last 12 lines ---
+    2026-10-14 12:36:45.151  ERROR startup failed | finalizing target | 140 ms
+    ninfer-serve: 启动失败: requested Engine runtime reservation requires 12915488256 bytes, but only 7553613824 bytes are available for runtime capacity
+    2026-10-14 12:36:45.416  ERROR requested Engine runtime reservation requires 12915488256 bytes, but only 7553613824 bytes are available for runtime capacity
+    ninfer-serve: main_inner 返回 rc=1
+    ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+    ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f351557ff1d]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f3507bb7a76]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f3507bb7bbe]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f3507b9a1d1]
+    /data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f3507b9a28b]
+    /data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f351557fb35]
+### nvidia-smi: 21 MiB
+[armctl] pid 242555 not alive
+### INT8 ctx=317440 stopped 2026-10-14 12:36:45
+########## E3 ALL DONE 2026-10-14 12:36:45 ##########

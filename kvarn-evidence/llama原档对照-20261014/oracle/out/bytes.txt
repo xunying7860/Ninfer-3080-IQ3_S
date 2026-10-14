@@ -1,0 +1,28 @@
+== 每 token·head-slice(128 dim) 的字节账 ==
+口径：KVarN = bee record 口径(record_dim=128)；llama = ggml_row_size(type, 128)，K/V 各自按 head_dim 分块
+
+--- A. KVarN（record 口径）---
+bits | payload | scale/zp/other | K 或 V B/token/slice | D256 K+V B/token/head
+   2 |    4096 |            768 |                   38 |                   152
+   3 |    6144 |            768 |                   54 |                   216
+   4 |    8192 |            768 |                   70 |                   280
+   5 |   10240 |            768 |                   86 |                   344
+   6 |   12288 |            768 |                  102 |                   408
+   7 |   14336 |            768 |                  118 |                   472
+   8 |   16384 |            768 |                  134 |                   536
+
+--- B. llama.cpp 原生 KV 档（QK 块沿 head_dim）---
+type  | blk | block_B | bpw  | 128-dim 片 B/token/slice | D256 K+V B/token/head
+q4_0  |  32 |      18 | 4.50 |                       72 |                   288
+q4_1  |  32 |      20 | 5.00 |                       80 |                   320
+q5_0  |  32 |      22 | 5.50 |                       88 |                   352
+q5_1  |  32 |      24 | 6.00 |                       96 |                   384
+q8_0  |  32 |      34 | 8.50 |                      136 |                   544
+q4_K  | 256 |     144 | 4.50 |                       72 * |                   288
+  * q4_K 的 super-block = 256 元素，128-dim 的 head-slice 装不下（ggml_row_size 会 assert），
+    上表按 256-dim 整行 144 B 折半记 72 B/token/slice；llama.cpp 的 KV cache 类型集合里本来也没有 q4_K。
+
+--- C. 等字节对照的分档点（K 或 V 单侧 B/token/slice）---
+  KVarN K2=38 K3=54 K4=70 K5=86 K6=102 K8=134
+  llama q4_0=72 q4_1=80 q5_0=88 q5_1=96 q8_0=136 q4_K=72
+  (q4_0 与 q4_K 同为 4.5 bpw；KVarN K4=70 比 q4_0 少 2 B/token/slice)

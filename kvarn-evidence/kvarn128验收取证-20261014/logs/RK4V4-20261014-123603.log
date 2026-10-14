@@ -1,0 +1,18 @@
+[armctl] 2026-10-14 12:36:03 launch name=RK4V4 bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18132 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=317440 extra='' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123603.log
+2026-10-14 12:36:03.499  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:36:03.581  INFO  starting engine
+2026-10-14 12:36:03.728  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:36:04.477  INFO  loading weights | 12.3 GiB
+2026-10-14 12:36:08.656  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:36:08.806  ERROR startup failed | finalizing target | 140 ms
+ninfer-serve: 启动失败: requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+2026-10-14 12:36:09.064  ERROR requested Engine runtime reservation requires 7562116608 bytes, but only 7553613824 bytes are available for runtime capacity
+ninfer-serve: main_inner 返回 rc=1
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7fad1eeb6f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7fad115b7a76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7fad115b7bbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7fad1159a1d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7fad1159a28b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7fad1eeb6b35]

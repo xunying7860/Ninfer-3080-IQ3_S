@@ -1,0 +1,11 @@
+### suite=tools (tools-after-r1) model=qwen3.8-27b-coder390-q2lynn port=18134
+  R1 client=24.81s ttft=24600 ms cache=0 (0.0%, None) prompt=25566 out=16 finish=length
+  >>> restart: bash /data/kvarn/g128-验收-20261014/run/armctl.sh KV128NG restart
+[armctl] 2026-10-14 12:27:35 SIGTERM -> pid=236653
+[armctl] pid=236653 exited after 2s
+[armctl] launched pid=237362 log=/data/kvarn/g128-验收-20261014/logs/KV128NG-20261014-122307.log
+  >>> ready in 9 s (restart+boot)
+  R2 client=24.7s ttft=24500 ms cache=0 (0.0%, None) prompt=25299 out=24 finish=stop
+  R3 client=0.62s ttft=205 ms cache=25322 (99.8%, private endpoint) prompt=25368 out=47 finish=stop
+  R4 client=0.58s ttft=174 ms cache=25414 (99.8%, private endpoint) prompt=25455 out=31 finish=stop
+### evidence written: /data/kvarn/g128-验收-20261014/ev/KV128NG-ng0-tools.json

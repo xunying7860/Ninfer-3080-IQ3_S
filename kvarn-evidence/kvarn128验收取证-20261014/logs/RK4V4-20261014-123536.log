@@ -1,0 +1,33 @@
+[armctl] 2026-10-14 12:35:36 launch name=RK4V4 bin=/data/kvarn/g128-engine/bin/ninfer-serve port=18132 kv=rk4v4 profile=/data/kvarn/g128-验收-20261014/profiles/device-profiles-rk4v4.json ctx=131072 extra='' effort=high cg=1024 log=/data/kvarn/g128-验收-20261014/logs/RK4V4-20261014-123536.log
+2026-10-14 12:35:36.298  INFO  build 0.12.0-rtx3090+8186a2e-dirty
+2026-10-14 12:35:36.382  INFO  starting engine
+2026-10-14 12:35:36.525  INFO  engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+2026-10-14 12:35:37.290  INFO  loading weights | 12.3 GiB
+2026-10-14 12:35:41.477  INFO  weights ready | 12.3 GiB | 4.2s | 2.95 GiB/s
+2026-10-14 12:35:41.716  INFO  pinning host state | 74.8 MiB
+2026-10-14 12:35:41.740  INFO  host state pinned | 74.8 MiB | 24.0 ms
+2026-10-14 12:35:41.740  INFO  pinning host KV | 256.0 MiB
+2026-10-14 12:35:41.822  INFO  host KV pinned | 256.0 MiB | 81.1 ms
+2026-10-14 12:35:43.182  INFO  CUDA graphs ready | 1.4s
+2026-10-14 12:35:43.183  INFO  engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 6.8s | weights 12.3 GiB | CUDA sync auto
+2026-10-14 12:35:43.183  INFO  capacity | KV 131,072 tokens, rk4v4, explicit | pages 2,048/2,048 | runtime 3.74 GiB | free 4.26 GiB
+2026-10-14 12:35:43.183  INFO  context cache | 1 active + 1 cached device states | host 1 states, 256.0 MiB KV | private 2 | shared 7 | anchors 2
+2026-10-14 12:35:43.183  INFO  media | 16 preprocess workers | cache 512.0 MiB | live 1.00 GiB
+warmup trace: 进入
+warmup trace: 请求已构造，进 prepare_impl
+warmup trace: prepare_impl 返回，进 run()
+warmup trace: run() 返回
+2026-10-14 12:35:43.674  INFO  warmup complete | 490 ms
+2026-10-14 12:35:43.674  INFO  listening on http://127.0.0.1:18132 | model qwen3.8-27b-coder390-q2lynn | auth disabled
+2026-10-14 12:35:43.674  INFO  api base http://127.0.0.1:18132/v1
+2026-10-14 12:35:44.264  INFO  stopping | running and queued requests are cancelled
+2026-10-14 12:35:44.265  INFO  server stopped
+ninfer-serve: main_inner 返回 rc=0
+ninfer-serve: atexit 正在退出（有人调了 exit()，不是从 main 返回）
+ninfer-serve: exit() 调用点回溯 6 帧（模块+偏移，可用 addr2line/nm 定名）
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acf1d)[0x7f0318652f1d]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47a76)[0x7f030accea76]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x47bbe)[0x7f030accebbe]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(+0x2a1d1)[0x7f030acb11d1]
+/data/ninfer/bundle/libs/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f030acb128b]
+/data/kvarn/g128-engine/bin/ninfer-serve(+0x3acb35)[0x7f0318652b35]

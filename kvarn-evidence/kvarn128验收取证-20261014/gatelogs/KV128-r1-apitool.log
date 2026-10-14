@@ -1,0 +1,10 @@
+### suite=apitool (tool-call-after-r1) model=qwen3.8-27b-coder390-q2lynn port=18131
+  R1 client=0.62s ttft=381 ms cache=0 (0.0%, None) prompt=366 out=26 finish=tool_calls tools=[{"function": {"arguments": "{\"city\":\"北京\"}", "name": "ge
+  >>> restart: bash /data/kvarn/g128-验收-20261014/run/armctl.sh KV128 restart
+[armctl] 2026-10-14 12:13:48 SIGTERM -> pid=230866
+[armctl] pid=230866 exited after 2s
+[armctl] launched pid=231152 log=/data/kvarn/g128-验收-20261014/logs/KV128-20261014-120840.log
+  >>> ready in 9 s (restart+boot)
+  R2 client=0.29s ttft=263 ms cache=0 (0.0%, None) prompt=116 out=3 finish=stop
+  R3 client=0.29s ttft=145 ms cache=118 (83.7%, private endpoint) prompt=141 out=10 finish=stop
+### evidence written: /data/kvarn/g128-验收-20261014/ev/KV128-r1-apitool.json

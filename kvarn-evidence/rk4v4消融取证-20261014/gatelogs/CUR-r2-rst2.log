@@ -1,0 +1,16 @@
+### suite=rst2 (restart-twice) model=qwen3.8-27b-coder390-q2lynn port=18123
+  R1 client=17.65s ttft=17600 ms cache=0 (0.0%, None) prompt=25249 out=5 finish=stop
+  R2 client=0.66s ttft=509 ms cache=25253 (99.9%, private endpoint) prompt=25289 out=24 finish=stop
+  >>> restart: bash /data/kvarn/g128-rk4v4-test/armctl3.sh CUR restart
+[armctl3] 2026-10-14 10:49:17 SIGTERM -> pid=150705
+[armctl3] pid=150705 exited after 2s
+[armctl3] launched pid=151110 log=/data/kvarn/g128-rk4v4-test/logs/CUR-20261014-104256.log
+  >>> ready in 9 s (restart+boot)
+  R3 client=18.84s ttft=18500 ms cache=0 (0.0%, None) prompt=25358 out=47 finish=stop
+  >>> restart: bash /data/kvarn/g128-rk4v4-test/armctl3.sh CUR restart
+[armctl3] 2026-10-14 10:49:45 SIGTERM -> pid=151110
+[armctl3] pid=151110 exited after 2s
+[armctl3] launched pid=151370 log=/data/kvarn/g128-rk4v4-test/logs/CUR-20261014-104256.log
+  >>> ready in 9 s (restart+boot)
+  R4 client=18.63s ttft=18300 ms cache=0 (0.0%, None) prompt=25445 out=25 finish=stop
+### evidence written: /data/kvarn/g128-rk4v4-test/ev/CUR-r2-rst2.json

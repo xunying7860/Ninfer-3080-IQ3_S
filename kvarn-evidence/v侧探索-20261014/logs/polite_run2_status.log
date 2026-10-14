@@ -1,0 +1,17 @@
+[14:12:01] 忙 (used=21MiB procs=0 writes=4)，等 60s
+[14:13:01] 忙 (used=21MiB procs=1 writes=8)，等 60s
+[14:14:01] 忙 (used=12901MiB procs=1 writes=6)，等 60s
+[14:15:01] 忙 (used=21MiB procs=0 writes=3)，等 60s
+[14:16:01] 忙 (used=21MiB procs=0 writes=3)，等 60s
+[14:17:01] 忙 (used=12901MiB procs=2 writes=5)，等 60s
+[14:18:02] 忙 (used=21MiB procs=0 writes=6)，等 60s
+[14:19:02] 忙 (used=21MiB procs=1 writes=6)，等 60s
+[14:20:02] 忙 (used=21MiB procs=1 writes=1)，等 60s
+[14:21:02] 忙 (used=21MiB procs=0 writes=1)，等 60s
+[14:22:02] 忙 (used=21MiB procs=0 writes=16)，等 60s
+[14:23:02] 忙 (used=21MiB procs=0 writes=4)，等 60s
+[14:24:02] 忙 (used=21MiB procs=0 writes=3)，等 60s
+[14:25:02] 忙 (used=21MiB procs=0 writes=3)，等 60s
+[14:26:27] 窗口连续空闲 (used=21MiB procs=0 writes=0) → 起跑
+[14:27:09] 第 1 次结束 rc=9  log=logs/vsab-20261014-142627.log
+  非零退出（看门狗/异常），等 120s

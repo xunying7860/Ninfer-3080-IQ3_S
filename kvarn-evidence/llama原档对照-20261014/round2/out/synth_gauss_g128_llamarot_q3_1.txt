@@ -1,0 +1,19 @@
+# mode=llama-rot dom=rot data=synth_gauss_g128 group=128 iters=16 stage_f16=0 ref=f32(raw)  单位=一条 token 的 256-dim head 向量
+synth_gauss_g128/llama-rot synth_gauss_k_h0_g0      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9862800 cos_vec_mean=0.9863196 cos_vec_min=0.9836127 relL2=0.16775 maxAbs=0.671
+synth_gauss_g128/llama-rot synth_gauss_k_h0_g1      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9862882 cos_vec_mean=0.9863111 cos_vec_min=0.9817816 relL2=0.16782 maxAbs=0.7327
+synth_gauss_g128/llama-rot synth_gauss_k_h1_g0      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9864168 cos_vec_mean=0.9864655 cos_vec_min=0.9829620 relL2=0.16706 maxAbs=0.7099
+synth_gauss_g128/llama-rot synth_gauss_k_h1_g1      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9864170 cos_vec_mean=0.9864475 cos_vec_min=0.9809950 relL2=0.16706 maxAbs=0.6773
+synth_gauss_g128/llama-rot synth_gauss_k_h2_g0      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9864229 cos_vec_mean=0.9864474 cos_vec_min=0.9822290 relL2=0.16697 maxAbs=0.7062
+synth_gauss_g128/llama-rot synth_gauss_k_h2_g1      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9863825 cos_vec_mean=0.9864210 cos_vec_min=0.9832945 relL2=0.16728 maxAbs=0.7307
+synth_gauss_g128/llama-rot synth_gauss_k_h3_g0      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9861806 cos_vec_mean=0.9862183 cos_vec_min=0.9821341 relL2=0.16824 maxAbs=0.7882
+synth_gauss_g128/llama-rot synth_gauss_k_h3_g1      type=q3_1 256x128 tok=col rec= 16384 B bpt= 64.000 | cos_glob=0.9863944 cos_vec_mean=0.9864374 cos_vec_min=0.9823982 relL2=0.16709 maxAbs=0.7811
+synth_gauss_g128/llama-rot synth_gauss_v_h0_g0      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9861932 cos_vec_mean=0.9862300 cos_vec_min=0.9815580 relL2=0.16830 maxAbs=0.7862
+synth_gauss_g128/llama-rot synth_gauss_v_h0_g1      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9863283 cos_vec_mean=0.9863662 cos_vec_min=0.9825527 relL2=0.16748 maxAbs=0.7341
+synth_gauss_g128/llama-rot synth_gauss_v_h1_g0      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9861204 cos_vec_mean=0.9861410 cos_vec_min=0.9806976 relL2=0.16868 maxAbs=0.7428
+synth_gauss_g128/llama-rot synth_gauss_v_h1_g1      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9862693 cos_vec_mean=0.9863126 cos_vec_min=0.9824390 relL2=0.16813 maxAbs=0.7345
+synth_gauss_g128/llama-rot synth_gauss_v_h2_g0      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9863171 cos_vec_mean=0.9863440 cos_vec_min=0.9830675 relL2=0.16754 maxAbs=0.7065
+synth_gauss_g128/llama-rot synth_gauss_v_h2_g1      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9863554 cos_vec_mean=0.9863919 cos_vec_min=0.9833299 relL2=0.16754 maxAbs=0.7347
+synth_gauss_g128/llama-rot synth_gauss_v_h3_g0      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9862625 cos_vec_mean=0.9862998 cos_vec_min=0.9830418 relL2=0.16781 maxAbs=0.7495
+synth_gauss_g128/llama-rot synth_gauss_v_h3_g1      type=q3_1 128x256 tok=row rec= 16384 B bpt= 64.000 | cos_glob=0.9861628 cos_vec_mean=0.9861943 cos_vec_min=0.9828432 relL2=0.16847 maxAbs=0.6687
+>>> synth_gauss_g128/llama-rot 汇总(8 个 256-dim head) K: cos_glob=0.9863478 cos_vec_mean=0.9863835 cos_vec_min(worst)=0.9824259 relL2=0.16741 bpt=64.000
+>>> synth_gauss_g128/llama-rot 汇总(8 个 256-dim head) V: cos_glob=0.9862511 cos_vec_mean=0.9862850 cos_vec_min(worst)=0.9824412 relL2=0.16799 bpt=64.000

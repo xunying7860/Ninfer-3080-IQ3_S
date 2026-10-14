@@ -1,0 +1,19 @@
+# mode=rot-only dom=rot data=synth_outlier_g128 group=128 iters=0 stage_f16=0 ref=f32(raw)  单位=一条 token 的 256-dim head 向量
+synth_outlier_g128/rot-only  synth_outlier_k_h0_g0    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9746419 cos_vec_mean=0.7936635 cos_vec_min=0.7356750 relL2=0.22889 maxAbs=3.991
+synth_outlier_g128/rot-only  synth_outlier_k_h0_g1    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9951051 cos_vec_mean=0.9950527 cos_vec_min=0.9935054 relL2=0.09932 maxAbs=0.5521
+synth_outlier_g128/rot-only  synth_outlier_k_h1_g0    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9717110 cos_vec_mean=0.7862137 cos_vec_min=0.7105392 relL2=0.24310 maxAbs=5.249
+synth_outlier_g128/rot-only  synth_outlier_k_h1_g1    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9950416 cos_vec_mean=0.9949548 cos_vec_min=0.9933359 relL2=0.10010 maxAbs=0.593
+synth_outlier_g128/rot-only  synth_outlier_k_h2_g0    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9723650 cos_vec_mean=0.7955905 cos_vec_min=0.7260179 relL2=0.24007 maxAbs=4.028
+synth_outlier_g128/rot-only  synth_outlier_k_h2_g1    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9950830 cos_vec_mean=0.9950233 cos_vec_min=0.9933187 relL2=0.09951 maxAbs=0.5734
+synth_outlier_g128/rot-only  synth_outlier_k_h3_g0    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9736787 cos_vec_mean=0.8030679 cos_vec_min=0.7402871 relL2=0.23381 maxAbs=4.638
+synth_outlier_g128/rot-only  synth_outlier_k_h3_g1    bits=4 256x128 tok=col rec= 17920 B bpt= 70.000 | cos_glob=0.9950893 cos_vec_mean=0.9949986 cos_vec_min=0.9927800 relL2=0.09959 maxAbs=0.5568
+synth_outlier_g128/rot-only  synth_outlier_v_h0_g0    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9952582 cos_vec_mean=0.9950943 cos_vec_min=0.9930608 relL2=0.09740 maxAbs=9.32
+synth_outlier_g128/rot-only  synth_outlier_v_h0_g1    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9950999 cos_vec_mean=0.9951074 cos_vec_min=0.9931250 relL2=0.09929 maxAbs=0.6542
+synth_outlier_g128/rot-only  synth_outlier_v_h1_g0    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9950473 cos_vec_mean=0.9950292 cos_vec_min=0.9926776 relL2=0.10037 maxAbs=9.048
+synth_outlier_g128/rot-only  synth_outlier_v_h1_g1    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9950357 cos_vec_mean=0.9950678 cos_vec_min=0.9932537 relL2=0.10002 maxAbs=0.6647
+synth_outlier_g128/rot-only  synth_outlier_v_h2_g0    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9946347 cos_vec_mean=0.9951022 cos_vec_min=0.9926269 relL2=0.10403 maxAbs=8.81
+synth_outlier_g128/rot-only  synth_outlier_v_h2_g1    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9951845 cos_vec_mean=0.9951564 cos_vec_min=0.9929849 relL2=0.09854 maxAbs=0.7214
+synth_outlier_g128/rot-only  synth_outlier_v_h3_g0    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9952450 cos_vec_mean=0.9951261 cos_vec_min=0.9931229 relL2=0.09833 maxAbs=8.39
+synth_outlier_g128/rot-only  synth_outlier_v_h3_g1    bits=4 128x256 tok=row rec= 17920 B bpt= 70.000 | cos_glob=0.9949998 cos_vec_mean=0.9950232 cos_vec_min=0.9929729 relL2=0.10044 maxAbs=0.5812
+>>> synth_outlier_g128/rot-only 汇总(8 个 256-dim head) K: cos_glob=0.9840894 cos_vec_mean=0.8948206 cos_vec_min(worst)=0.8606824 relL2=0.16805 bpt=70.000
+>>> synth_outlier_g128/rot-only 汇总(8 个 256-dim head) V: cos_glob=0.9950631 cos_vec_mean=0.9950883 cos_vec_min(worst)=0.9929781 relL2=0.09980 bpt=70.000

@@ -1,0 +1,148 @@
+{
+ "suite": "rst",
+ "tag": "restart-after-r1",
+ "nonce": "gate-prod",
+ "port": 18123,
+ "model": "qwen3.8-27b-coder390-q2lynn",
+ "rounds": [
+  {
+   "round": 1,
+   "content": "1200",
+   "id_slot": 0,
+   "session_digest": "3f53031f2056b639",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 5,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25249,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 25254
+   },
+   "client_s": 17.68,
+   "engine": {
+    "ttft_ms": 17600,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "25249",
+    "output_tokens": "5",
+    "prefill_tps": null,
+    "decode_tps": "129.4",
+    "mtp": "3/3 (100.0%)",
+    "line": "2026-10-14 10:48:28.080  INFO  req#7 done | openai-chat | stop token | prompt 25,249 | output 5 | cache 0 (0.0%) | TTFT 17.6s | total 17.7s | prefill 1.43k tok/s | decode 129.4 tok/s | mtp accepted 3/3 (100.0%)"
+   }
+  },
+  {
+   "round": 2,
+   "content": "Line 000600: MARK-7731-KXQ at 600",
+   "id_slot": 0,
+   "session_digest": "21483f97229555a2",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 24,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25289,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    },
+    "total_tokens": 25313
+   },
+   "client_s": 18.19,
+   "engine": {
+    "ttft_ms": 18000,
+    "cache_tokens": "0",
+    "cache_pct": "0.0",
+    "cache_kind": null,
+    "prompt_tokens": "25289",
+    "output_tokens": "24",
+    "prefill_tps": null,
+    "decode_tps": "155.9",
+    "mtp": null,
+    "line": "2026-10-14 10:48:55.292  INFO  req#1 done | openai-chat | stop token | prompt 25,289 | output 24 | cache 0 (0.0%) | TTFT 18.0s | total 18.2s | prefill 1.40k tok/s | decode 155.9 tok/s | mixed speculation accepted 19/24 (79.2%) | ngram 10/15 accepted, 1 rounds"
+   }
+  },
+  {
+   "round": 3,
+   "content": "第 000007 行提到 EARLY-4417-ZZ early note，第 001193 行提到 LATE-9082-QQ late note。",
+   "id_slot": 0,
+   "session_digest": "5cf4423d3772a3a5",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 47,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25358,
+    "prompt_tokens_details": {
+     "cached_tokens": 25312
+    },
+    "total_tokens": 25405
+   },
+   "client_s": 0.85,
+   "engine": {
+    "ttft_ms": 470,
+    "cache_tokens": "25312",
+    "cache_pct": "99.8",
+    "cache_kind": "private endpoint",
+    "prompt_tokens": "25358",
+    "output_tokens": "47",
+    "prefill_tps": "109.0",
+    "decode_tps": "122.9",
+    "mtp": "36/36 (100.0%)",
+    "line": "2026-10-14 10:48:56.641  INFO  req#2 done | openai-chat | stop token | prompt 25,358 | output 47 | cache 25,312 (99.8%, private endpoint) | TTFT 470 ms | total 845 ms | prefill 109.0 tok/s | decode 122.9 tok/s | mtp accepted 36/36 (100.0%)"
+   }
+  },
+  {
+   "round": 4,
+   "content": "文档含大量例行维护记录，第600行暗号MARK-7731-KXQ。",
+   "id_slot": 0,
+   "session_digest": "b9d82aa312dea5ed",
+   "reasoning": "",
+   "tool_calls": null,
+   "finish": "stop",
+   "usage": {
+    "completion_tokens": 25,
+    "completion_tokens_details": {
+     "reasoning_tokens": 0
+    },
+    "prompt_tokens": 25445,
+    "prompt_tokens_details": {
+     "cached_tokens": 25404
+    },
+    "total_tokens": 25470
+   },
+   "client_s": 0.49,
+   "engine": {
+    "ttft_ms": 176,
+    "cache_tokens": "25404",
+    "cache_pct": "99.8",
+    "cache_kind": "private endpoint",
+    "prompt_tokens": "25445",
+    "output_tokens": "25",
+    "prefill_tps": "308.3",
+    "decode_tps": "77.1",
+    "mtp": "16/30 (53.3%)",
+    "line": "2026-10-14 10:48:57.635  INFO  req#3 done | openai-chat | stop token | prompt 25,445 | output 25 | cache 25,404 (99.8%, private endpoint) | TTFT 176 ms | total 489 ms | prefill 308.3 tok/s | decode 77.1 tok/s | mtp accepted 16/30 (53.3%)"
+   }
+  }
+ ],
+ "restarts": [
+  {
+   "after_round": 1,
+   "restart_wall_s": 8.5,
+   "ready_after_restart_s": 6.0
+  }
+ ]
+}

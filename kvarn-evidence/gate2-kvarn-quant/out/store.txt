@@ -1,0 +1,6 @@
+================ GATE2 附件：存储路径（旋转 + F16 stage）================
+[device] NVIDIA GeForce RTX 3080 sm_86 ; smem/block opt-in = 101376 B
+[sel   ] kvarn.cu:2536 选 headwide 的条件：head_slices(2) > 1 && smpbo(101376) >= KVAR_N_SHARED_BYTES(69704) => 走 headwide（每 block 一个 D256 head，block 内跨 2 slice）
+[stage ] tokens=128 heads=4 dim=128 slices=2 ; stage 元素=65536
+[stage ] CUDA 旋转+F16 stage vs 宿主转写：差异字节 = 0 / 131072  首差异@-1
+判定：PASS（存储路径旋转 + F16 stage 逐字节一致）

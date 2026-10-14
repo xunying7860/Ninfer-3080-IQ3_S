@@ -1,0 +1,38 @@
+build 8186a2e-dirty
+starting engine
+engine | device profile nvidia-geforce-rtx-3080-sm86: 67 routed keys (calibration)
+loading weights | 12.1 GiB
+weights ready | 12.1 GiB | 3.9s | 3.08 GiB/s
+engine ready | qwen3.8-27b-coder390-Q2LynnStyle-Mtp | total 5.1s | weights 12.1 GiB | CUDA sync auto
+preparing corpus
+corpus ready | 1 streams | 18,992 input tokens | 16,382 scored tokens | 2 windows | 8.82 ms
+scoring | 1 streams | 16,382 tokens | 2 windows
+ninfer: KVarN128 窗口已分配 #0 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #1 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #2 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #3 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #4 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #5 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #6 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #7 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #8 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #9 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #10 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #11 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #12 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #13 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #14 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+ninfer: KVarN128 窗口已分配 #15 pages=128 heads=4 16.0 MiB×2（真解码，与量化平面同页表）
+scoring | 16,382/16,382 tokens | 2/2 windows | PPL 5.8480 | 1.10k tok/s | elapsed 14.9s | ETA 0 us
+[1/1] ppl_doc.txt | 16,382 scored tokens | PPL 5.84802 | 14.9s
+scoring complete | 16,382 tokens | 2 windows | PPL 5.84802 | 14.9s | 1.10k tok/s
+Perplexity result
+artifact: qwen3.8-27b-coder390-Q2LynnStyle-Mtp
+kv: kvarn128, corpus: custom-ppl_doc.txt / custom, context/stride: 8192/8192 (disjoint windows)
+
+domain                            tokens        mean_nll             ppl
+custom                             16382        1.766104        5.848024
+overall                            16382        1.766104        5.848024
+
+score rate: 1102.8 tok/s
+report: "/data/kvarn/g128-验收-20261014/ppl/kvarn128-A-ctx8192-20261014-120400/report.json"
