@@ -154,7 +154,9 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 `/data/kvarn/backup-prod01-20261014/`，往后称**旧生产01**。
 
 **KVarN（Hadamard 旋转 + 双向 Sinkhorn 方差归一）已完整移植进引擎并实测完毕，结论是"不投"**：与生产 `rk4v4` 质量打平
-（引擎 PPL −0.0325% / −0.0166%）、字节**反而更费**（本实现 P1 口径 **292 B** vs 生产 `rk4v4` **280 B**，**+4.29%**；
+（引擎 PPL −0.0325% / −0.0166%）、**算法本身的字节与生产打平：紧凑 record 口径 280 = 280**（`32·(Kb+Vb)+24` ⇒ K4V4 = 140/140，
+生产 `rk4v4` = 136/144），但**本实现落地的 P1 页自足布局是 292 B**（K 128+20 / V 128+16，scale 平面独立存，比紧凑多 12 B
+⇒ 上线真实显存代价 **+4.29%**，不是零；引擎自报 65,536 同窗口 `runtime 2.63 GiB` vs `2.58 GiB` = +0.05 GiB 即此差；
 scale leading 的单位是每 token 每 head 的 FP16 元素数 K=10/V=8，见 `kvarn-port/engine/src/ops/kv_cache/kvarn_layout.h`）、
 且同窗口下 prefill 吞吐 **−28%**、32K TTFT **+39%**；
 论文/vLLM 分支宣称的"2bit 近无损"在这个模型上判死（K4V2 **+2.55%/+2.91%**，2bit V 一切改法最好 +1.68%）——
