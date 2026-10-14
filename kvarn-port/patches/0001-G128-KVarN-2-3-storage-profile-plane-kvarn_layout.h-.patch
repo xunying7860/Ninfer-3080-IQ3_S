@@ -1,0 +1,1598 @@
+From 034347fa084226edcd6f34c8405b95c082b6f0d8 Mon Sep 17 00:00:00 2001
+From: kvarn-g128 <kvarn@local>
+Date: Tue, 13 Oct 2026 22:02:21 +0800
+Subject: [PATCH 1/7] =?UTF-8?q?G128=20KVarN=20=E6=8E=A5=E7=BA=BF=EF=BC=88?=
+ =?UTF-8?q?=E9=98=B6=E6=AE=B5=202+3=20=E7=AC=AC=E4=B8=80=E6=AE=B5=EF=BC=89?=
+ =?UTF-8?q?=EF=BC=9Astorage/profile/plane=20=E5=87=A0=E4=BD=95=E6=B3=A8?=
+ =?UTF-8?q?=E5=86=8C=20+=20=E5=8D=95=E4=B8=80=E7=9C=9F=E5=80=BC=E6=9D=A5?=
+ =?UTF-8?q?=E6=BA=90=20kvarn=5Flayout.h=20+=20=E6=96=B0=20TU=E3=80=82?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- storage 名 KvarnTile128，五张名字/解析表全同步（types.h 枚举末位 / operational_log kv_cache_name / serve_options parse_kv_dtype / apps/cli/options.cpp / apps/cli/main.cpp format_kv_cache）+ 任务书未列的 paged_kv_storage.h 与 perplexity/main.cpp 也补了 case。
+- d256_profile.h 加 case：U8 码流 128 B/token（256 维 × 4 bit / 8）、quant_group = tile 粒度 128（不是 64）、scale 平面 FP16 K10/V8。
+- kvarn_layout.h = 单一真值来源：record 口径 32*(Kb+Vb)+24（36 格与阶段 1 oracle 口径②逐格一致，K4V2=216 / K4V4=280）、P1 分配口径 32*(Kb+Vb)+36（K4V4=292 / K4V2=228，多的 12 B 是维轴按页存两份）、页内寻址与 paged_kv_element_offset 同式（.cu 有 static_assert 钉住）。
+- 新 TU append/kvarn128_launch.cu：append 三路 A/B/C（B 路只写 stage、不碰 metadata）、KvarnTile128BlockTable（resolve() 只有 __device__，host 误用直接编译错）、双槽 ping-pong staging（capture 前预留）、rotate+stage 核（照搬 ninfer normalized_hadamard_d256_inplace，不补 cross-slice）。
+- kvarn128_codec.cuh：量化数学逐行抄 gate2 已验的 kvarn_quantize_tile，写入端改成 ninfer 平面约定；encode/decode 共用 kvarn_layout.h 的槽位映射；整瓦片主体同时供 engine kernel 与独立 harness 使用。
+- sources.cmake 显式加新 TU。
+- 已修掉一个真 bug：码流打包原来用**全局维**索引 per-slice 的 payload，跨 slice 读脏（K cos 0.418 → 修后 0.99998）。
+---
+ apps/cli/main.cpp                             |   2 +
+ apps/cli/options.cpp                          |   2 +
+ apps/perplexity/main.cpp                      |   2 +
+ build_check/g128_container_build.sh           |  34 ++
+ build_check/kvarn128_gate.cu                  | 359 +++++++++++++++
+ include/ninfer/types.h                        |   6 +
+ src/core/paged_kv_storage.h                   |  12 +
+ src/ops/kv_cache/append/kvarn128_codec.cuh    | 430 ++++++++++++++++++
+ src/ops/kv_cache/append/kvarn128_launch.cu    | 262 +++++++++++
+ src/ops/kv_cache/append/kvarn128_launch.h     |  59 +++
+ src/ops/kv_cache/append/launch.cu             |  35 ++
+ src/ops/kv_cache/d256_profile.h               |   8 +
+ src/ops/kv_cache/kvarn_layout.h               | 152 +++++++
+ src/ops/kv_cache/sources.cmake                |   2 +
+ .../causal_cache/causal_softmax_attention.cpp |   4 +
+ src/serve/operational_log.cpp                 |   3 +
+ src/serve/serve_options.cpp                   |   2 +
+ 17 files changed, 1374 insertions(+)
+ create mode 100644 build_check/g128_container_build.sh
+ create mode 100644 build_check/kvarn128_gate.cu
+ create mode 100644 src/ops/kv_cache/append/kvarn128_codec.cuh
+ create mode 100644 src/ops/kv_cache/append/kvarn128_launch.cu
+ create mode 100644 src/ops/kv_cache/append/kvarn128_launch.h
+ create mode 100644 src/ops/kv_cache/kvarn_layout.h
+
+diff --git a/apps/cli/main.cpp b/apps/cli/main.cpp
+index b31ebef..b5a9857 100644
+--- a/apps/cli/main.cpp
++++ b/apps/cli/main.cpp
+@@ -100,6 +100,8 @@ std::string format_kv_cache(ninfer::KvCacheStorage storage) {
+         return "nvfp4";
+     case ninfer::KvCacheStorage::Fp8KeyNvfp4Value:
+         return "k8v4";
++    case ninfer::KvCacheStorage::KvarnTile128:
++        return "kvarn128";
+     }
+     return "unknown";
+ }
+diff --git a/apps/cli/options.cpp b/apps/cli/options.cpp
+index 2936830..79f31cb 100644
+--- a/apps/cli/options.cpp
++++ b/apps/cli/options.cpp
+@@ -123,6 +123,8 @@ KvCacheStorage parse_kv_cache(std::string_view text) {
+     if (text == "rk4v4-e8") { return KvCacheStorage::RotatedInt4KeyInt4ValueE8; }
+     // rk2v4-e8: rotated keys as E8 root codes, two bytes per eight dimensions. Opt-in.
+     if (text == "rk2v4-e8") { return KvCacheStorage::RotatedE8RootKeyInt4Value; }
++    // kvarn128: KVarN G128（K4V4），Hadamard D256 + 128-token 组内 Sinkhorn 平衡 + rank-1 仿射量化。Opt-in.
++    if (text == "kvarn128") { return KvCacheStorage::KvarnTile128; }
+     if (text == "nvfp4") { return KvCacheStorage::Nvfp4Group16; }
+     if (text == "k8v4") { return KvCacheStorage::Fp8KeyNvfp4Value; }
+     throw std::invalid_argument("invalid kv-dtype: " + std::string(text));
+diff --git a/apps/perplexity/main.cpp b/apps/perplexity/main.cpp
+index 41f4d9a..018d37a 100644
+--- a/apps/perplexity/main.cpp
++++ b/apps/perplexity/main.cpp
+@@ -284,6 +284,8 @@ std::string kv_name(ninfer::KvCacheStorage value) {
+         return "nvfp4";
+     case ninfer::KvCacheStorage::Fp8KeyNvfp4Value:
+         return "k8v4";
++    case ninfer::KvCacheStorage::KvarnTile128:
++        return "kvarn128";
+     }
+     throw std::logic_error("unknown KV dtype");
+ }
+diff --git a/build_check/g128_container_build.sh b/build_check/g128_container_build.sh
+new file mode 100644
+index 0000000..ab0617f
+--- /dev/null
++++ b/build_check/g128_container_build.sh
+@@ -0,0 +1,34 @@
++#!/usr/bin/env bash
++# G128 路线的容器内构建入口（engine-g128 专用；容器 g128build / 卷 g128vol，与旧 kvarn-build/kvarnbuild 隔离）。
++# 与旧路线不同的一点：**不把源码 cp -a 进卷**（R12 坑：cp -a 保时间戳 + ninja 按时间戳判新 ⇒ 改动不生效）。
++# 这里直接 cmake -S /src -B /w/build（bind mount 的 mtime 就是真 mtime），构建产物在卷里，增量重编只看真 mtime。
++# 并发：宿主 store.sh 不限并发（CPU+2）会 OOM；本机 12 核/16 GB ⇒ 逐级降档 + -k 0 keep-going。
++export DEBIAN_FRONTEND=noninteractive
++if [ ! -f /w/.apt_done ]; then
++  apt-get update -q
++  apt-get install -y -q cmake ninja-build pkg-config git libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libcurl4-openssl-dev
++  touch /w/.apt_done
++fi
++cd /src
++export CUDACXX=/usr/local/cuda/bin/nvcc
++export PATH="$(dirname "$CUDACXX"):$PATH"
++echo "== nvcc: $(nvcc --version | tail -1)"
++echo "== 源码指纹（确认 bind mount 看见的是我改过的树）"
++md5sum "$1" 2>/dev/null || true
++if [ ! -f /w/build/build.ninja ]; then
++  echo "== configure =="
++  cmake -S /src -B /w/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=86 -DNINFER_BUILD_BENCHMARKS=OFF
++  echo CONFIGURE_RC=$?
++fi
++rc=1
++for jobs in 8 6 4 2; do
++  echo "----- pass -j $jobs -----"
++  cmake --build /w/build --target ninfer-serve -j $jobs -- -k 0
++  rc=$?
++  echo "PASS_RC[$jobs]=$rc"
++  if [ $rc -eq 0 ]; then break; fi
++  echo "有 target 失败（多为 OOM 被杀），降档重试"
++done
++echo "BUILD_RC=$rc"
++find /w/build -name ninfer-serve -type f -printf 'PRODUCT %s %p\n' 2>/dev/null | head -3
++echo DONE-BUILD
+diff --git a/build_check/kvarn128_gate.cu b/build_check/kvarn128_gate.cu
+new file mode 100644
+index 0000000..0ae630c
+--- /dev/null
++++ b/build_check/kvarn128_gate.cu
+@@ -0,0 +1,359 @@
++// kvarn128_gate.cu —— G128 KVarN 的独立对拍（本机 docker + --gpus all 跑，不进引擎构建）
++//
++// [1] 36 组合字节账：kvarn_layout.h 的紧凑 record 口径 vs 阶段 1 oracle 口径②（32*(Kb+Vb)+24）
++// [2] P1 实际分配口径：kvarn_plane_tile_bytes（4 plane × 2 页）逐格打印
++// [3] **record 解码 == 主机反量化**：GPU 走 engine 用的同一份 device 主体
++//     （kvarn128_encode_tile / kvarn128_decode_tile_device），主机走独立的标量复刻
++//     （Sinkhorn + per-row RTN + rank-1 反量化），比 half 逐位与 cosine（判据 ≥ 0.999）
++// [4] 两段 staging（= C 路封口）与一次写满（= A 路）解出来的 half 必须完全相同
++//
++// 编译（容器内）：nvcc -O2 -std=c++17 -arch=sm_86 -I/src/src -I/src/include -o gate kvarn128_gate.cu
++// 运行：./gate
++#include "ops/kv_cache/append/kvarn128_codec.cuh"
++
++#include <cuda_fp16.h>
++#include <cuda_runtime.h>
++
++#include <cmath>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <vector>
++
++using namespace ninfer::ops;
++
++#define CUDA_CHECK(x)                                                                              \
++    do {                                                                                           \
++        cudaError_t _e = (x);                                                                      \
++        if (_e != cudaSuccess) {                                                                   \
++            fprintf(stderr, "CUDA error %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(_e)); \
++            exit(3);                                                                               \
++        }                                                                                          \
++    } while (0)
++
++static constexpr int kDyn =
++    (kKvarnTileTokens * kKvarnSliceDim + 8 * kKvarnSliceDim + 2 + 16) * (int)sizeof(float);
++
++// ============ GPU：调用 engine 用的同一份 device 主体 ============
++__global__ void gate_encode_kernel(const __half* __restrict__ stage, int slot, int head,
++                                   std::uint8_t* __restrict__ k_code, __half* __restrict__ k_scale,
++                                   std::uint8_t* __restrict__ v_code, __half* __restrict__ v_scale,
++                                   int page0, int page1, int iters) {
++    extern __shared__ float sh[];
++    __shared__ std::uint8_t rec[kKvarnMaxRecordBytes];
++    __shared__ float sa[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float zp[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float oa[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float bc[kKvarnSliceDim];
++    __shared__ float br[kKvarnSliceDim];
++    kvarn128_encode_tile<4, 4>(stage, slot, head, k_code, k_scale, v_code, v_scale, page0, page1, sh,
++                               rec, sa, zp, oa, bc, br, iters);
++}
++__global__ void gate_decode_kernel(const std::uint8_t* __restrict__ k_code,
++                                   const __half* __restrict__ k_scale,
++                                   const std::uint8_t* __restrict__ v_code,
++                                   const __half* __restrict__ v_scale, int page0, int page1,
++                                   __half* __restrict__ out_k, __half* __restrict__ out_v) {
++    kvarn128_decode_tile_device<4, 4>(k_code, k_scale, v_code, v_scale, 0, page0, page1, out_k,
++                                      out_v);
++}
++
++// ============ 主机：独立标量复刻（自己写一遍，不用 device 代码）============
++static float h_std_col(const float t[128][128], const float sc[128], const float sr[128], int col) {
++    double sum = 0, sum_sq = 0;
++    const double s = sc[col];
++    for (int r = 0; r < 128; ++r) {
++        const double x = (double)t[r][col] / (s * (double)sr[r]);
++        sum += x; sum_sq += x * x;
++    }
++    const double mean = sum / 128.0;
++    const double var  = (sum_sq - 128.0 * mean * mean) / 127.0; // 分母 127（样本标准差）
++    return (float)std::sqrt(var > 0.0 ? var : 0.0);
++}
++static float h_std_row(const float t[128][128], const float sc[128], const float sr[128], int row) {
++    double sum = 0, sum_sq = 0;
++    const double s = sr[row];
++    for (int c = 0; c < 128; ++c) {
++        const double x = (double)t[row][c] / ((double)sc[c] * s);
++        sum += x; sum_sq += x * x;
++    }
++    const double mean = sum / 128.0;
++    const double var  = (sum_sq - 128.0 * mean * mean) / 127.0;
++    return (float)std::sqrt(var > 0.0 ? var : 0.0);
++}
++
++// Sinkhorn + per-row 非对称 RTN + rank-1 反量化；out[r][c] = (q*sa[r]+zp[r])*oa[c]
++// 轴值与平面一致：都先取 fp16 再回到 float（平面里存的就是 fp16）。
++static void h_scalar_roundtrip(const float t[128][128], int bits, int iters, float out[128][128]) {
++    float log_sc[128], log_sr[128], sc[128], sr[128], bc[128], br[128], cstd[128], rstd[128];
++    for (int i = 0; i < 128; ++i) {
++        log_sc[i] = 0; log_sr[i] = 0; sc[i] = 1; sr[i] = 1; bc[i] = 1; br[i] = 1;
++    }
++    for (int i = 0; i < 128; ++i) {
++        cstd[i] = h_std_col(t, sc, sr, i);
++        rstd[i] = h_std_row(t, sc, sr, i);
++    }
++    float best_imb = 3.402823466e+38F;
++    auto update_best = [&]() {
++        float cmn = 1e30f, cmx = -1e30f, rmn = 1e30f, rmx = -1e30f;
++        for (int i = 0; i < 128; ++i) {
++            cmn = fminf(cmn, cstd[i]); cmx = fmaxf(cmx, cstd[i]);
++            rmn = fminf(rmn, rstd[i]); rmx = fmaxf(rmx, rstd[i]);
++        }
++        const float imb = cmx / fmaxf(cmn, 1e-8f) + rmx / fmaxf(rmn, 1e-8f);
++        if (imb <= best_imb) {
++            best_imb = imb;
++            for (int i = 0; i < 128; ++i) { bc[i] = sc[i]; br[i] = sr[i]; }
++        }
++    };
++    update_best();
++    for (int it = 0; it < iters; ++it) {
++        for (int i = 0; i < 128; ++i) {
++            const float c = fminf(fmaxf(cstd[i], 1e-3f), 1e3f);
++            log_sc[i] = fminf(fmaxf(log_sc[i] + logf(c), -0.3f), 10.0f);
++            sc[i] = expf(log_sc[i]);
++        }
++        for (int i = 0; i < 128; ++i) rstd[i] = h_std_row(t, sc, sr, i);
++        for (int i = 0; i < 128; ++i) {
++            const float rr = fminf(fmaxf(rstd[i], 1e-3f), 1e3f);
++            log_sr[i] = fminf(fmaxf(log_sr[i] + logf(rr), -0.3f), 10.0f);
++            sr[i] = expf(log_sr[i]);
++        }
++        for (int i = 0; i < 128; ++i) {
++            rstd[i] = h_std_row(t, sc, sr, i);
++            cstd[i] = h_std_col(t, sc, sr, i);
++        }
++        update_best();
++    }
++    const int qmax = (1 << bits) - 1;
++    float sa[128], zp[128], oa[128];
++    int qs[128][128];
++    for (int r = 0; r < 128; ++r) {
++        float lo = 3.402823466e+38F, hi = -3.402823466e+38F;
++        for (int c = 0; c < 128; ++c) {
++            const float x = t[r][c] / (bc[c] * br[r]);
++            lo = fminf(lo, x); hi = fmaxf(hi, x);
++        }
++        const float scale = fmaxf((hi - lo) / qmax, 1e-10f);
++        sa[r] = __half2float(__float2half_rn(br[r] * scale));
++        zp[r] = __half2float(__float2half_rn(br[r] * lo));
++        for (int c = 0; c < 128; ++c) {
++            const float x = t[r][c] / (bc[c] * br[r]);
++            qs[r][c] = (int)fminf(fmaxf(roundf((x - lo) / scale), 0.0f), (float)qmax);
++        }
++    }
++    for (int i = 0; i < 128; ++i) oa[i] = __half2float(__float2half_rn(bc[i]));
++    for (int r = 0; r < 128; ++r)
++        for (int c = 0; c < 128; ++c) out[r][c] = ((float)qs[r][c] * sa[r] + zp[r]) * oa[c];
++}
++
++// ============ 比较 ============
++struct Cmp { double cos = 0, maxabs = 0; int half_mismatch = 0; int nonfinite = 0; };
++static Cmp compare(const std::vector<__half>& gpu, const float ref[128][256]) {
++    Cmp o;
++    double dot = 0, na = 0, nb = 0;
++    for (int t = 0; t < 128; ++t)
++        for (int d = 0; d < 256; ++d) {
++            const float a = __half2float(gpu[t * 256 + d]);
++            const double b = (double)ref[t][d];
++            if (!std::isfinite((double)a)) ++o.nonfinite;
++            dot += (double)a * b; na += (double)a * a; nb += b * b;
++            const double diff = std::fabs((double)a - b);
++            if (diff > o.maxabs) o.maxabs = diff;
++            if (a != __half2float(__float2half_rn((float)b))) ++o.half_mismatch;
++        }
++    o.cos = dot / std::sqrt(na * nb);
++    return o;
++}
++
++int main() {
++    printf("================ G128 KVarN 对拍（engine 用的同一份 device 主体）================\n");
++    cudaDeviceProp prop{};
++    CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
++    printf("[device] %s sm_%d%d\n", prop.name, prop.major, prop.minor);
++
++    // ---- [1] 36 组合字节账 ----
++    const int ob[6] = {2, 3, 4, 5, 6, 8};
++    const int table[6][6] = {
++        {152, 184, 216, 248, 280, 344}, {184, 216, 248, 280, 312, 376},
++        {216, 248, 280, 312, 344, 408}, {248, 280, 312, 344, 376, 440},
++        {280, 312, 344, 376, 408, 472}, {344, 376, 408, 440, 472, 536},
++    };
++    int bad = 0;
++    printf("\n[1] 紧凑 record 口径 vs 阶段 1 oracle 口径②（B/token/head）\n");
++    for (int i = 0; i < 6; ++i)
++        for (int j = 0; j < 6; ++j) {
++            const int got = kvarn_compact_bytes_per_token(ob[i], ob[j]);
++            if (got != table[i][j]) {
++                ++bad;
++                printf("  MISMATCH K%db V%db: got %d want %d\n", ob[i], ob[j], got, table[i][j]);
++            }
++        }
++    printf("  36 格：不一致 %d / 36  ⇒ %s\n", bad, bad == 0 ? "PASS" : "FAIL");
++    printf("  闭式自检：K4V2=%d（应 216）；K4V4=%d（应 280）\n",
++           kvarn_compact_bytes_per_token(4, 2), kvarn_compact_bytes_per_token(4, 4));
++    printf("\n[2] P1 实际分配口径（4 plane × 2 页 = 128 token）\n");
++    printf("  K4V4: tile=%d B ⇒ %d B/token/head（record 口径 280；生产 rk4v4 = 280）\n",
++           kvarn_plane_tile_bytes(4, 4), kvarn_plane_bytes_per_token(4, 4));
++    printf("  K4V2: tile=%d B ⇒ %d B/token/head（record 口径 216）\n",
++           kvarn_plane_tile_bytes(4, 2), kvarn_plane_bytes_per_token(4, 2));
++
++    // ---- [3] record 解码 == 主机反量化 ----
++    const int KVH = 4, PAGES = 2;
++    const int code_leading  = kvarn_code_leading(4);
++    const std::size_t code_elems  = (std::size_t)code_leading * kKvarnPageTokens * KVH * PAGES;
++    const std::size_t scale_elems = (std::size_t)kKvarnKScaleLeading * kKvarnPageTokens * KVH * PAGES;
++    // stage 布局 = [which][slot][head][128 token][256 dim]（必须与 kvarn128_encode_tile 一致）
++    const std::size_t stage_plane =
++        (std::size_t)kKvarnPagesPerTile * KVH * kKvarnTileTokens * kKvarnHeadDim;
++    const std::size_t stage_elems = 2 * stage_plane;
++
++    std::uint8_t *d_kc = nullptr, *d_vc = nullptr;
++    __half *d_ks = nullptr, *d_vs = nullptr, *d_stage = nullptr, *d_ok = nullptr, *d_ov = nullptr,
++           *d_ok2 = nullptr, *d_ov2 = nullptr;
++    CUDA_CHECK(cudaMalloc(&d_kc, code_elems));
++    CUDA_CHECK(cudaMalloc(&d_vc, code_elems));
++    CUDA_CHECK(cudaMalloc(&d_ks, scale_elems * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_vs, scale_elems * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_stage, stage_elems * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_ok, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_ov, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_ok2, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++    CUDA_CHECK(cudaMalloc(&d_ov2, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++    CUDA_CHECK(cudaFuncSetAttribute(gate_encode_kernel, cudaFuncAttributeMaxDynamicSharedMemorySize,
++                                    kDyn));
++
++    const char* names[2] = {"高斯", "离群通道"};
++    int all_pass = 1;
++    for (int ci = 0; ci < 2; ++ci) {
++        const bool outlier = ci == 1;
++        std::vector<__half> hstage(stage_elems, __half(0.0f));
++        float tl[2][128][128], tv[2][128][128];
++        unsigned seed = 20261013u;
++        auto rnd = [&]() {
++            seed = seed * 1664525u + 1013904223u;
++            return ((seed >> 8) & 0xFFFFFF) / 16777216.0f - 0.5f;
++        };
++        for (int t = 0; t < 128; ++t)
++            for (int d = 0; d < 256; ++d) {
++                float kv = rnd(), vv = rnd();
++                if (outlier && (d % 64) == 0) { kv *= 20.0f; vv *= 20.0f; }
++                const int s = d / 128, dl = d % 128;
++                tl[s][dl][t]      = kv; // K: [dim][token]
++                tv[s][t][dl]      = vv; // V: [token][dim]
++                hstage[t * kKvarnHeadDim + d]               = __float2half_rn(kv);
++                hstage[stage_plane + t * kKvarnHeadDim + d] = __float2half_rn(vv);
++            }
++        CUDA_CHECK(cudaMemcpy(d_stage, hstage.data(), stage_elems * sizeof(__half), cudaMemcpyHostToDevice));
++        CUDA_CHECK(cudaMemset(d_kc, 0, code_elems));
++        CUDA_CHECK(cudaMemset(d_vc, 0, code_elems));
++        CUDA_CHECK(cudaMemset(d_ks, 0, scale_elems * sizeof(__half)));
++        CUDA_CHECK(cudaMemset(d_vs, 0, scale_elems * sizeof(__half)));
++        gate_encode_kernel<<<1, 128, kDyn>>>(d_stage, 0, 0, d_kc, d_ks, d_vc, d_vs, 0, 1, 0);
++        CUDA_CHECK(cudaGetLastError());
++        CUDA_CHECK(cudaDeviceSynchronize());
++        CUDA_CHECK(cudaMemset(d_ok, 0, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++        CUDA_CHECK(cudaMemset(d_ov, 0, (std::size_t)kKvarnTileTokens * kKvarnHeadDim * sizeof(__half)));
++        gate_decode_kernel<<<1, 128>>>(d_kc, d_ks, d_vc, d_vs, 0, 1, d_ok, d_ov);
++        CUDA_CHECK(cudaGetLastError());
++        CUDA_CHECK(cudaDeviceSynchronize());
++
++        std::vector<__half> gk(128 * 256), gv(128 * 256);
++        CUDA_CHECK(cudaMemcpy(gk.data(), d_ok, gk.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++        CUDA_CHECK(cudaMemcpy(gv.data(), d_ov, gv.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++
++        static float hk[128][256], hv[128][256];
++        for (int s = 0; s < 2; ++s) {
++            float q[128][128];
++            h_scalar_roundtrip(tl[s], 4, 0, q); // K: row=dim, col=token
++            for (int t = 0; t < 128; ++t)
++                for (int dl = 0; dl < 128; ++dl) hk[t][s * 128 + dl] = q[dl][t];
++            h_scalar_roundtrip(tv[s], 4, 0, q); // V: row=token, col=dim
++            for (int t = 0; t < 128; ++t)
++                for (int dl = 0; dl < 128; ++dl) hv[t][s * 128 + dl] = q[t][dl];
++        }
++        const Cmp ck = compare(gk, hk);
++        const Cmp cv = compare(gv, hv);
++        printf("\n[3-%s] K record 解码 vs 主机反量化: cosine=%.10f max|Δ|=%.3e half 不一致=%d/%d nonfinite=%d\n",
++               names[ci], ck.cos, ck.maxabs, ck.half_mismatch, 128 * 256, ck.nonfinite);
++        printf("[3-%s] V record 解码 vs 主机反量化: cosine=%.10f max|Δ|=%.3e half 不一致=%d/%d nonfinite=%d\n",
++               names[ci], cv.cos, cv.maxabs, cv.half_mismatch, 128 * 256, cv.nonfinite);
++        const bool pass = ck.cos >= 0.999 && cv.cos >= 0.999 && ck.nonfinite == 0 && cv.nonfinite == 0;
++        printf("[3-%s] 判定：%s（判据 A: cosine ≥ 0.999；判据 B: nonfinite == 0）\n", names[ci],
++               pass ? "PASS" : "FAIL");
++        all_pass &= pass ? 1 : 0;
++
++        // ---- [3b] iters=16 参考（信息项，不作判据）----
++        // gate2 已证：合成数据上 Sinkhorn 是病态轨迹，宿主 libm 与设备数学的 ulp 差会被迭代放大
++        // （1-ulp 输入扰动就能改 4600 字节）⇒ 这里只报 cosine。真实数据 best_iter=0，不受影响。
++        {
++            gate_encode_kernel<<<1, 128, kDyn>>>(d_stage, 0, 0, d_kc, d_ks, d_vc, d_vs, 0, 1, 16);
++            CUDA_CHECK(cudaGetLastError());
++            CUDA_CHECK(cudaDeviceSynchronize());
++            gate_decode_kernel<<<1, 128>>>(d_kc, d_ks, d_vc, d_vs, 0, 1, d_ok2, d_ov2);
++            CUDA_CHECK(cudaGetLastError());
++            CUDA_CHECK(cudaDeviceSynchronize());
++            std::vector<__half> gk16(128 * 256), gv16(128 * 256);
++            CUDA_CHECK(cudaMemcpy(gk16.data(), d_ok2, gk16.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++            CUDA_CHECK(cudaMemcpy(gv16.data(), d_ov2, gv16.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++            static float hk16[128][256], hv16[128][256];
++            for (int s = 0; s < 2; ++s) {
++                float q[128][128];
++                h_scalar_roundtrip(tl[s], 4, 16, q);
++                for (int t = 0; t < 128; ++t)
++                    for (int dl = 0; dl < 128; ++dl) hk16[t][s * 128 + dl] = q[dl][t];
++                h_scalar_roundtrip(tv[s], 4, 16, q);
++                for (int t = 0; t < 128; ++t)
++                    for (int dl = 0; dl < 128; ++dl) hv16[t][s * 128 + dl] = q[t][dl];
++            }
++            const Cmp i1 = compare(gk16, hk16), i2 = compare(gv16, hv16);
++            printf("[3b-%s] iters=16（信息项，不作判据）K cosine=%.6f  V cosine=%.6f\n", names[ci],
++                   i1.cos, i2.cos);
++        }
++
++        // ---- [4] 两段 staging（C 路：先写前 100 个 token，再写后 28 个）== 一次写满（A 路）----
++        std::vector<__half> split(stage_elems, __half(0.0f)); // 先全清空
++        for (int t = 0; t < 100; ++t) {
++            for (int d = 0; d < 256; ++d) {
++                split[t * kKvarnHeadDim + d]               = hstage[t * kKvarnHeadDim + d];
++                split[stage_plane + t * kKvarnHeadDim + d] = hstage[stage_plane + t * kKvarnHeadDim + d];
++            }
++        }
++        // 后 28 个 token 由第二次写入补齐（模拟 C 路：先前攒了 100 个，这次封口）
++        for (int t = 100; t < 128; ++t) {
++            for (int d = 0; d < 256; ++d) {
++                split[t * kKvarnHeadDim + d]               = hstage[t * kKvarnHeadDim + d];
++                split[stage_plane + t * kKvarnHeadDim + d] = hstage[stage_plane + t * kKvarnHeadDim + d];
++            }
++        }
++        CUDA_CHECK(cudaMemcpy(d_stage, split.data(), stage_elems * sizeof(__half), cudaMemcpyHostToDevice));
++        CUDA_CHECK(cudaMemset(d_kc, 0xAA, code_elems));
++        CUDA_CHECK(cudaMemset(d_vc, 0xAA, code_elems));
++        gate_encode_kernel<<<1, 128, kDyn>>>(d_stage, 0, 0, d_kc, d_ks, d_vc, d_vs, 0, 1, 0);
++        CUDA_CHECK(cudaGetLastError());
++        CUDA_CHECK(cudaDeviceSynchronize());
++        gate_decode_kernel<<<1, 128>>>(d_kc, d_ks, d_vc, d_vs, 0, 1, d_ok2, d_ov2);
++        CUDA_CHECK(cudaGetLastError());
++        CUDA_CHECK(cudaDeviceSynchronize());
++        std::vector<__half> gk2(128 * 256), gv2(128 * 256);
++        CUDA_CHECK(cudaMemcpy(gk2.data(), d_ok2, gk2.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++        CUDA_CHECK(cudaMemcpy(gv2.data(), d_ov2, gv2.size() * sizeof(__half), cudaMemcpyDeviceToHost));
++        int dk = 0, dv = 0;
++        for (std::size_t i = 0; i < gk.size(); ++i) {
++            if (gk[i] != gk2[i]) ++dk;
++            if (gv[i] != gv2[i]) ++dv;
++        }
++        printf("[4-%s] staging 分段写 vs 一次写满：K 不一致=%d  V 不一致=%d ⇒ %s（应全 0）\n",
++               names[ci], dk, dv, (dk == 0 && dv == 0) ? "PASS" : "FAIL");
++        all_pass &= (dk == 0 && dv == 0) ? 1 : 0;
++    }
++
++    printf("\n================ 汇总 ================\n");
++    printf("36 格字节账不一致 = %d / 36\n", bad);
++    printf("P1 K4V4 = %d B/token/head（record 口径 280；生产 rk4v4 = 280，P1 多 12 B 是维轴按页存两份）\n",
++           kvarn_plane_bytes_per_token(4, 4));
++    printf("总判定：%s\n", (bad == 0 && all_pass) ? "PASS" : "FAIL");
++    cudaFree(d_kc); cudaFree(d_vc); cudaFree(d_ks); cudaFree(d_vs); cudaFree(d_stage);
++    cudaFree(d_ok); cudaFree(d_ov); cudaFree(d_ok2); cudaFree(d_ov2);
++    return (bad == 0 && all_pass) ? 0 : 1;
++}
+diff --git a/include/ninfer/types.h b/include/ninfer/types.h
+index 3130d2b..ee82047 100644
+--- a/include/ninfer/types.h
++++ b/include/ninfer/types.h
+@@ -77,6 +77,12 @@ enum class KvCacheStorage : std::uint8_t {
+     // a residual axis (two bytes per block) over a group-64 scale, paired with the rk8v4 packed
+     // int4 value plane. Opt-in through --kv-dtype rk2v4-e8.
+     RotatedE8RootKeyInt4Value,
++    // KVarN G128（上游 beellama.cpp 的 KVarN 移植，本 fork 新路线）：Hadamard D256 旋转 +
++    // 128-token 组（tile）内 Sinkhorn 平衡 + 逐维/逐 token 的 rank-1 仿射量化（K4V4）。
++    // 存储几何取 **P1 页自足**（1 tile = 2 页，维轴每页各存一份）；量化数学与标量 oracle 在
++    // iters=0 下 576/576 record 逐字节一致（阶段 1 gate 2）。Opt-in through --kv-dtype kvarn128.
++    // Appended last so the existing values keep their numbering.
++    KvarnTile128,
+ };
+ 
+ enum class EnginePurpose : std::uint8_t {
+diff --git a/src/core/paged_kv_storage.h b/src/core/paged_kv_storage.h
+index ff53c23..832b5f4 100644
+--- a/src/core/paged_kv_storage.h
++++ b/src/core/paged_kv_storage.h
+@@ -2,6 +2,7 @@
+ 
+ #include "core/dtype.h"
+ #include "ninfer/types.h"
++#include "ops/kv_cache/kvarn_layout.h"
+ 
+ #include <cstddef>
+ #include <cstdint>
+@@ -115,6 +116,17 @@ struct PagedKVStorageLayout {
+                     {DType::U8, head_dim / 2, DType::FP16, 8}};
+         }
+         break;
++    case KvCacheStorage::KvarnTile128:
++        // KVarN G128（P1 页自足）：码流每 token 每 head = 256 维 × 4 bit / 8 = 128 B（U8）；
++        // scale 平面 FP16，份额由 kvarn_layout.h 的槽位映射推导（K 10 / V 8）。
++        if (head_dim == kD256KVCacheHeadDim) {
++            return {storage,
++                    head_dim,
++                    {DType::U8, ops::kvarn_code_leading(4), DType::FP16, ops::kKvarnKScaleLeading},
++                    {DType::U8, ops::kvarn_code_leading(4), DType::FP16,
++                     ops::kKvarnVScaleLeading}};
++        }
++        break;
+     case KvCacheStorage::Fp8E4M3Row256:
+         if (head_dim == kD256KVCacheHeadDim) {
+             return symmetric({DType::FP8_E4M3FN, 256, DType::FP16, 1});
+diff --git a/src/ops/kv_cache/append/kvarn128_codec.cuh b/src/ops/kv_cache/append/kvarn128_codec.cuh
+new file mode 100644
+index 0000000..b724331
+--- /dev/null
++++ b/src/ops/kv_cache/append/kvarn128_codec.cuh
+@@ -0,0 +1,430 @@
++#pragma once
++
++// ===========================================================================
++// kvarn128_codec.cuh —— G128 KVarN 的**设备端**编解码（encode / decode）
++//
++// 量化数学 = gate 2 已验通的 kvarn_quantize_tile（逐行抄自上游 kvarn.cu:660-757，
++// 与标量 oracle 在 iters=0 下 576/576 record、0 差异字节）。本文件唯一改动是
++// **写入端**：不再吐上游那套「record = payload + 3 个轴」的一整块内存，而是按 ninfer 的
++// 平面约定（[页][token][slot]，见 kvarn_layout.h）落进 4 个 plane。
++//
++// encode 与 decode 共用 kvarn_layout.h 的槽位映射与寻址 —— 这是"能跑但数值错"这类
++// 静默故障的唯一有效防线：两边不可能各写一套还没有人来对。
++// ===========================================================================
++
++#include "ops/kv_cache/hadamard_d256.cuh"
++#include "ops/kv_cache/kvarn_layout.h"
++
++#include <cuda_fp16.h>
++#include <cuda_runtime.h>
++
++#include <cstdint>
++
++namespace ninfer::ops {
++
++// bits ≤ 4 时一条 record 的最大字节（8960 = 2048*4 + 768）；K4V4 是本轮唯一注册档。
++inline constexpr int kKvarnMaxRecordBytes = 2048 * 4 + 768;
++
++// ===========================================================================
++// 一、上游数值路径的 device 助手（gate 2 逐行口径）
++// ===========================================================================
++
++// ---- 旋转：一个 warp 拥有一个 D256 token 行（lane l 载 dims l+32r）----
++// gate 1 已证 ninfer 的 normalized_hadamard_d256_inplace 与 beellama 的
++// kvarn_wht_128 + kvarn_wht_cross_slices 结构逐位相同（3,145,728 元素 max|Δ| = 0），
++// 且 ninfer 侧归一化更准（末级单点精确 2^-4）⇒ 照搬 ninfer 现成的，不补 cross-slice 蝶形。
++__device__ __forceinline__ void kvarn128_rotate_token(float (&values)[8], int lane) {
++    normalized_hadamard_d256_inplace(values, lane);
++}
++
++__device__ __forceinline__ float kvarn_warp_min_(float value) {
++    for (int offset = 16; offset > 0; offset >>= 1) {
++        value = fminf(value, __shfl_down_sync(0xffffffffu, value, offset));
++    }
++    return value;
++}
++__device__ __forceinline__ float kvarn_warp_max_(float value) {
++    for (int offset = 16; offset > 0; offset >>= 1) {
++        value = fmaxf(value, __shfl_down_sync(0xffffffffu, value, offset));
++    }
++    return value;
++}
++__device__ __forceinline__ void kvarn_reduce_std_ranges_(const float* col_std, const float* row_std,
++                                                         float* reduce) {
++    const int lane = threadIdx.x & 31;
++    const int warp = threadIdx.x >> 5;
++    const float col_min = kvarn_warp_min_(col_std[threadIdx.x]);
++    const float col_max = kvarn_warp_max_(col_std[threadIdx.x]);
++    const float row_min = kvarn_warp_min_(row_std[threadIdx.x]);
++    const float row_max = kvarn_warp_max_(row_std[threadIdx.x]);
++    if (lane == 0) {
++        reduce[warp * 4 + 0] = col_min;
++        reduce[warp * 4 + 1] = col_max;
++        reduce[warp * 4 + 2] = row_min;
++        reduce[warp * 4 + 3] = row_max;
++    }
++    __syncthreads();
++    if (threadIdx.x < 4) {
++        const int metric = threadIdx.x;
++        float value      = reduce[metric];
++        for (int w = 1; w < 4; ++w) {
++            const float next = reduce[w * 4 + metric];
++            value = (metric == 0 || metric == 2) ? fminf(value, next) : fmaxf(value, next);
++        }
++        reduce[metric] = value;
++    }
++    __syncthreads();
++}
++__device__ __forceinline__ void kvarn_update_best_from_std_(const float* candidate_col,
++                                                            const float* candidate_row,
++                                                            bool candidate_is_log, float* best_col,
++                                                            float* best_row, float* col_std,
++                                                            float* row_std, float* best_imbalance,
++                                                            float* better, float* reduce) {
++    const int i = threadIdx.x;
++    kvarn_reduce_std_ranges_(col_std, row_std, reduce);
++    if (i == 0) {
++        const float col_min = reduce[0];
++        const float col_max = reduce[1];
++        const float row_min = reduce[2];
++        const float row_max = reduce[3];
++        const float imbalance = col_max / fmaxf(col_min, 1e-8f) + row_max / fmaxf(row_min, 1e-8f);
++        *better = imbalance <= *best_imbalance ? 1.0f : 0.0f;
++        if (*better != 0.0f) { *best_imbalance = imbalance; }
++    }
++    __syncthreads();
++    if (*better != 0.0f) {
++        best_col[i] = candidate_is_log ? expf(candidate_col[i]) : candidate_col[i];
++        best_row[i] = candidate_is_log ? expf(candidate_row[i]) : candidate_row[i];
++    }
++    __syncthreads();
++}
++// std 分母固定 = kKvarnSliceDim - 1 = 127（样本标准差）。写成 128 会让 scale 系统性偏
++// sqrt(128/127) ≈ 1.0039（doc 03 §3.4 点名的坑）。
++__device__ __forceinline__ float kvarn_std_col(const float* tile, const float* s_col,
++                                               const float* s_row, int col) {
++    float sum = 0.0f, sum_sq = 0.0f;
++    const float sc = s_col[col];
++    for (int row = 0; row < kKvarnSliceDim; ++row) {
++        const float value = tile[row * kKvarnSliceDim + col] / (sc * s_row[row]);
++        sum += value;
++        sum_sq += value * value;
++    }
++    const float mean = sum / kKvarnSliceDim;
++    return sqrtf(fmaxf((sum_sq - kKvarnSliceDim * mean * mean) / (kKvarnSliceDim - 1), 0.0f));
++}
++__device__ __forceinline__ float kvarn_std_row(const float* tile, const float* s_col,
++                                               const float* s_row, int row) {
++    float sum = 0.0f, sum_sq = 0.0f;
++    const float sr = s_row[row];
++    for (int col = 0; col < kKvarnSliceDim; ++col) {
++        const float value = tile[row * kKvarnSliceDim + col] / (s_col[col] * sr);
++        sum += value;
++        sum_sq += value * value;
++    }
++    const float mean = sum / kKvarnSliceDim;
++    return sqrtf(fmaxf((sum_sq - kKvarnSliceDim * mean * mean) / (kKvarnSliceDim - 1), 0.0f));
++}
++
++// ---- 量化：与 gate 2 的 kvarn_quantize_tile 逐行相同（唯一差别是导出 best_col/best_row）----
++// record 布局保持上游口径：payload[row*row_bytes + col*bits]，三个轴紧随其后。
++// row/col 的语义由调用方决定（K: row=dim, col=token；V: row=token, col=dim），
++// 与上游 kvarn_quantize_stage 的 token/dim 装载一致。128 个线程必须全部参与（函数内有 __syncthreads）。
++__device__ __forceinline__ void kvarn128_quantize_tile(std::uint8_t* record, int bits,
++                                                       int iterations, float* shared,
++                                                       float* best_col_out, float* best_row_out) {
++    float* tile           = shared;
++    float* log_s_col      = tile + kKvarnTileTokens * kKvarnSliceDim;
++    float* log_s_row      = log_s_col + kKvarnSliceDim;
++    float* s_col          = log_s_row + kKvarnSliceDim;
++    float* s_row          = s_col + kKvarnSliceDim;
++    float* best_col       = s_row + kKvarnSliceDim;
++    float* best_row       = best_col + kKvarnSliceDim;
++    float* col_std        = best_row + kKvarnSliceDim;
++    float* row_std        = col_std + kKvarnSliceDim;
++    float* best_imbalance = row_std + kKvarnSliceDim;
++    float* better         = best_imbalance + 1;
++    float* reduce         = better + 1;
++
++    log_s_col[threadIdx.x] = 0.0f;
++    log_s_row[threadIdx.x] = 0.0f;
++    s_col[threadIdx.x]     = 1.0f;
++    s_row[threadIdx.x]     = 1.0f;
++    best_col[threadIdx.x]  = 1.0f;
++    best_row[threadIdx.x]  = 1.0f;
++    __syncthreads();
++
++    col_std[threadIdx.x] = kvarn_std_col(tile, s_col, s_row, threadIdx.x);
++    row_std[threadIdx.x] = kvarn_std_row(tile, s_col, s_row, threadIdx.x);
++    __syncthreads();
++    if (threadIdx.x == 0) { *best_imbalance = 3.402823466e+38F; }
++    __syncthreads();
++    kvarn_update_best_from_std_(s_col, s_row, false, best_col, best_row, col_std, row_std,
++                                best_imbalance, better, reduce);
++
++    for (int iter = 0; iter < iterations; ++iter) {
++        const float col = fminf(fmaxf(col_std[threadIdx.x], 1e-3f), 1e3f);
++        log_s_col[threadIdx.x] = fminf(fmaxf(log_s_col[threadIdx.x] + logf(col), -0.3f), 10.0f);
++        s_col[threadIdx.x]     = expf(log_s_col[threadIdx.x]);
++        __syncthreads();
++
++        row_std[threadIdx.x] = kvarn_std_row(tile, s_col, s_row, threadIdx.x);
++        __syncthreads();
++
++        const float row = fminf(fmaxf(row_std[threadIdx.x], 1e-3f), 1e3f);
++        const float log_s_row_new = fminf(fmaxf(log_s_row[threadIdx.x] + logf(row), -0.3f), 10.0f);
++        log_s_row[threadIdx.x] = log_s_row_new;
++        s_row[threadIdx.x]     = expf(log_s_row_new);
++        __syncthreads();
++
++        row_std[threadIdx.x] = kvarn_std_row(tile, s_col, s_row, threadIdx.x);
++        col_std[threadIdx.x] = kvarn_std_col(tile, s_col, s_row, threadIdx.x);
++        __syncthreads();
++
++        kvarn_update_best_from_std_(s_col, s_row, false, best_col, best_row, col_std, row_std,
++                                    best_imbalance, better, reduce);
++    }
++
++    const int row = threadIdx.x;
++    float lo = 3.402823466e+38F;
++    float hi = -3.402823466e+38F;
++    for (int col = 0; col < kKvarnSliceDim; ++col) {
++        const float x = tile[row * kKvarnSliceDim + col] / (best_col[col] * best_row[row]);
++        lo = fminf(lo, x);
++        hi = fmaxf(hi, x);
++    }
++    const int qmax      = (1 << bits) - 1;
++    const float scale   = fmaxf((hi - lo) / qmax, 1e-10f);
++    const int row_bytes = kKvarnSliceDim * bits / 8;
++    std::uint8_t* row_payload = record + row * row_bytes;
++    for (int i = 0; i < row_bytes; ++i) { row_payload[i] = 0; } // 打包先 memset（上游 kvarn.cu:736-738）
++    for (int col = 0; col < kKvarnSliceDim; ++col) {
++        const float x = tile[row * kKvarnSliceDim + col] / (best_col[col] * best_row[row]);
++        const std::uint8_t q =
++            (std::uint8_t)fminf(fmaxf(roundf((x - lo) / scale), 0.0f), (float)qmax);
++        const int bit_offset = col * bits;
++        for (int bit = 0; bit < bits; ++bit) {
++            const int dst_bit = bit_offset + bit;
++            row_payload[dst_bit / 8] |= (std::uint8_t)(((q >> bit) & 1u) << (dst_bit % 8));
++        }
++    }
++    const int payload_bytes = kKvarnTileTokens * kKvarnSliceDim * bits / 8;
++    __half* scale_axis = (__half*)(record + payload_bytes);
++    __half* zp_axis    = scale_axis + kKvarnSliceDim;
++    __half* other_axis = zp_axis + kKvarnSliceDim;
++    scale_axis[row] = __float2half_rn(best_row[row] * scale);
++    zp_axis[row]    = __float2half_rn(best_row[row] * lo);
++    other_axis[row] = __float2half_rn(best_col[row]);
++    __syncthreads();
++    if (best_col_out != nullptr) { best_col_out[row] = best_col[row]; }
++    if (best_row_out != nullptr) { best_row_out[row] = best_row[row]; }
++}
++
++// ===========================================================================
++// 二、落到 ninfer 平面（写入端）
++// ===========================================================================
++
++// 码流：平面每 (页, head) 是 [token 0..63][byte 0..CodeLeading)，字节 b 覆盖全局维
++// [b*DimsPerByte, b*DimsPerByte + DimsPerByte)；低 bits 位是较低维。
++// **payload 里的 row/col 是 slice 内的局部下标**（record 是 per-slice 的 128×128），所以
++// 这里必须把全局维 d 折成 d - dim_offset 再去取码 —— 用全局维去索引 payload 会读到隔壁 slice。
++// K: row=dim, col=token；V: row=token, col=dim。
++template <int Bits, bool Value, int KVHeads, int CodeLeading>
++__device__ __forceinline__ void kvarn128_pack_codes_to_plane(std::uint8_t* plane, int head,
++                                                             std::int32_t page0,
++                                                             std::int32_t page1,
++                                                             const std::uint8_t* payload,
++                                                             int dim_offset) {
++    constexpr int RowBytes           = kKvarnSliceDim * Bits / 8;
++    constexpr int DimsPerByte        = 8 / Bits;
++    constexpr int SliceBytesPerToken = kKvarnSliceDim * Bits / 8;
++    const int first_byte             = dim_offset * Bits / 8;
++    for (int i = threadIdx.x; i < kKvarnTileTokens * SliceBytesPerToken; i += blockDim.x) {
++        const int t        = i / SliceBytesPerToken;
++        const int b        = first_byte + i % SliceBytesPerToken;
++        const int dim_local0 = b * DimsPerByte - dim_offset; // slice 内维（0..127）
++        std::uint8_t byte  = 0;
++#pragma unroll
++        for (int k = 0; k < DimsPerByte; ++k) {
++            const int dl  = dim_local0 + k;
++            const int row = Value ? t : dl;
++            const int col = Value ? dl : t;
++            int q = 0;
++            const std::size_t bo = static_cast<std::size_t>(col) * Bits;
++            for (int bit = 0; bit < Bits; ++bit) {
++                q |= ((payload[static_cast<std::size_t>(row) * RowBytes + (bo + bit) / 8] >>
++                       ((bo + bit) % 8)) &
++                      1u)
++                     << bit;
++            }
++            byte |= static_cast<std::uint8_t>(q) << (k * Bits);
++        }
++        const int page = t >= kKvarnPageTokens ? page1 : page0;
++        const int off  = t & (kKvarnPageTokens - 1);
++        plane[kvarn_plane_element_offset(CodeLeading, KVHeads, page, head, off, b)] = byte;
++    }
++}
++
++// scale 平面：P1 页自足（维轴在两页各存一份）。
++// sa = best_row*scale、zp = best_row*lo、oa = best_col（槽位映射见 kvarn_layout.h）。
++template <bool Value, int KVHeads, int ScaleLeading>
++__device__ __forceinline__ void kvarn128_write_scale_plane(
++    __half* plane, int head, std::int32_t page0, std::int32_t page1,
++    const float (*sa)[kKvarnSliceDim], const float (*zp)[kKvarnSliceDim],
++    const float (*oa)[kKvarnSliceDim]) {
++    constexpr int PerPage = kKvarnPageTokens * ScaleLeading;
++    for (int i = threadIdx.x; i < kKvarnPagesPerTile * PerPage; i += blockDim.x) {
++        const int pi   = i / PerPage;
++        const int r    = i % PerPage;
++        const int p    = r / ScaleLeading;          // 页内 token 下标
++        const int j    = r % ScaleLeading;          // 槽
++        const int page = pi == 0 ? page0 : page1;
++        const int tt   = pi * kKvarnPageTokens + p; // 瓦片内 token 下标
++        __half h;
++        if constexpr (!Value) {
++            if (j < kKvarnKScaleSlotZp) {
++                const int slice  = (j - kKvarnKScaleSlotScale) / kKvarnAxisPerToken;
++                const int parity = (j - kKvarnKScaleSlotScale) % kKvarnAxisPerToken;
++                h = __float2half_rn(sa[slice][parity + kKvarnAxisPerToken * p]);
++            } else if (j < kKvarnKScaleSlotOther) {
++                const int slice  = (j - kKvarnKScaleSlotZp) / kKvarnAxisPerToken;
++                const int parity = (j - kKvarnKScaleSlotZp) % kKvarnAxisPerToken;
++                h = __float2half_rn(zp[slice][parity + kKvarnAxisPerToken * p]);
++            } else {
++                h = __float2half_rn(oa[j - kKvarnKScaleSlotOther][tt]);
++            }
++        } else {
++            if (j < kKvarnVScaleSlotAxes) {
++                const int slice  = (j - kKvarnVScaleSlotOther) / kKvarnAxisPerToken;
++                const int parity = (j - kKvarnVScaleSlotOther) % kKvarnAxisPerToken;
++                h = __float2half_rn(oa[slice][parity + kKvarnAxisPerToken * p]);
++            } else {
++                // 4/5 = scale_axis 两 slice、6/7 = zp_axis 两 slice（P1 几何定案）
++                const int slice = (j - kKvarnVScaleSlotAxes) % 2;
++                const int is_zp = (j - kKvarnVScaleSlotAxes) / 2;
++                h = __float2half_rn(is_zp == 0 ? sa[slice][tt] : zp[slice][tt]);
++            }
++        }
++        plane[kvarn_plane_element_offset(ScaleLeading, KVHeads, page, head, p, j)] = h;
++    }
++}
++
++// ===========================================================================
++// 三、从 ninfer 平面读回（decode）
++// ===========================================================================
++// **与 encode 共用 kvarn_layout.h 的槽位映射**，所以"写进去读不出来"这类不可能是布局问题。
++// 这是路线 B（materialize）与"record 解码 == 主机反量化"对拍的唯一解码实现。
++template <int Bits, bool Value, int KVHeads, int CodeLeading, int ScaleLeading>
++__device__ __forceinline__ void kvarn128_decode_plane(const std::uint8_t* plane,
++                                                      const __half* scale, int head,
++                                                      std::int32_t page0, std::int32_t page1,
++                                                      __half* out, int dim_offset) {
++    constexpr int DimsPerByte = 8 / Bits;
++    const int slice           = dim_offset / kKvarnSliceDim;
++    for (int i = threadIdx.x; i < kKvarnTileTokens * kKvarnSliceDim; i += blockDim.x) {
++        const int t  = i / kKvarnSliceDim;
++        const int dl = i % kKvarnSliceDim; // slice 内维
++        const int d  = dim_offset + dl;    // 全 head 维（0..255）
++        const int page = t >= kKvarnPageTokens ? page1 : page0;
++        const int off  = t & (kKvarnPageTokens - 1);
++        const int b    = d / DimsPerByte;
++        const int by =
++            (int)plane[kvarn_plane_element_offset(CodeLeading, KVHeads, page, head, off, b)];
++        const int q      = (by >> ((d % DimsPerByte) * Bits)) & ((1 << Bits) - 1);
++        const int p      = dl / kKvarnAxisPerToken; // 维轴条目所在 token（K/V 同式）
++        const int parity = dl % kKvarnAxisPerToken;
++        float val;
++        if constexpr (!Value) {
++            const float s = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, p, kvarn_k_scale_slot_scale(slice, parity))]);
++            const float z = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, p, kvarn_k_scale_slot_zp(slice, parity))]);
++            const float o = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, off, kvarn_k_scale_slot_other(slice))]);
++            val = (q * s + z) * o;
++        } else {
++            const float o = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, p, kvarn_v_scale_slot_other(slice, parity))]);
++            const float s = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, off, kvarn_v_scale_slot_axes(slice, 0))]);
++            const float z = __half2float(scale[kvarn_plane_element_offset(
++                ScaleLeading, KVHeads, page, head, off, kvarn_v_scale_slot_axes(slice, 1))]);
++            val = (q * s + z) * o;
++        }
++        out[t * kKvarnHeadDim + d] = __float2half_rn(val);
++    }
++}
++
++// ===========================================================================
++// 四、整瓦片编解码的 device 主体 —— 引擎的 __global__ 与独立对拍 harness **共用同一份**，
++//     杜绝"测的是一份、跑的是一份"（G64 旧路线就是在这里分叉的）。
++// ===========================================================================
++template <int Bits, int KVHeads>
++__device__ __forceinline__ void kvarn128_encode_tile(
++    const __half* __restrict__ stage /* [2][KVHeads][128][256] 旋转域 */, int slot, int head,
++    std::uint8_t* __restrict__ k_code, __half* __restrict__ k_scale,
++    std::uint8_t* __restrict__ v_code, __half* __restrict__ v_scale, std::int32_t page0,
++    std::int32_t page1, float* __restrict__ smem_tile /* 16384 floats, 与 quantize 共用 */,
++    std::uint8_t* __restrict__ smem_rec, float (*sa)[kKvarnSliceDim], float (*zp)[kKvarnSliceDim],
++    float (*oa)[kKvarnSliceDim], float* __restrict__ bc, float* __restrict__ br, int iters) {
++    const std::int64_t stage_plane = static_cast<std::int64_t>(kKvarnTileTokens) * kKvarnHeadDim *
++                                     KVHeads * kKvarnPagesPerTile;
++    for (int which = 0; which < 2; ++which) { // 0=K, 1=V
++        for (int slice = 0; slice < kKvarnSlices; ++slice) {
++            for (int i = threadIdx.x; i < kKvarnSliceDim * kKvarnSliceDim; i += blockDim.x) {
++                const int r     = i / kKvarnSliceDim;
++                const int c     = i % kKvarnSliceDim;
++                const int token = which ? r : c; // K: row=dim, col=token；V: row=token, col=dim
++                const int dim   = which ? c : r;
++                smem_tile[i] = __half2float(
++                    stage[which * stage_plane +
++                          (static_cast<std::int64_t>(slot) * KVHeads + head) * kKvarnTileTokens *
++                              kKvarnHeadDim +
++                          static_cast<std::int64_t>(token) * kKvarnHeadDim +
++                          slice * kKvarnSliceDim + dim]);
++            }
++            __syncthreads();
++            kvarn128_quantize_tile(smem_rec, Bits, iters, smem_tile, bc, br);
++            // 三个轴从 record（fp16）取回 —— 平面值与 record 逐位一致，别自己再算一遍
++            const int payload_bytes = kKvarnTileTokens * kKvarnSliceDim * Bits / 8;
++            const __half* ax        = reinterpret_cast<const __half*>(smem_rec + payload_bytes);
++            for (int i = threadIdx.x; i < kKvarnSliceDim; i += blockDim.x) {
++                sa[slice][i] = __half2float(ax[i]);
++                zp[slice][i] = __half2float(ax[kKvarnSliceDim + i]);
++                oa[slice][i] = __half2float(ax[2 * kKvarnSliceDim + i]);
++            }
++            __syncthreads();
++            if (which == 0) {
++                kvarn128_pack_codes_to_plane<Bits, false, KVHeads, kvarn_code_leading(Bits)>(
++                    k_code, head, page0, page1, smem_rec, slice * kKvarnSliceDim);
++            } else {
++                kvarn128_pack_codes_to_plane<Bits, true, KVHeads, kvarn_code_leading(Bits)>(
++                    v_code, head, page0, page1, smem_rec, slice * kKvarnSliceDim);
++            }
++            __syncthreads(); // smem_rec 下一轮要被覆写
++        }
++        if (which == 0) {
++            kvarn128_write_scale_plane<false, KVHeads, kKvarnKScaleLeading>(k_scale, head, page0,
++                                                                           page1, sa, zp, oa);
++        } else {
++            kvarn128_write_scale_plane<true, KVHeads, kKvarnVScaleLeading>(v_scale, head, page0,
++                                                                          page1, sa, zp, oa);
++        }
++        __syncthreads();
++    }
++}
++
++template <int Bits, int KVHeads>
++__device__ __forceinline__ void kvarn128_decode_tile_device(
++    const std::uint8_t* __restrict__ k_code, const __half* __restrict__ k_scale,
++    const std::uint8_t* __restrict__ v_code, const __half* __restrict__ v_scale, int head,
++    std::int32_t page0, std::int32_t page1, __half* __restrict__ out_k, __half* __restrict__ out_v) {
++    for (int slice = 0; slice < kKvarnSlices; ++slice) {
++        kvarn128_decode_plane<Bits, false, KVHeads, kvarn_code_leading(Bits), kKvarnKScaleLeading>(
++            k_code, k_scale, head, page0, page1, out_k, slice * kKvarnSliceDim);
++        kvarn128_decode_plane<Bits, true, KVHeads, kvarn_code_leading(Bits), kKvarnVScaleLeading>(
++            v_code, v_scale, head, page0, page1, out_v, slice * kKvarnSliceDim);
++    }
++}
++
++} // namespace ninfer::ops
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.cu b/src/ops/kv_cache/append/kvarn128_launch.cu
+new file mode 100644
+index 0000000..d781759
+--- /dev/null
++++ b/src/ops/kv_cache/append/kvarn128_launch.cu
+@@ -0,0 +1,262 @@
++// kvarn128_launch.cu —— G128 KVarN 的 append 三路（A 满瓦片直写 / B 未满只写 stage / C 封口）
++// 与 device 侧页表解析。新 TU，与 G64 旧路线（kvarn_launch.cu）并存但互不影响。
++//
++// 硬约束复述（违反会重演静默死）：
++//   * host 绝不解引用 block table（KvarnTile128BlockTable::resolve() 只有 device 版）。
++//   * B 路不碰 metadata（尾块还没落到页上）。
++//   * staging 必须在 CUDA Graph capture 之前预分配，且双槽 ping-pong
++//     （MTP 拒 draft 回滚会重开上一组，单槽会静默读错源）。
++#include "ops/kv_cache/append/kvarn128_launch.h"
++
++#include "core/device.h"
++#include "core/paged_kv_cache.h"
++#include "ops/kv_cache/append/kvarn128_codec.cuh"
++#include "ops/kv_cache/kvarn_layout.h"
++
++#include <cuda_bf16.h>
++#include <cuda_fp16.h>
++
++#include <cstdio>
++#include <cstdlib>
++
++namespace ninfer::ops {
++namespace {
++
++// 与上游一致：128 线程（threadIdx.x 即 row）、动态 smem = 一个 128×128 fp32 瓦片 + 归约暂存。
++constexpr int kThreads          = kKvarnSliceDim; // 128
++constexpr int kDynamicSmemBytes = (kKvarnTileTokens * kKvarnSliceDim + 8 * kKvarnSliceDim + 2 +
++                                   16) *
++                                  static_cast<int>(sizeof(float)); // 69,704 B（= gate2 实测 required）
++constexpr int kMaxKVHeads = 4; // 引擎侧只注册 4/2；staging 按 4 预留
++
++// ---------------------------------------------------------------------------
++// 旋转 + 落 stage：一个 warp 一个 token（lane l 载 dims l+32r），K/V 各转一次。
++// stage 布局 = [which][slot][head][tile_token 0..127][dim 0..255]，旋转域 fp16。
++// ---------------------------------------------------------------------------
++__global__ void __launch_bounds__(kThreads) kvarn128_rotate_stage_kernel(
++    const __nv_bfloat16* __restrict__ k, const __nv_bfloat16* __restrict__ v,
++    const std::int32_t* __restrict__ positions, int pos_begin, int count, int tile_base, int slot,
++    int kv_heads, __half* __restrict__ stage) {
++    const int head  = blockIdx.y;
++    const int warp  = static_cast<int>(threadIdx.x) >> 5;
++    const int lane  = static_cast<int>(threadIdx.x) & 31;
++    const int local = blockIdx.x * (kThreads / 32) + warp;
++    if (local >= count) { return; }
++    const int token = pos_begin + local;
++    const int pos   = positions[token];
++    const int tt    = pos - tile_base;
++    if (tt < 0 || tt >= kKvarnTileTokens) { return; } // 位置不在本 tile：丢掉，绝不越界写
++
++    const std::int64_t stage_plane =
++        static_cast<std::int64_t>(kKvarnTileTokens) * kKvarnHeadDim * kv_heads *
++        kKvarnPagesPerTile /* = slot 数 */;
++    for (int which = 0; which < 2; ++which) {
++        const __nv_bfloat16* src = which ? v : k;
++        __half* dst =
++            stage + which * stage_plane +
++            (static_cast<std::int64_t>(slot) * kv_heads + head) * kKvarnTileTokens * kKvarnHeadDim +
++            static_cast<std::int64_t>(tt) * kKvarnHeadDim;
++        float values[8];
++#pragma unroll
++        for (int r = 0; r < 8; ++r) {
++            const int d = lane + 32 * r;
++            values[r]   = __bfloat162float(
++                src[static_cast<std::int64_t>(d) +
++                    static_cast<std::int64_t>(kKvarnHeadDim) * (head + kv_heads * token)]);
++        }
++        kvarn128_rotate_token(values, lane);
++#pragma unroll
++        for (int r = 0; r < 8; ++r) {
++            dst[lane + 32 * r] = __float2half_rn(values[r]);
++        }
++    }
++}
++
++// ---------------------------------------------------------------------------
++// 编码：一个 block 干 (tile, head)。整瓦片必须都在 stage 里才会被调用（host 分派保证）。
++// 主体在 kvarn128_codec.cuh 的 kvarn128_encode_tile —— 与独立 harness 共用同一份。
++// ---------------------------------------------------------------------------
++template <int Bits, int KVHeads>
++__global__ void __launch_bounds__(kThreads) kvarn128_encode_kernel(
++    const __half* __restrict__ stage, int slot, int tile, std::uint8_t* __restrict__ k_code,
++    __half* __restrict__ k_scale, std::uint8_t* __restrict__ v_code, __half* __restrict__ v_scale,
++    KvarnTile128BlockTable table, int iters) {
++    extern __shared__ float sh[]; // 69,704 B：瓦片 + quantize 的归约暂存
++    __shared__ std::uint8_t rec[kKvarnMaxRecordBytes];
++    __shared__ float sa[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float zp[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float oa[kKvarnSlices][kKvarnSliceDim];
++    __shared__ float bc[kKvarnSliceDim];
++    __shared__ float br[kKvarnSliceDim];
++
++    // block table 只在 device 上解析（host 解析 = 设备函数 host 调用 ⇒ exit(1) 陷阱）。
++    const std::int32_t* bt  = table.resolve();
++    const std::int32_t page0 = bt[2 * tile];
++    const std::int32_t page1 = bt[2 * tile + 1];
++
++    kvarn128_encode_tile<Bits, KVHeads>(stage, slot, blockIdx.x, k_code, k_scale, v_code, v_scale,
++                                        page0, page1, sh, rec, sa, zp, oa, bc, br, iters);
++}
++
++// ---------------------------------------------------------------------------
++// 解码对拍：plane → 旋转域 fp16 [128 token][256 dim]
++// ---------------------------------------------------------------------------
++template <int Bits, int KVHeads>
++__global__ void __launch_bounds__(kThreads) kvarn128_decode_kernel(
++    const std::uint8_t* __restrict__ k_code, const __half* __restrict__ k_scale,
++    const std::uint8_t* __restrict__ v_code, const __half* __restrict__ v_scale,
++    KvarnTile128BlockTable table, int tile, __half* __restrict__ out_k,
++    __half* __restrict__ out_v) {
++    const std::int32_t* bt  = table.resolve();
++    const std::int32_t page0 = bt[2 * tile];
++    const std::int32_t page1 = bt[2 * tile + 1];
++    kvarn128_decode_tile_device<Bits, KVHeads>(k_code, k_scale, v_code, v_scale, blockIdx.x, page0,
++                                               page1, out_k, out_v);
++}
++
++// ---------------------------------------------------------------------------
++// staging 池：双槽 ping-pong（MTP 拒 draft 回滚会重开上一组，单槽会静默读错源）。
++// 必须在 CUDA Graph capture 之前分配（capture 期禁 malloc）。
++// ---------------------------------------------------------------------------
++__half* g_stage       = nullptr;
++int     g_stage_heads = 0;
++
++const char* ensure_stage_impl(int kv_heads, cudaStream_t stream) {
++    const int heads = kv_heads > 0 ? kv_heads : kMaxKVHeads;
++    if (g_stage != nullptr && g_stage_heads >= heads) { return nullptr; }
++    cudaStreamCaptureStatus cap = cudaStreamCaptureStatusNone;
++    cudaStreamIsCapturing(stream, &cap);
++    if (cap != cudaStreamCaptureStatusNone) {
++        return "KVarN staging 必须在 CUDA Graph capture 之前完成分配（warmup 里第一次 append 就会触发）";
++    }
++    const std::size_t bytes =
++        static_cast<std::size_t>(2) * heads * kKvarnTileTokens * kKvarnHeadDim * sizeof(__half);
++    __half* fresh = nullptr;
++    if (cudaMalloc(&fresh, bytes) != cudaSuccess) {
++        cudaGetLastError();
++        return "KVarN staging cudaMalloc 失败（2 slot × KVHeads × 128 × 256 × 2 B）";
++    }
++    if (cudaMemset(fresh, 0, bytes) != cudaSuccess) { cudaGetLastError(); }
++    if (g_stage != nullptr) { cudaFree(g_stage); }
++    g_stage       = fresh;
++    g_stage_heads = heads;
++    return nullptr;
++}
++
++void ensure_encode_opt_in() {
++    static bool done = [] {
++        cudaFuncSetAttribute(kvarn128_encode_kernel<4, 4>,
++                             cudaFuncAttributeMaxDynamicSharedMemorySize, kDynamicSmemBytes);
++        cudaFuncSetAttribute(kvarn128_encode_kernel<4, 2>,
++                             cudaFuncAttributeMaxDynamicSharedMemorySize, kDynamicSmemBytes);
++        return true;
++    }();
++    (void)done;
++}
++
++} // namespace
++
++// 与 ops/kernel/paged_kv_address.cuh 的寻址逐格相同 —— 单一真值来源的机器校验。
++static_assert(kvarn_plane_element_offset(128, 4, /*page=*/3, /*head=*/2, /*page_off=*/5,
++                                         /*slot=*/7) ==
++                  static_cast<std::int64_t>(128) * kKvarnPageTokens *
++                          (2 + static_cast<std::int64_t>(4) * 3) +
++                      static_cast<std::int64_t>(128) * 5 + 7,
++              "kvarn_layout.h 的页内寻址必须与引擎 paged_kv_element_offset 同式");
++static_assert(kKvarnPageTokens == kPagedKVPageSize, "KVarN 的页粒度必须等于引擎的分页粒度");
++
++int kvarn128_stage_slots() { return kKvarnPagesPerTile; }
++
++bool kvarn128_ensure_stage(int kv_heads, cudaStream_t stream) {
++    const char* why = ensure_stage_impl(kv_heads, stream);
++    if (why == nullptr) { return true; }
++    std::fprintf(stderr, "ninfer: KVarN staging 池不可用: %s\n", why);
++    std::fflush(stderr);
++    return false;
++}
++
++void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
++                                     const std::int32_t* positions, KvarnTile128BlockTable table,
++                                     unsigned char* k_code, void* k_scale, unsigned char* v_code,
++                                     void* v_scale, int tokens, int kv_heads, int pages,
++                                     cudaStream_t stream) {
++    (void)pages;
++    if (tokens <= 0) { return; }
++    if (kv_heads != 4 && kv_heads != 2) {
++        std::fprintf(stderr, "ninfer: KVarN128 append 只支持 KVHeads 4/2（收到 %d）\n", kv_heads);
++        return;
++    }
++    const char* why = ensure_stage_impl(kv_heads, stream);
++    if (why != nullptr) {
++        std::fprintf(stderr, "ninfer: KVarN128 append 前置条件不满足: %s\n", why);
++        std::fflush(stderr);
++        return;
++    }
++    if (positions == nullptr || k_code == nullptr || k_scale == nullptr || v_code == nullptr ||
++        v_scale == nullptr) {
++        std::fprintf(stderr, "ninfer: KVarN128 append 实参缺失（positions/plane 有空指针）\n");
++        std::fflush(stderr);
++        return;
++    }
++    ensure_encode_opt_in();
++
++    const auto* kp = static_cast<const __nv_bfloat16*>(k_bf16);
++    const auto* vp = static_cast<const __nv_bfloat16*>(v_bf16);
++    auto* kc = static_cast<std::uint8_t*>(k_code);
++    auto* ks = static_cast<__half*>(k_scale);
++    auto* vc = static_cast<std::uint8_t*>(v_code);
++    auto* vs = static_cast<__half*>(v_scale);
++
++    const int pos0  = positions[0];
++    const int n     = tokens;
++    const int t0    = kvarn_tile_of(pos0);
++    const int tlast = kvarn_tile_of(pos0 + n - 1);
++
++    for (int tile = t0; tile <= tlast; ++tile) {
++        const int base = tile * kKvarnTileTokens;
++        const int b    = pos0 > base ? pos0 : base; // 本次覆盖的起点
++        const int e    = (pos0 + n < base + kKvarnTileTokens) ? pos0 + n : base + kKvarnTileTokens;
++        if (b >= e) { continue; }
++        const int slot = tile & (kKvarnPagesPerTile - 1); // 双槽 ping-pong
++
++        // ① 旋转 + 落 stage（本瓦片本次覆盖的 token 段）
++        const int rot_v = e - b;
++        const dim3 rot_grid(static_cast<unsigned>((rot_v + (kThreads / 32) - 1) / (kThreads / 32)),
++                            static_cast<unsigned>(kv_heads));
++        kvarn128_rotate_stage_kernel<<<rot_grid, kThreads, 0, stream>>>(
++            kp, vp, positions, b - pos0, rot_v, base, slot, kv_heads, g_stage);
++        CUDA_CHECK(cudaGetLastError());
++
++        // ② 只在本瓦片真的攒满时才编码（B 路不碰 metadata / 不编码）
++        if (e != base + kKvarnTileTokens) { continue; }
++        const dim3 enc_grid(static_cast<unsigned>(kv_heads));
++        if (kv_heads == 4) {
++            kvarn128_encode_kernel<4, 4><<<enc_grid, kThreads, kDynamicSmemBytes, stream>>>(
++                g_stage, slot, tile, kc, ks, vc, vs, table, kKvarnIters);
++        } else {
++            kvarn128_encode_kernel<4, 2><<<enc_grid, kThreads, kDynamicSmemBytes, stream>>>(
++                g_stage, slot, tile, kc, ks, vc, vs, table, kKvarnIters);
++        }
++        CUDA_CHECK(cudaGetLastError());
++    }
++}
++
++void kvarn128_decode_tile(const void* k_code, const void* k_scale, const void* v_code,
++                          const void* v_scale, KvarnTile128BlockTable table, int tile, int head,
++                          int kv_heads, void* out_k, void* out_v, cudaStream_t stream) {
++    (void)head;
++    if (kv_heads == 4) {
++        kvarn128_decode_kernel<4, 4><<<1, kThreads, 0, stream>>>(
++            static_cast<const std::uint8_t*>(k_code), static_cast<const __half*>(k_scale),
++            static_cast<const std::uint8_t*>(v_code), static_cast<const __half*>(v_scale), table,
++            tile, static_cast<__half*>(out_k), static_cast<__half*>(out_v));
++    } else {
++        kvarn128_decode_kernel<4, 2><<<1, kThreads, 0, stream>>>(
++            static_cast<const std::uint8_t*>(k_code), static_cast<const __half*>(k_scale),
++            static_cast<const std::uint8_t*>(v_code), static_cast<const __half*>(v_scale), table,
++            tile, static_cast<__half*>(out_k), static_cast<__half*>(out_v));
++    }
++    CUDA_CHECK(cudaGetLastError());
++}
++
++} // namespace ninfer::ops
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.h b/src/ops/kv_cache/append/kvarn128_launch.h
+new file mode 100644
+index 0000000..ce8b5fa
+--- /dev/null
++++ b/src/ops/kv_cache/append/kvarn128_launch.h
+@@ -0,0 +1,59 @@
++#pragma once
++
++// ===========================================================================
++// kvarn128_launch.h —— G128 KVarN 的 host 侧入口（append 三路 + 解码对拍）
++//
++// **硬约束（G64 旧路线真金白银换来的）**：
++//   * block table 只允许在 device 上解析。引擎的 PagedKVBatchMetadata::block_table()
++//     （ops/kernel/paged_kv_address.cuh:37-39）是 __device__-only 并且要读 table_rows[0]
++//     （设备地址）；host 侧调用它 = 编译器给那条路径生成 exit(1) 陷阱，现象是
++//     "无信号、无异常文本、atexit 跑了、main 没返回、rc=1"。KvarnTile128BlockTable::resolve()
++//     只给 __device__，host 误用直接编译错。
++//   * positions 是**绝对位置**向量（kv_cache_append.cpp: require_shape(positions, tokens,1,1,1)）。
++//   * 尾块（本组未攒满）必须走 B 路：只写 stage、不碰 metadata。
++// ===========================================================================
++
++#include <cstdint>
++#include <cuda_runtime.h>
++
++namespace ninfer::ops {
++
++struct KvarnTile128BlockTable {
++    const std::int32_t* direct       = nullptr; // PagedKVDirectMetadata::table（已解析）
++    const std::int32_t* tables       = nullptr; // PagedKVBatchMetadata::tables
++    const std::int32_t* table_rows   = nullptr; // PagedKVBatchMetadata::table_rows（设备数组）
++    std::int32_t        table_stride = 0;
++
++    KvarnTile128BlockTable() = default;
++    __host__ __device__ KvarnTile128BlockTable(const std::int32_t* table) : direct(table) {}
++
++    // 只允许 device 调用（host 调用会读设备地址；故意不给 host 版本，让误用变成编译错误）。
++    __device__ __forceinline__ const std::int32_t* resolve() const {
++        return direct != nullptr
++                   ? direct
++                   : tables + static_cast<std::int64_t>(table_rows[0]) * table_stride;
++    }
++};
++
++// 引擎侧唯一入口（ops/kv_cache/append/launch.cu 调用）。四个 plane 都是整块基底指针，
++// 页内寻址由 kvarn_layout.h 的槽位映射算。pages = k_pages.ne[3]（物理页数）。
++void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
++                                     const std::int32_t* positions, KvarnTile128BlockTable table,
++                                     unsigned char* k_code, void* k_scale, unsigned char* v_code,
++                                     void* v_scale, int tokens, int kv_heads, int pages,
++                                     cudaStream_t stream);
++
++// staging（旋转域 fp16）必须在 **CUDA Graph capture 之前**预留（capture 期禁 malloc）。
++// 消费端与 warmup 都会调它；已经够大就直接返回 true。
++bool kvarn128_ensure_stage(int kv_heads, cudaStream_t stream);
++// 当前 staging 的 slot 数（诊断用）。
++int kvarn128_stage_slots();
++
++// 把某个 tile 解码成**旋转域** fp16 [128 token][256 dim]（out_k/out_v 各 128*256 个 half）。
++// 与 kv_cache_append 共用 kvarn_layout.h 的槽位映射；这是"record 解码 == 主机反量化"对拍的
++// 唯一解码实现，也是后续融合读核（消费端路线 A）的参考实现。
++void kvarn128_decode_tile(const void* k_code, const void* k_scale, const void* v_code,
++                          const void* v_scale, KvarnTile128BlockTable table, int tile, int head,
++                          int kv_heads, void* out_k, void* out_v, cudaStream_t stream);
++
++} // namespace ninfer::ops
+diff --git a/src/ops/kv_cache/append/launch.cu b/src/ops/kv_cache/append/launch.cu
+index f88b312..2a8600d 100644
+--- a/src/ops/kv_cache/append/launch.cu
++++ b/src/ops/kv_cache/append/launch.cu
+@@ -3,6 +3,7 @@
+ #include "core/device.h"
+ #include "ops/common/math.h"
+ #include "ops/kv_cache/append/kernel.cuh"
++#include "ops/kv_cache/append/kvarn128_launch.h"
+ #include "ops/kv_cache/append/kvarn_launch.h"
+ #include "ops/kv_cache/plane_types.h"
+ 
+@@ -113,6 +114,40 @@ void launch_full(const Tensor& k, const Tensor& v, const Tensor& positions, Cach
+         }
+         return;
+     }
++    // KVarN G128（新路线）：1 tile = 128 token = 2 页；A 满瓦片直写 / B 未满只写 stage / C 封口。
++    // 绝不塞进 kv_cache_is_int8_family：KVarN 的 scale 是"K 每维一份 + 每 token 一份列因子"
++    // 的 rank-1 向量布局，与 int8 家族"每 token 自己 4 组"的读法不同，塞进去是"能跑但数值错"。
++    if (cache.storage == KvCacheStorage::KvarnTile128) {
++        Tensor& kvarn128_k_scale = cache.k_scale_pages;
++        Tensor& kvarn128_v_scale = cache.v_scale_pages;
++        // batch 元数据整包带走，解析只在 device 上做（host 解引用 = 编译器 exit(1) 陷阱）。
++        KvarnTile128BlockTable kvarn128_bt;
++        if constexpr (std::is_same_v<Metadata, ninfer::ops::PagedKVBatchMetadata<true>> ||
++                      std::is_same_v<Metadata, ninfer::ops::PagedKVBatchMetadata<false>>) {
++            kvarn128_bt.tables       = metadata.tables;
++            kvarn128_bt.table_rows   = metadata.table_rows;
++            kvarn128_bt.table_stride = metadata.table_stride;
++        } else {
++            kvarn128_bt.direct = metadata.table;
++        }
++        if (positions.data == nullptr || kvarn128_k_scale.data == nullptr ||
++            kvarn128_v_scale.data == nullptr) {
++            std::fprintf(stderr,
++                         "ninfer: KVarN128 append 前置条件不满足（tokens=%d kv_heads=%d）\n", tokens,
++                         static_cast<int>(Geometry::KVHeads));
++            std::fflush(stderr);
++            throw std::invalid_argument(
++                "kv_cache_append: KVarN128 needs positions and both scale planes");
++        }
++        kv_cache_append_kvarn128_launch(
++            k.data, v.data, static_cast<const std::int32_t*>(positions.data), kvarn128_bt,
++            static_cast<unsigned char*>(cache_k.data), kvarn128_k_scale.data,
++            static_cast<unsigned char*>(cache_v.data), kvarn128_v_scale.data, tokens,
++            Geometry::KVHeads,
++            // 平面形状 {leading, 64, kv_heads, pages} ⇒ ne[3] 就是池物理页数。
++            static_cast<int>(cache_k.ne[3]), stream);
++        return;
++    }
+     if (cache.storage == KvCacheStorage::Fp8E4M3Row256) {
+         Tensor& cache_k_scale = cache.k_scale_pages;
+         Tensor& cache_v_scale = cache.v_scale_pages;
+diff --git a/src/ops/kv_cache/d256_profile.h b/src/ops/kv_cache/d256_profile.h
+index 80b01dd..e8cebba 100644
+--- a/src/ops/kv_cache/d256_profile.h
++++ b/src/ops/kv_cache/d256_profile.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include "core/dtype.h"
++#include "ops/kv_cache/kvarn_layout.h"
+ 
+ #include <ninfer/types.h>
+ 
+@@ -124,6 +125,13 @@ inline constexpr D256KVCacheProfile d256_kv_cache_profile(ninfer::KvCacheStorage
+         // 字节账：K 146 + V 64+18 = 82 ⇒ 228 B/token·KVhead（比生产 rk4v4 的 280 省 18.6%）。
+         return {DType::U8, DType::U8, kD256KVCacheHeadDim / 2, kD256KVCacheHeadDim / 4,
+                 64, DType::FP16, 9, DType::FP16, 9};
++    case ninfer::KvCacheStorage::KvarnTile128:
++        // KVarN G128（K4V4）：码流平面每 token 每 head = 256 维 × 4 bit / 8 = 128 B；
++        // scale 平面取 P1 页自足方案的槽位账（K 10 / V 8 个 half/ token，见 kvarn_layout.h）。
++        // quant_group 用 **tile 粒度 128**（KVarN 的"组"就是 128-token 的 tile，不是 64）。
++        return {DType::U8, DType::U8, kvarn_code_leading(4), kvarn_code_leading(4),
++                kKvarnTileTokens, DType::FP16, kKvarnKScaleLeading, DType::FP16,
++                kKvarnVScaleLeading};
+     case ninfer::KvCacheStorage::Nvfp4Group16:
+         // Both planes are e2m1-coded (2 codes/byte, so half the head dimension) with a 16-value
+         // group and a raw E4M3 scale byte per group.
+diff --git a/src/ops/kv_cache/kvarn_layout.h b/src/ops/kv_cache/kvarn_layout.h
+new file mode 100644
+index 0000000..d5b3a67
+--- /dev/null
++++ b/src/ops/kv_cache/kvarn_layout.h
+@@ -0,0 +1,152 @@
++#pragma once
++
++#include <cstdint>
++
++// ===========================================================================
++// KVarN G128 —— 几何与字节账的**单一真值来源**（single source of truth）
++//
++// 本文件是 G128 路线的唯一几何账：record 字节、页内 leading 份额、scale 页槽位映射、
++// 页内元素寻址。encode 核、decode 核、profile 注册、字节账对拍**都只能从这里取**，
++// 任何一处各写一份都会让"能跑但数值错"重新变成可能（这正是 G64 路线的头号静默风险）。
++//
++// 与上游 beellama.cpp 的对应：
++//   tile（组）   = 128 token（upstream token_group / KVAR_N_DIM）
++//   一个 record  = 一个 slice 的 128×128（rows×cols 随 K/V 语义轴互换）
++//   D256         = 2 个 slice（head_slices=2），K/V 各 2 条 record
++//
++// 与上游的**唯一刻意偏离**：ninfer 的分页核固定按「页 = 64 token」组织平面
++// （ops/kernel/paged_kv_address.cuh 的 paged_kv_element_offset），所以这里取 **P1 页自足**：
++// 一个 tile = 2 页，维轴（每 tile 一份）在两个页里**各存一份**换取"任意一页可独立解码"，
++// 代价 = 每 tile 1536 B（12 B/token）。紧凑 record 口径与 P1 分配口径都在此文件给出，谁都能对。
++//
++// 本文件刻意只依赖 <cstdint>（core/ 与独立对拍 harness 都要能包含它），所以 device 侧
++// 用得到的 constexpr 函数都挂 NINFER_KVARN_HD（host+device），不把 cuda_runtime 拖进来。
++// ===========================================================================
++
++#if defined(__CUDACC__)
++#define NINFER_KVARN_HD __host__ __device__
++#else
++#define NINFER_KVARN_HD
++#endif
++
++namespace ninfer::ops {
++
++inline constexpr int kKvarnTileTokens   = 128; // 组大小 = upstream token_group
++inline constexpr int kKvarnPageTokens   = 64;  // ninfer 分页粒度（core/paged_kv_cache.h: kPagedKVPageSize）
++inline constexpr int kKvarnPagesPerTile = 2;   // 128 / 64
++inline constexpr int kKvarnSlices       = 2;   // D256 / 128
++inline constexpr int kKvarnSliceDim     = 128;
++inline constexpr int kKvarnHeadDim      = 256;
++// 迭代数：上游 KVAR_N_OP_PARAM_ITERS（8 或 16 都无损）。取 16 = gate 2 实跑口径；
++// 真实数据 best_iter=0，迭代数对真实数据的 record 无影响（oracle 交叉校验已验证）。
++inline constexpr int kKvarnIters = 16;
++
++// 维轴每 token 的槽位数 = 128 维 / 64 token = 2（**与码位宽无关**，位宽只改码流长度）。
++inline constexpr int kKvarnAxisPerToken = kKvarnSliceDim / kKvarnPageTokens;
++
++// ---- record 口径（upstream make_record_layout(record_dim=128).record_bytes × head_slices）----
++// record_bytes = rows*cols*bits/8 + (2*rows + cols)*2，rows=cols=KVarN_DIM=128
++NINFER_KVARN_HD constexpr int kvarn_record_bytes(int bits) {
++    return kKvarnSliceDim * kKvarnSliceDim * bits / 8 + (2 * kKvarnSliceDim + kKvarnSliceDim) * 2;
++}
++// 一个 tile（128 token × 1 KV head）的紧凑 record 账：K/V 各 2 条 record。
++NINFER_KVARN_HD constexpr int kvarn_compact_tile_bytes(int k_bits, int v_bits) {
++    return kKvarnSlices * (kvarn_record_bytes(k_bits) + kvarn_record_bytes(v_bits));
++}
++// 每 token 每 head 的紧凑账 = 32*(Kb+Vb) + 24（与阶段 1 oracle 口径②的 36 格逐格相同）。
++NINFER_KVARN_HD constexpr int kvarn_compact_bytes_per_token(int k_bits, int v_bits) {
++    return kvarn_compact_tile_bytes(k_bits, v_bits) / kKvarnTileTokens;
++}
++
++// ---- 码流 leading：每 token 每 head 的字节数 = 256 维 × bits / 8 ----
++NINFER_KVARN_HD constexpr int kvarn_code_leading(int bits) { return kKvarnHeadDim * bits / 8; }
++
++// ---- P1 页自足方案：scale 平面 leading（每 token 每 head 的 FP16 元素数，全是推导值）----
++// K：维轴 (scale_axis + zp_axis) 2 slice × 128 维 × 2 = 512 项，按每页 64 token 摊 ⇒ 每 token 8；
++//    列因子 other 2 slice ⇒ 每 token 2；合计 10。
++// V：维轴 other 2 slice × 128 维 = 256 项摊到 64 token ⇒ 每 token 4；
++//    token 轴 (scale_axis + zp_axis) 2 slice × 2 ⇒ 每 token 4；合计 8。
++inline constexpr int kKvarnKScaleLeading =
++    kKvarnSlices * kKvarnAxisPerToken * 2 /*维轴 scale+zp 摊到每页 64 token*/ + kKvarnSlices
++    /*列因子*/;
++inline constexpr int kKvarnVScaleLeading =
++    kKvarnSlices * kKvarnAxisPerToken /*维轴 other*/ + kKvarnSlices * 2 /*token 轴 scale+zp*/;
++static_assert(kKvarnKScaleLeading == 10, "K scale 页 leading 推导错误");
++static_assert(kKvarnVScaleLeading == 8, "V scale 页 leading 推导错误");
++
++// ---- 实际分配的 tile 字节（4 个 plane × 2 页）----
++NINFER_KVARN_HD constexpr int kvarn_plane_tile_bytes(int k_bits, int v_bits) {
++    return kKvarnPagesPerTile * kKvarnPageTokens *
++           (kvarn_code_leading(k_bits) + kvarn_code_leading(v_bits) + 2 * kKvarnKScaleLeading +
++            2 * kKvarnVScaleLeading);
++}
++NINFER_KVARN_HD constexpr int kvarn_plane_bytes_per_token(int k_bits, int v_bits) {
++    return kvarn_plane_tile_bytes(k_bits, v_bits) / kKvarnTileTokens;
++}
++
++// ---- 页内元素寻址（与 ops/kernel/paged_kv_address.cuh 的 paged_kv_page_head_offset 同式）----
++// 平面形状 = {leading_extent, 64, kv_heads, pages}，页内是 [token 0..63][slot 0..leading)。
++// 本文件刻意不 include 引擎头，便于独立对拍；.cu 里有 static_assert 钉住两者相等。
++NINFER_KVARN_HD constexpr std::int64_t kvarn_plane_element_offset(int leading_extent,
++                                                                  int head_extent, int page,
++                                                                  int head, int page_off,
++                                                                  int slot) {
++    return static_cast<std::int64_t>(leading_extent) * kKvarnPageTokens *
++               (static_cast<std::int64_t>(head) + static_cast<std::int64_t>(head_extent) * page) +
++           static_cast<std::int64_t>(leading_extent) * page_off + slot;
++}
++
++// ---- 槽位分段起点（都是推导值）----
++inline constexpr int kKvarnKScaleSlotScale = 0;                                    // 0..3
++inline constexpr int kKvarnKScaleSlotZp    = kKvarnSlices * kKvarnAxisPerToken;     // 4..7
++inline constexpr int kKvarnKScaleSlotOther = 2 * kKvarnSlices * kKvarnAxisPerToken; // 8..9
++inline constexpr int kKvarnVScaleSlotOther = 0;                                    // 0..3
++inline constexpr int kKvarnVScaleSlotAxes  = kKvarnSlices * kKvarnAxisPerToken;     // 4..7
++
++// K scale 页槽位映射（0..9）：维 i（slice 内 0..127）的条目在 p = i/2，视差 = i&1。
++//   槽 0..3：scale_axis（维轴）；槽 4..7：zp_axis（维轴）；槽 8..9：列因子 other[t]。
++NINFER_KVARN_HD constexpr int kvarn_k_scale_p(int dim_local) {
++    return dim_local / kKvarnAxisPerToken;
++}
++NINFER_KVARN_HD constexpr int kvarn_k_scale_slot_scale(int slice, int dim_parity) {
++    return kKvarnKScaleSlotScale + slice * kKvarnAxisPerToken + dim_parity;
++}
++NINFER_KVARN_HD constexpr int kvarn_k_scale_slot_zp(int slice, int dim_parity) {
++    return kKvarnKScaleSlotZp + slice * kKvarnAxisPerToken + dim_parity;
++}
++NINFER_KVARN_HD constexpr int kvarn_k_scale_slot_other(int slice) {
++    return kKvarnKScaleSlotOther + slice;
++}
++
++// V scale 页槽位映射（0..7）：维 j 的列因子条目在 p = j/2；token 轴条目在 p = 页内 token 下标。
++//   槽 0..3：other（维轴，列因子）—— 2*slice + 视差；
++//   槽 4..7：token 轴 —— 4/5 = scale_axis 两个 slice、6/7 = zp_axis 两个 slice（与 P1 几何定案一致）。
++NINFER_KVARN_HD constexpr int kvarn_v_scale_p(int dim_local) {
++    return dim_local / kKvarnAxisPerToken;
++}
++NINFER_KVARN_HD constexpr int kvarn_v_scale_slot_other(int slice, int dim_parity) {
++    return kKvarnVScaleSlotOther + slice * kKvarnAxisPerToken + dim_parity;
++}
++NINFER_KVARN_HD constexpr int kvarn_v_scale_slot_axes(int slice, int is_zp) {
++    return kKvarnVScaleSlotAxes + 2 * is_zp + slice;
++}
++
++// ---- 位置 → tile / 页映射（1 tile = 2 个**逻辑**页；物理页由 block table 各自映射，不必相邻）----
++NINFER_KVARN_HD constexpr int kvarn_tile_of(int position) { return position / kKvarnTileTokens; }
++NINFER_KVARN_HD constexpr int kvarn_tile_base(int position) {
++    return kvarn_tile_of(position) * kKvarnTileTokens;
++}
++NINFER_KVARN_HD constexpr int kvarn_page_of_token(int tile_token) {
++    return tile_token / kKvarnPageTokens; // 0 或 1
++}
++NINFER_KVARN_HD constexpr int kvarn_page_off(int tile_token) {
++    return tile_token % kKvarnPageTokens;
++}
++// 逻辑页号（block table 的索引）= 2*tile + 页内序。
++NINFER_KVARN_HD constexpr int kvarn_logical_page(int position) {
++    return 2 * kvarn_tile_of(position) + kvarn_page_of_token(position % kKvarnTileTokens);
++}
++
++} // namespace ninfer::ops
++
++#undef NINFER_KVARN_HD
+diff --git a/src/ops/kv_cache/sources.cmake b/src/ops/kv_cache/sources.cmake
+index 0173e49..c80e10a 100644
+--- a/src/ops/kv_cache/sources.cmake
++++ b/src/ops/kv_cache/sources.cmake
+@@ -6,4 +6,6 @@ target_sources(ninfer_ops PRIVATE
+   # KVarN（阶段 1 移植）：本清单是显式列表、无 GLOB，漏加就不会被编译，链阶段表现为
+   # kv_cache_append_kvarn_launch 未定义。kvarn_compile_check.cu 是我自己的编译探针，**不能**加。
+   "${CMAKE_CURRENT_LIST_DIR}/append/kvarn_launch.cu"
++  # KVarN G128（新路线）：新 TU。同样别忘显式加，漏加只在链阶段表现为未定义符号。
++  "${CMAKE_CURRENT_LIST_DIR}/append/kvarn128_launch.cu"
+ )
+diff --git a/src/ops/softmax_attention/dense/causal_cache/causal_softmax_attention.cpp b/src/ops/softmax_attention/dense/causal_cache/causal_softmax_attention.cpp
+index 9ff92d7..e45b052 100644
+--- a/src/ops/softmax_attention/dense/causal_cache/causal_softmax_attention.cpp
++++ b/src/ops/softmax_attention/dense/causal_cache/causal_softmax_attention.cpp
+@@ -457,6 +457,10 @@ CausalAttentionRoute causal_attention_resolve_route(std::int32_t q_heads, std::i
+             case KvCacheStorage::Fp8KeyNvfp4Value:
+                 prompt_limit = width <= 4 ? 0 : width <= 8 ? 128 : 320;
+                 break;
++            case KvCacheStorage::KvarnTile128:
++                // KVarN G128：先照 INT8 family 的口径（消费端读核到位前不单列 tier）。
++                prompt_limit = width <= 8 ? 0 : 256;
++                break;
+             }
+             if (envelope.max_visible_keys <= prompt_limit) return CausalAttentionRoute::Prompt;
+         }
+diff --git a/src/serve/operational_log.cpp b/src/serve/operational_log.cpp
+index 7a90792..a7cd7d9 100644
+--- a/src/serve/operational_log.cpp
++++ b/src/serve/operational_log.cpp
+@@ -153,6 +153,9 @@ const char* kv_cache_name(ninfer::KvCacheStorage storage) noexcept {
+         return "kvarn";
+     case ninfer::KvCacheStorage::KvarnSinkhorn4KeyInt2ValueGroup64:
+         return "kvarn2";
++    case ninfer::KvCacheStorage::KvarnTile128:
++        // G128 新路线：capacity 行不加这条就会打 "unknown"，跟生产日志对不上账。
++        return "kvarn128";
+     }
+     return "unknown";
+ }
+diff --git a/src/serve/serve_options.cpp b/src/serve/serve_options.cpp
+index 2f7648b..199f295 100644
+--- a/src/serve/serve_options.cpp
++++ b/src/serve/serve_options.cpp
+@@ -70,6 +70,8 @@ KvCacheStorage parse_kv_dtype(const char* text) {
+     // KVarN：Hadamard 旋转 + 页内 Sinkhorn 均衡 + 逐通道 uniform 量化（阶段 1 移植，消费端读核未完）。
+     if (value == "kvarn") { return KvCacheStorage::KvarnSinkhorn4KeyInt4ValueGroup64; }
+     if (value == "kvarn2") { return KvCacheStorage::KvarnSinkhorn4KeyInt2ValueGroup64; }
++    // KVarN G128（K4V4，新路线）：Hadamard D256 旋转 + 128-token 组内 Sinkhorn 平衡 + rank-1 仿射量化。
++    if (value == "kvarn128") { return KvCacheStorage::KvarnTile128; }
+     throw std::invalid_argument("invalid kv-dtype: " + value);
+ }
+ 
+-- 
+2.52.0.windows.1
+

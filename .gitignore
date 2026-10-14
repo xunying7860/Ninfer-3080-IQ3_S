@@ -23,3 +23,14 @@ run.sh.PROD-*
 dmon-*.txt
 top-*.txt
 repro-*.out
+
+# —— KVarN 移植的补丁/取证要入库，覆盖上面的通用忽略（*.log 与 logs/ 目录）——
+!kvarn-evidence/
+!kvarn-evidence/**/
+!kvarn-evidence/**/*
+!kvarn-port/
+!kvarn-port/**/
+!kvarn-port/**/*
+!docs/kvarn-移植/
+!docs/kvarn-移植/**/
+!docs/kvarn-移植/*.md

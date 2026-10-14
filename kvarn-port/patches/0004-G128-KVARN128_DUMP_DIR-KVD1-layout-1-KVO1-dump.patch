@@ -1,0 +1,236 @@
+From 5ba2b33538d55c5ebcd8fa87a45f72c0572a68bc Mon Sep 17 00:00:00 2001
+From: kvarn-g128 <kvarn@local>
+Date: Wed, 14 Oct 2026 07:52:10 +0800
+Subject: [PATCH 4/7] =?UTF-8?q?G128=20=E5=AF=B9=E6=8B=8D=E5=8F=96=E8=AF=81?=
+ =?UTF-8?q?=EF=BC=9A=E5=8A=A0=20KVARN128=5FDUMP=5FDIR=20=E9=97=A8=E6=8E=A7?=
+ =?UTF-8?q?=E7=9A=84=20KVD1(layout=3D1)+KVO1=20=E7=AA=97=E5=8F=A3=20dump?=
+ =?UTF-8?q?=EF=BC=88=E5=8F=AA=E8=AF=BB=E8=B7=AF=E5=BE=84=EF=BC=8C=E4=B8=8D?=
+ =?UTF-8?q?=E6=94=B9=E6=95=B0=E5=80=BC=EF=BC=89?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- dump 只在 env KVARN128_DUMP_DIR 非空、tokens>=128（tile0 已封口）、且本次 append 不在
+  CUDA Graph capture 中时触发一次；cudaStreamSynchronize 后取数。
+- host 侧不解引用设备指针：block table 的 table_rows[0] 与物理页条目都走 cudaMemcpy D2H
+  （tile0 ⇒ 条目 0/1），与 kvarn_layout.h 的页块基址 leading*64*(head+heads*phys) 对齐。
+- 产出 kvarn128_p1.dump（KVD1 ver=1，flags 之后追加 layout=1/code_leading/scale_leading 三个
+  u32，字节段 = 2 页 × 64 行 × 行内，与 decode-g128 README §4 建议位一致）与 kvarn128_win.kvo
+  （KVO1 domain=1，引擎窗口 tile0/head0 的 128×256 bf16→f32）。
+---
+ src/ops/kv_cache/append/kvarn128_launch.cu | 184 +++++++++++++++++++++
+ 1 file changed, 184 insertions(+)
+
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.cu b/src/ops/kv_cache/append/kvarn128_launch.cu
+index de14cf4..d6c1f6e 100644
+--- a/src/ops/kv_cache/append/kvarn128_launch.cu
++++ b/src/ops/kv_cache/append/kvarn128_launch.cu
+@@ -27,7 +27,9 @@
+ #include <cstddef>
+ #include <cstdio>
+ #include <cstdlib>
++#include <cstring>
+ #include <stdexcept>
++#include <vector>
+ 
+ namespace ninfer::ops {
+ namespace {
+@@ -379,6 +381,185 @@ bool kvarn128_window(const void* k_code, int pages, int kv_heads, cudaStream_t s
+     return true;
+ }
+ 
++// ===========================================================================
++// 对拍 dump（KVARN128_DUMP_DIR=<dir> 打开；只 dump 一次；不改数值路径）
++//   <dir>/kvarn128_p1.dump —— KVD1(layout=1)：tile0/head0 的 K、V 两条（各 2 页）
++//   <dir>/kvarn128_win.kvo —— KVO1(domain=1)：引擎窗口里 tile0/head0 的 128×256 bf16→f32
++// host 侧只做 cudaMemcpy，绝不解引用设备指针（block table 也走 D2H 拷回）。
++// ===========================================================================
++namespace {
++
++bool kvarn128_d2h(void* dst, const void* src, std::size_t bytes) {
++    if (cudaMemcpy(dst, src, bytes, cudaMemcpyDeviceToHost) != cudaSuccess) {
++        cudaGetLastError();
++        return false;
++    }
++    return true;
++}
++
++void kvarn128_write_kvd1(FILE* f, const char* name, int kind, int bits, int code_leading,
++                         int scale_leading, const std::uint8_t* code, const std::uint16_t* scale) {
++    const std::uint32_t nl = static_cast<std::uint32_t>(std::strlen(name));
++    std::fwrite(&nl, 4, 1, f);
++    std::fwrite(name, 1, nl, f);
++    const std::int32_t a[7] = {kind,       bits,               kKvarnSliceDim, kKvarnSliceDim,
++                               kKvarnTileTokens, kKvarnPagesPerTile, kKvarnSlices};
++    std::fwrite(a, 4, 7, f);
++    const std::uint32_t flags  = 0;
++    const std::uint32_t layout = 1; // P1 页自足槽位布局（decode-g128 §4 建议位）
++    const std::uint32_t cl     = static_cast<std::uint32_t>(code_leading);
++    const std::uint32_t sl     = static_cast<std::uint32_t>(scale_leading);
++    std::fwrite(&flags, 4, 1, f);
++    std::fwrite(&layout, 4, 1, f);
++    std::fwrite(&cl, 4, 1, f);
++    std::fwrite(&sl, 4, 1, f);
++    const std::uint32_t cb =
++        static_cast<std::uint32_t>(kKvarnPagesPerTile * kKvarnPageTokens * code_leading);
++    std::fwrite(&cb, 4, 1, f);
++    std::fwrite(code, 1, cb, f);
++    const std::uint32_t sh =
++        static_cast<std::uint32_t>(kKvarnPagesPerTile * kKvarnPageTokens * scale_leading);
++    std::fwrite(&sh, 4, 1, f);
++    std::fwrite(scale, 2, sh, f);
++    const std::uint32_t of = 0;
++    std::fwrite(&of, 4, 1, f);
++}
++
++void kvarn128_write_kvo1_head(FILE* f, const char* name, int kind, const float* data) {
++    const std::uint32_t nl = static_cast<std::uint32_t>(std::strlen(name));
++    std::fwrite(&nl, 4, 1, f);
++    std::fwrite(name, 1, nl, f);
++    const std::int32_t h[4] = {kind, kKvarnTileTokens, kKvarnHeadDim, 1 /*domain: 1=已逆旋转*/};
++    std::fwrite(h, 4, 4, f);
++    const std::uint32_t nf = static_cast<std::uint32_t>(kKvarnTileTokens * kKvarnHeadDim);
++    std::fwrite(&nf, 4, 1, f);
++    std::fwrite(data, 4, nf, f);
++}
++
++float kvarn128_bf16_bits_to_f32(std::uint16_t h) {
++    const std::uint32_t u = static_cast<std::uint32_t>(h) << 16;
++    float               f;
++    std::memcpy(&f, &u, 4);
++    return f;
++}
++
++void kvarn128_dump_probe(const void* k_code, const void* k_scale, const void* v_code,
++                         const void* v_scale, KvarnTile128BlockTable table, int kv_heads,
++                         const __nv_bfloat16* win_k, const __nv_bfloat16* win_v, int tokens,
++                         cudaStream_t stream) {
++    static bool done = false;
++    const char* dir  = std::getenv("KVARN128_DUMP_DIR");
++    if (done || dir == nullptr || dir[0] == '\0') { return; }
++    if (tokens < kKvarnTileTokens) { return; } // 只 dump 已封口的 tile 0（真解码路）
++    cudaStreamCaptureStatus cap = cudaStreamCaptureStatusNone;
++    cudaStreamIsCapturing(stream, &cap);
++    if (cap != cudaStreamCaptureStatusNone) {
++        std::fprintf(stderr, "ninfer: KVarN128 dump 跳过（本次 append 在 CUDA Graph capture 中）\n");
++        std::fflush(stderr);
++        return;
++    }
++    done = true;
++    if (cudaStreamSynchronize(stream) != cudaSuccess) { cudaGetLastError(); return; }
++    constexpr int KB = 4, VB = 4;
++    constexpr int CK = 32 * KB, CV = 32 * VB;
++    constexpr int SK = kKvarnKScaleLeading, SV = kKvarnVScaleLeading;
++
++    // 物理页：block table 只在 device 上解析 ⇒ host 只用 cudaMemcpy 取回（tile 0 ⇒ 条目 0/1）
++    std::int32_t        row = 0, page0 = -1, page1 = -1;
++    const std::int32_t* bt  = table.direct;
++    if (bt == nullptr) {
++        if (!kvarn128_d2h(&row, table.table_rows, sizeof(row))) { return; }
++        bt = table.tables + static_cast<std::int64_t>(row) * table.table_stride;
++    }
++    if (!kvarn128_d2h(&page0, bt + 0, 4) || !kvarn128_d2h(&page1, bt + 1, 4)) { return; }
++    if (page0 < 0 || page1 < 0) { return; }
++
++    // 每个 plane 的「页块」基址 = leading*64*(head + heads*phys)，head = 0
++    auto page_block = [kv_heads](int leading, std::int32_t phys) -> std::int64_t {
++        return static_cast<std::int64_t>(leading) * kKvarnPageTokens *
++               (static_cast<std::int64_t>(kv_heads) * phys);
++    };
++    const std::int32_t phys[2] = {page0, page1};
++
++    std::uint8_t  kc[2 * kKvarnPageTokens * CK];
++    std::uint8_t  vc[2 * kKvarnPageTokens * CV];
++    std::uint16_t ks[2 * kKvarnPageTokens * SK];
++    std::uint16_t vs[2 * kKvarnPageTokens * SV];
++    for (int p = 0; p < 2; ++p) {
++        if (!kvarn128_d2h(kc + p * kKvarnPageTokens * CK,
++                          static_cast<const std::uint8_t*>(k_code) + page_block(CK, phys[p]),
++                          kKvarnPageTokens * CK) ||
++            !kvarn128_d2h(vc + p * kKvarnPageTokens * CV,
++                          static_cast<const std::uint8_t*>(v_code) + page_block(CV, phys[p]),
++                          kKvarnPageTokens * CV) ||
++            !kvarn128_d2h(ks + p * kKvarnPageTokens * SK,
++                          static_cast<const __half*>(k_scale) + page_block(SK, phys[p]),
++                          kKvarnPageTokens * SK * 2) ||
++            !kvarn128_d2h(vs + p * kKvarnPageTokens * SV,
++                          static_cast<const __half*>(v_scale) + page_block(SV, phys[p]),
++                          kKvarnPageTokens * SV * 2)) {
++            return;
++        }
++    }
++
++    // 窗口值（bf16，已逆旋转）→ f32
++    std::vector<float> wk(kKvarnTileTokens * kKvarnHeadDim);
++    std::vector<float> wv(kKvarnTileTokens * kKvarnHeadDim);
++    for (int tt = 0; tt < kKvarnTileTokens; ++tt) {
++        const int          p   = tt / kKvarnPageTokens;
++        const int          off = tt % kKvarnPageTokens;
++        const std::int64_t base =
++            static_cast<std::int64_t>(kKvarnHeadDim) * kKvarnPageTokens *
++                (static_cast<std::int64_t>(kv_heads) * phys[p]) +
++            static_cast<std::int64_t>(kKvarnHeadDim) * off;
++        std::uint16_t tmp[2 * kKvarnHeadDim];
++        if (!kvarn128_d2h(tmp, win_k + base, kKvarnHeadDim * 2) ||
++            !kvarn128_d2h(tmp + kKvarnHeadDim, win_v + base, kKvarnHeadDim * 2)) {
++            return;
++        }
++        for (int d = 0; d < kKvarnHeadDim; ++d) {
++            wk[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
++                kvarn128_bf16_bits_to_f32(tmp[d]);
++            wv[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
++                kvarn128_bf16_bits_to_f32(tmp[kKvarnHeadDim + d]);
++        }
++    }
++
++    char path[1024];
++    std::snprintf(path, sizeof(path), "%s/kvarn128_p1.dump", dir);
++    FILE* f = std::fopen(path, "wb");
++    if (f != nullptr) {
++        const std::uint32_t magic = 0x3144564Bu, ver = 1, n = 2;
++        std::fwrite(&magic, 4, 1, f);
++        std::fwrite(&ver, 4, 1, f);
++        std::fwrite(&n, 4, 1, f);
++        kvarn128_write_kvd1(f, "L0-K-h0", 0, KB, CK, SK, kc, ks);
++        kvarn128_write_kvd1(f, "L0-V-h0", 1, VB, CV, SV, vc, vs);
++        std::fclose(f);
++        std::fprintf(stderr, "ninfer: KVarN128 dump 写出 %s（KVD1 layout=1，pages %d/%d）\n", path,
++                     page0, page1);
++    } else {
++        std::fprintf(stderr, "ninfer: KVarN128 dump 打不开 %s\n", path);
++    }
++    std::snprintf(path, sizeof(path), "%s/kvarn128_win.kvo", dir);
++    f = std::fopen(path, "wb");
++    if (f != nullptr) {
++        const std::uint32_t magic = 0x314F564Bu, ver = 1, n = 2;
++        std::fwrite(&magic, 4, 1, f);
++        std::fwrite(&ver, 4, 1, f);
++        std::fwrite(&n, 4, 1, f);
++        kvarn128_write_kvo1_head(f, "L0-K-h0", 0, wk.data());
++        kvarn128_write_kvo1_head(f, "L0-V-h0", 1, wv.data());
++        std::fclose(f);
++        std::fprintf(stderr, "ninfer: KVarN128 dump 写出 %s\n", path);
++    } else {
++        std::fprintf(stderr, "ninfer: KVarN128 dump 打不开 %s\n", path);
++    }
++    std::fflush(stderr);
++}
++
++} // namespace
++
+ // 与 ops/kernel/paged_kv_address.cuh 的寻址逐格相同 —— 单一真值来源的机器校验。
+ static_assert(kvarn_plane_element_offset(128, 4, /*page=*/3, /*head=*/2, /*page_off=*/5,
+                                          /*slot=*/7) ==
+@@ -469,6 +650,9 @@ void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
+         }
+         CUDA_CHECK(cudaGetLastError());
+     }
++
++    // 对拍 dump（默认关闭；KVARN128_DUMP_DIR 打开时只写一次，不改数值路径）
++    kvarn128_dump_probe(k_code, k_scale, v_code, v_scale, table, kv_heads, wk, wv, tokens, stream);
+ }
+ 
+ void kvarn128_decode_tile(const void* k_code, const void* k_scale, const void* v_code,
+-- 
+2.52.0.windows.1
+

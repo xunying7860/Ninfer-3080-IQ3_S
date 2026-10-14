@@ -1,0 +1,846 @@
+From 8186a2ee1c2d8b045f6121c5021924a846d1c35b Mon Sep 17 00:00:00 2001
+From: kvarn-g128 <kvarn@local>
+Date: Wed, 14 Oct 2026 08:57:24 +0800
+Subject: [PATCH 5/7] =?UTF-8?q?G128=20KVarN=20=E4=BF=AE"=E6=9C=AA=E5=B0=81?=
+ =?UTF-8?q?=E5=8F=A3=20tile=20=E8=BE=93=E5=87=BA=E9=80=80=E5=8C=96"?=
+ =?UTF-8?q?=EF=BC=9Astaging=20=E6=94=B9=E6=8C=89=E5=B1=82=20+=20=E5=88=86?=
+ =?UTF-8?q?=E9=85=8D=E6=BC=8F=20which=20=E7=BB=B4?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+结论：病在**未封口窗口写进了错误的源**，不在消费端 masking / valid_tokens。
+窗口的未封口分支"照抄 stage"这一步没错（cos=1.000000），但它按 [0,tt_end) 全段重写，
+而 stage 是"本次 append 的暂存"、[0,tt_begin) 里是**别的 layer / 别的 append 的残留**
+⇒ 这块 tile 先前已经写对的那段真值被覆盖 ⇒ 短提示词（整段 KV 都在同一个未封口 tile）
+的 KV 几乎全被换成别人的值，输出退化。
+
+判定数字（KVARN128_DUMP_DIR 的 pre/cont 对拍）
+  pre  = 第 1 次 tt_begin==0 的 append：tokens=51 pos0=0 poslast=50 tile=0 tt=[0,51) pages 0/0
+  cont = 第 1 次 tt_begin>0 的 append：tokens=2 pos0=51 poslast=52 tile=0 tt=[51,53) pages 0/0
+  两者同属 layer0 的同一个窗口（prefill 与 decode 都逐 layer 推进）。
+  A=cos(inv_rot(pre_stage),pre_win)  B=cos(inv_rot(cont_stage),cont_win)
+  C=cos(inv_rot(cont_stage),pre_win) D=cos(cont_win,pre_win)   （逐 token，取 min/mean）
+
+修前（中间版 b6575cf9：只修了分配尺寸、stage 仍是全局一块）
+  [K] 保持段 [0,51)：A_min=0.999999977 B_min=0.999999977 C_min=-0.237362851 C_mean=-0.105331382 D_min=-0.237353007 D_mean=-0.105331245  被改写的 token=51/51
+  [V] 保持段 [0,51)：A_min=0.999999975 B_min=0.999999974 C_min=-0.102977347 C_mean=0.014045603 D_min=-0.102997397 D_mean=0.014045013  被改写的 token=51/51
+  ⇒ A=B≈1（照抄没错）但 C≪1（stage 不是这块 tile 的真值）且 D≪1 且 51/51 被改写
+    ⇒ 窗口里已经不是真值了，消费端读什么 masking 都救不回来。
+修后（本提交 936575ee）
+  [K] 保持段 [0,51)：A_min=0.999999977 B_min=0.999999977 C_min=0.999999977 C_mean=0.999999981 D_min=1.000000000 D_mean=1.000000000  被改写的 token=0/51
+  [V] 保持段 [0,51)：A_min=0.999999975 B_min=0.999999975 C_min=0.999999975 C_mean=0.999999980 D_min=1.000000000 D_mean=1.000000000  被改写的 token=0/51
+
+改了什么（src/ops/kv_cache/append/kvarn128_launch.{cu,h}）
+1) ensure_stage_impl → ensure_stage_for(key,...)：staging 池由"全局一块"改为**按层一份**
+   （键 = 量化 K 平面基址，与窗口同键）。语义对齐：stage 承载的是「这块 tile 的旋转域
+   累积值」，不是「本次 append 的暂存」——rotate 只写 [tt_begin,tt_end)、encode 封口时
+   读满 128 槽、未封口窗口读 [0,tt_end)，后两者都需要 [0,tt_begin) 那段上一次 append
+   写进去的值。按层分之后三处用法都自洽。顺带修掉同源缺陷：tile 跨 append 封口时
+   （如 225 token 的 tile1 在第 255 个位置封口）encode 会读陈旧 stage 编出错的码流。
+2) 同一函数：分配尺寸 2*heads*128*256 → 2(which) × kKvarnPagesPerTile(slot) × heads × 128 × 256。
+   旧值漏了 which 那一维 ⇒ V 平面整段落在分配尾后：heads=4 时每个 rotate/encode/window
+   都越界读写 512 KiB。证据：dump 探针从 V 平面地址 cudaMemcpy D2H 直接报错
+   `ninfer: KVarN128 dump-dbg bail-stage-d2h a=0 b=4`；算式：rotate 写到的最大下标
+   524287 vs 分配 262143 个 half（差 512 KiB）。
+3) kvarn128_ensure_stage 改为兼容 no-op（全树无调用；按层分配发生在第一次 append，必然在
+   CUDA Graph capture 之前；"capture 期禁 malloc"的检查仍在分配点）。
+4) dump 探针：未封口分支补 stage+窗口双 dump（KVO1 domain=0/1，复用已有格式）+ 新增
+   KVARN128_DUMP_VERBOSE 逐步 trace（正是靠它定位到 bail-stage-d2h）。
+
+验收（同一二进制 md5 936575ee323d10ab0f3117de597f3d7b，x99 GPU0，ctx 65536）
+- 短提示词 106/51/1 token（同一份 prompts.json，两臂逐字同题；temperature=0）
+  kvarn128: 106 → '\n\n391' stop(5) | 51 → '\n\n391' stop(5)
+            1   → '987年，哪个组织将《鼠族》列为年度最佳图书之一？\n\n嗯，用户问的是1987年…' 连贯中文(64)
+  rk4v4   : 106 → '\n\n391' stop(5) | 51 → '\n\n391\n\nQuestion: 17*23 = ?…'(64，自复读)
+            1   → '987年，哪个组织在哪个城市设立了总部？…' 连贯中文(56)
+  修前同题（109 token 探针题面）：'\n\n387\n\n34444444444444444444444444444444444'（复读退化）
+- 封口路数值对拍（KVD1 layout=1 ↔ KVO1 domain=1，pages 3/4）：
+  K cos_min=0.999998268 mean=0.999998707 maxabs=1.562e-02 nonfinite 0/0；反证(不逆旋转) |cos|≤0.168807 → PASS
+  V cos_min=0.999998306 mean=0.999998659 maxabs=3.901e-03 nonfinite 0/0；反证(不逆旋转) |cos|≤0.178388 → PASS
+- 未封口路：见上"修后"（保持段 cos 1.000000000/0.99999998，nonfinite 0）
+- req#N done 原文（生产配置，CUDA Graph 开）
+  kvarn128: 'req#1 done | openai-completions | stop token | prompt 106 | output 5 | cache 0 (0.0%) | TTFT 125 ms | total 217 ms | queue 10.1 ms | prefill 918.5 tok/s | decode 43.2 tok/s | mtp accepted 1/9 (11.1%)'
+            'req#2 done | openai-completions | stop token | prompt 51 | output 5 | cache 0 (0.0%) | TTFT 76.1 ms | total 166 ms | prefill 738.1 tok/s | decode 44.7 tok/s | mtp accepted 3/9 (33.3%)'
+            'req#3 done | openai-completions | output limit | prompt 1 | output 64 | cache 0 (0.0%) | TTFT 36.9 ms | total 892 ms | prefill 34.5 tok/s | decode 73.7 tok/s | mtp accepted 34/85 (40.0%)'
+  rk4v4   : 'req#1 done | openai-completions | stop token | prompt 106 | output 5 | cache 0 (0.0%) | TTFT 132 ms | total 221 ms | queue 11.4 ms | prefill 917.1 tok/s | decode 45.0 tok/s | mtp accepted 1/9 (11.1%)'
+            'req#2 done | openai-completions | output limit | prompt 51 | output 64 | cache 0 (0.0%) | TTFT 85.0 ms | total 519 ms | prefill 728.3 tok/s | decode 145.4 tok/s | mixed speculation accepted 50/60 (83.3%) | ngram 30/30 accepted, 3 rounds'
+            'req#3 done | openai-completions | stop token | prompt 1 | output 56 | cache 0 (0.0%) | TTFT 44.8 ms | total 774 ms | prefill 33.7 tok/s | decode 75.5 tok/s | mtp accepted 30/75 (40.0%)'
+  ⇒ 同题同档对照 decode：73.7 vs 75.5（1 token 提示/64 输出）、43.2 vs 45.0（106 token/5 输出），
+    差 ≤2%；rk4v4 的 145.4 tok/s 那条带 'ngram 30/30 accepted'（自复读命中 ngram 投机路径），
+    不是内核速度差 —— 之前"慢 2~2.5 倍"的观感来自拿带 ngram 的臂比不带的那条。
+
+新增 build_check/（证据可复现）
+  kvarn128_unsealed_verify.cu  pre/cont 四路 cos 对拍器（纯 host，g++ 可编）
+  req_probe.py                 精确 token 数题面校准 + 逐字回放（两臂同题）
+  run-g128-nograph.sh          诊断臂：--no-cuda-graph（capture 期 host 侧 dump 探针不会被
+                               调用、replay 期又不跑 host 代码 ⇒ 只有关掉 CUDA Graph 才拿得到 dump）
+---
+ build_check/kvarn128_unsealed_verify.cu    | 161 +++++++++++
+ build_check/req_probe.py                   | 111 ++++++++
+ build_check/run-g128-nograph.sh            |  28 ++
+ src/ops/kv_cache/append/kvarn128_launch.cu | 311 +++++++++++++++++----
+ src/ops/kv_cache/append/kvarn128_launch.h  |   5 +-
+ 5 files changed, 556 insertions(+), 60 deletions(-)
+ create mode 100644 build_check/kvarn128_unsealed_verify.cu
+ create mode 100644 build_check/req_probe.py
+ create mode 100644 build_check/run-g128-nograph.sh
+
+diff --git a/build_check/kvarn128_unsealed_verify.cu b/build_check/kvarn128_unsealed_verify.cu
+new file mode 100644
+index 0000000..e5e5bd2
+--- /dev/null
++++ b/build_check/kvarn128_unsealed_verify.cu
+@@ -0,0 +1,161 @@
++// kv128_verify_unsealed2.cu —— 未封口 tile 的引擎级判定（纯 host，无 kernel）
++//
++//   用法: kv128_unsealed2 <pre_stage.kvo> <pre_win.kvo> <cont_stage.kvo> <cont_win.kvo>
++//                        <cont_tt_begin> <cont_tt_end>
++//
++// 两份 dump 都来自**同一个 layer**（probe 取"第一次 tt_begin==0 的 append"与"第一次
++// tt_begin>0 的 append"，而 prefill/decode 都是逐 layer 推进 ⇒ 都是 layer 0 的同一个窗口）：
++//   *_stage.kvo = 引擎 g_stage 里 tile/head0 的 128×256 旋转域 fp16→f32（domain=0）
++//   *_win.kvo   = 引擎窗口同 tile/head0 的 128×256 bf16→f32（domain=1，已逆旋转）
++//
++// 四个数（主机对 stage 做一次 inverse_rotate_d256 后比 cos）：
++//   A = cos(inv_rot(pre_stage[tt]),  pre_win[tt])   prefill 那次：窗口是不是 stage 的忠实拷贝
++//   B = cos(inv_rot(cont_stage[tt]), cont_win[tt])  续写那次：同上
++//   C = cos(inv_rot(cont_stage[tt]), pre_win[tt])   续写那次的 stage 是不是"这块 tile 的真值"
++//                                                   （tt<tt_begin 段：真值 = pre_win，因为
++//                                                    同一 layer、同一 tile、同一批 token）
++//   D = cos(cont_win[tt], pre_win[tt])              窗口内容有没有被改写
++//
++// 判读：
++//   A≈1 且 B≈1           ⇒ 未封口分支"照抄 stage"这一步没写错（拷贝/寻址/逆旋转都对）；
++//   C≪1 (tt<tt_begin)    ⇒ 续写那次读到的 stage 不是这块 tile 的真值（陈旧：那是别的 layer/
++//                          别的 append 留下的内容）；
++//   D≪1 (tt<tt_begin)    ⇒ 窗口[0,tt_begin) 被那次 append 改写掉了 ⇒ 真值被覆盖 = 损坏。
++#include "kvarn128_cpu_reference.h"
++
++#include <cmath>
++#include <cstdint>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <string>
++#include <vector>
++
++using kvarn128_cpu::inverse_rotate_d256;
++using kvarn128_cpu::kHeadDim;
++
++static bool rd(void* p, std::size_t n, FILE* f) { return std::fread(p, 1, n, f) == n; }
++
++struct Head {
++    std::string        name;
++    int                kind = 0, tokens = 0, width = 0, domain = 0;
++    std::vector<float> data;
++};
++
++static bool load_kvo1(const char* path, std::vector<Head>& out) {
++    FILE* f = std::fopen(path, "rb");
++    if (f == nullptr) { std::fprintf(stderr, "打不开 %s\n", path); return false; }
++    std::uint32_t magic = 0, ver = 0, n = 0;
++    if (!rd(&magic, 4, f) || !rd(&ver, 4, f) || !rd(&n, 4, f)) { std::fclose(f); return false; }
++    if (magic != 0x314F564Bu || ver != 1u) {
++        std::fprintf(stderr, "KVO1 magic/ver 不对 (%08x,%u)\n", magic, ver);
++        std::fclose(f);
++        return false;
++    }
++    for (std::uint32_t i = 0; i < n; ++i) {
++        Head          H;
++        std::uint32_t nl = 0;
++        if (!rd(&nl, 4, f)) { std::fclose(f); return false; }
++        H.name.resize(nl);
++        if (nl != 0 && !rd(&H.name[0], nl, f)) { std::fclose(f); return false; }
++        std::int32_t a = 0;
++        rd(&a, 4, f); H.kind = a;
++        rd(&a, 4, f); H.tokens = a;
++        rd(&a, 4, f); H.width = a;
++        rd(&a, 4, f); H.domain = a;
++        std::uint32_t nf = 0;
++        rd(&nf, 4, f);
++        H.data.resize(nf);
++        if (nf != 0 && !rd(H.data.data(), nf * 4, f)) { std::fclose(f); return false; }
++        out.push_back(std::move(H));
++    }
++    std::fclose(f);
++    return true;
++}
++
++static double cosine(const float* a, const float* b, int n) {
++    double dot = 0, na = 0, nb = 0;
++    for (int i = 0; i < n; ++i) {
++        dot += static_cast<double>(a[i]) * b[i];
++        na += static_cast<double>(a[i]) * a[i];
++        nb += static_cast<double>(b[i]) * b[i];
++    }
++    if (na == 0.0 || nb == 0.0) return 0.0;
++    return dot / (std::sqrt(na) * std::sqrt(nb));
++}
++
++int main(int argc, char** argv) {
++    if (argc < 7) {
++        std::fprintf(stderr,
++                     "用法: %s <pre_stage.kvo> <pre_win.kvo> <cont_stage.kvo> <cont_win.kvo> "
++                     "<cont_tt_begin> <cont_tt_end>\n",
++                     argv[0]);
++        return 2;
++    }
++    const int tt_begin = std::atoi(argv[5]);
++    const int tt_end   = std::atoi(argv[6]);
++    std::vector<Head> ps, pw, cs, cw;
++    if (!load_kvo1(argv[1], ps) || !load_kvo1(argv[2], pw) || !load_kvo1(argv[3], cs) ||
++        !load_kvo1(argv[4], cw))
++        return 3;
++    std::printf("pre_stage %zu head  pre_win %zu  cont_stage %zu  cont_win %zu   "
++                "cont tt=[%d,%d)\n",
++                ps.size(), pw.size(), cs.size(), cw.size(), tt_begin, tt_end);
++    if (ps.size() != pw.size() || cs.size() != cw.size() || ps.size() != cs.size()) {
++        std::printf("head 数不一致\n");
++        return 4;
++    }
++
++    for (std::size_t i = 0; i < ps.size(); ++i) {
++        const bool  is_value = (ps[i].kind == 1);
++        const char* nm       = is_value ? "V" : "K";
++        std::printf("\n================ head[%zu] %s  (%s) ================\n", i, nm,
++                    ps[i].name.c_str());
++        std::vector<float> pr(kHeadDim), cr(kHeadDim);
++        double amin = 1e9, bmin = 1e9, cmin = 1e9, dmin = 1e9;
++        double amin_k = 1e9, bmin_k = 1e9, amin_f = 1e9, bmin_f = 1e9;
++        double csum = 0, dsum = 0;
++        int    nkept = 0, bad_d = 0, nfresh = 0;
++        for (int tt = 0; tt < ps[i].tokens; ++tt) {
++            const std::size_t off = static_cast<std::size_t>(tt) * kHeadDim;
++            const float* pst = ps[i].data.data() + off;
++            const float* pwn = pw[i].data.data() + off;
++            const float* cst = cs[i].data.data() + off;
++            const float* cwn = cw[i].data.data() + off;
++            for (int d = 0; d < kHeadDim; ++d) { pr[d] = pst[d]; cr[d] = cst[d]; }
++            inverse_rotate_d256(pr.data());
++            inverse_rotate_d256(cr.data());
++            const double A = cosine(pr.data(), pwn, kHeadDim);
++            const double B = cosine(cr.data(), cwn, kHeadDim);
++            const double C = cosine(cr.data(), pwn, kHeadDim);
++            const double D = cosine(cwn, pwn, kHeadDim);
++            if (A < amin) amin = A;
++            if (B < bmin) bmin = B;
++            if (tt < tt_begin) {
++                if (C < cmin) cmin = C;
++                if (D < dmin) dmin = D;
++                if (A < amin_k) amin_k = A;
++                if (B < bmin_k) bmin_k = B;
++                csum += C;
++                dsum += D;
++                ++nkept;
++                if (D < 0.99) ++bad_d;
++            } else if (tt < tt_end) {
++                if (A < amin_f) amin_f = A;
++                if (B < bmin_f) bmin_f = B;
++                ++nfresh;
++            }
++            std::printf("  %s tt=%3d A=%.6f B=%.6f C=%.6f D=%.6f%s\n", nm, tt, A, B, C, D,
++                        (tt < tt_begin && D < 0.99) ? "   <-- 窗口被改写" : "");
++        }
++        std::printf("  [%s] A_min=%.9f (prefill 照抄 stage)   B_min=%.9f (续写照抄 stage)\n", nm,
++                    amin, bmin);
++        std::printf("  [%s] 保持段 [0,%d)：A_min=%.9f B_min=%.9f  C_min=%.9f C_mean=%.9f  "
++                    "D_min=%.9f D_mean=%.9f  被改写的 token=%d/%d\n",
++                    nm, tt_begin, amin_k, bmin_k, cmin, nkept ? csum / nkept : 0.0, dmin,
++                    nkept ? dsum / nkept : 0.0, bad_d, nkept);
++        std::printf("  [%s] 新写段 [%d,%d)：A_min=%.9f B_min=%.9f（窗口=fresh stage 的忠实拷贝）\n",
++                    nm, tt_begin, tt_end, amin_f, bmin_f);
++    }
++    return 0;
++}
+diff --git a/build_check/req_probe.py b/build_check/req_probe.py
+new file mode 100644
+index 0000000..248ed82
+--- /dev/null
++++ b/build_check/req_probe.py
+@@ -0,0 +1,111 @@
++#!/usr/bin/env python3
++"""G128 KVarN 短提示词探针。
++
++用法：
++  python3 req_probe.py calib  -> 校准出精确 106/51/1 token 的题面，写 prompts.json
++  python3 req_probe.py run    -> 读 prompts.json，逐个发固定题面（temperature=0），打印原始输出
++
++题面在两次运行之间逐字相同，所以 kvarn128 与 rk4v4 两臂可用同一份 prompts.json 对照。
++"""
++import json
++import os
++import sys
++import urllib.request
++
++PORT = os.environ.get("PORT", "18093")
++URL = "http://127.0.0.1:%s/v1/completions" % PORT
++HERE = os.path.dirname(os.path.abspath(__file__))
++STATE = os.path.join(HERE, "prompts.json")
++
++SEED = "Question: 17*23 = ? Answer with just the number.\nAnswer:"
++FILLER = " the"
++TARGETS = [106, 51, 1]
++
++
++def call(prompt, max_tokens, temperature=0.0, timeout=900):
++    body = json.dumps({"prompt": prompt, "max_tokens": max_tokens,
++                       "temperature": temperature, "stream": False}).encode("utf-8")
++    req = urllib.request.Request(URL, data=body,
++                                 headers={"Content-Type": "application/json"})
++    with urllib.request.urlopen(req, timeout=timeout) as r:
++        return json.loads(r.read().decode("utf-8"))
++
++
++def ptokens(prompt):
++    return call(prompt, 1)["usage"]["prompt_tokens"]
++
++
++def calib(target):
++    if target <= 2:
++        for cand in ["1", "The", "A", "France", "def", "ok", "4"]:
++            try:
++                pt = ptokens(cand)
++            except Exception as exc:  # noqa: BLE001
++                print("  cand %r 失败 %s" % (cand, exc), flush=True)
++                continue
++            print("  cand %r prompt_tokens=%d" % (cand, pt), flush=True)
++            if pt == target:
++                return cand
++        return None
++    n = 0
++    for it in range(12):
++        prompt = FILLER * n + SEED
++        pt = ptokens(prompt)
++        print("  calib[%d] it=%d pad=%d prompt_tokens=%d" % (target, it, n, pt), flush=True)
++        if pt == target:
++            return prompt
++        n += (target - pt)
++        if n < 0:
++            n = 0
++            if pt > target:
++                return None
++    return None
++
++
++def main():
++    mode = sys.argv[1] if len(sys.argv) > 1 else "run"
++    if mode == "one":
++        # one <pad> [max_tokens]：只发一条 FILLER*pad + SEED（用于让"第一个 append"就落在 <128 token）
++        pad = int(sys.argv[2]) if len(sys.argv) > 2 else 90
++        mx = int(sys.argv[3]) if len(sys.argv) > 3 else 64
++        prompt = FILLER * pad + SEED
++        r = call(prompt, mx)
++        u = r.get("usage", {})
++        ch = r["choices"][0]
++        print("== one pad=%d prompt_tokens=%s completion_tokens=%s finish=%s ==" %
++              (pad, u.get("prompt_tokens"), u.get("completion_tokens"),
++               ch.get("finish_reason")), flush=True)
++        print("   text=%r" % ch.get("text"), flush=True)
++        return 0
++    if mode == "calib":
++        out = {}
++        for t in TARGETS:
++            print("== 校准 target=%d ==" % t, flush=True)
++            p = calib(t)
++            if p is None:
++                print("  校准失败 target=%d" % t, flush=True)
++                continue
++            out[str(t)] = p
++        with open(STATE, "w", encoding="utf-8") as f:
++            json.dump(out, f, ensure_ascii=False, indent=1)
++        print("写出 %s：%s" % (STATE, sorted(out.keys())), flush=True)
++        return 0
++    with open(STATE, encoding="utf-8") as f:
++        prompts = json.load(f)
++    for t in TARGETS:
++        p = prompts.get(str(t))
++        if p is None:
++            print("== target=%d 无题面，跳过 ==" % t, flush=True)
++            continue
++        r = call(p, 64)
++        u = r.get("usage", {})
++        ch = r["choices"][0]
++        print("== target=%d prompt_tokens=%s completion_tokens=%s finish=%s ==" %
++              (t, u.get("prompt_tokens"), u.get("completion_tokens"),
++               ch.get("finish_reason")), flush=True)
++        print("   text=%r" % ch.get("text"), flush=True)
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/build_check/run-g128-nograph.sh b/build_check/run-g128-nograph.sh
+new file mode 100644
+index 0000000..15aa47f
+--- /dev/null
++++ b/build_check/run-g128-nograph.sh
+@@ -0,0 +1,28 @@
++#!/bin/bash
++# G128 KVarN 诊断臂：与 run-g128.sh 相同，但去掉 --cuda-graph-allowance-mib 并加 --no-cuda-graph。
++# 原因：CUDA Graph 的 capture 阶段记录内核、replay 阶段不跑 host 代码 ⇒ KVARN128_DUMP_DIR 的
++# host 侧 dump 探针在 replay 里根本不会被调用（capture 里又禁止 cudaMemcpy D2H）。
++# 只有关掉 CUDA Graph，每个 append 才真的走 host 代码，dump 才拿得到数。
++set -u
++ROOT=/data/kvarn/g128-engine
++BIN=$ROOT/bin/ninfer-serve
++LOADER=/data/ninfer/bundle/libs/lib64/ld-linux-x86-64.so.2
++LIBPATH=/data/ninfer/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/lib/x86_64-linux-gnu
++MODEL=/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer
++export CUDA_VISIBLE_DEVICES=0
++KV=${KV_DTYPE:-kvarn128}
++CTX=${CTX_TOKENS:-16384}
++PORT=${PORT:-18093}
++mkdir -p "$ROOT/logs"
++exec "$LOADER" --library-path "$LIBPATH" "$BIN" "$MODEL" \
++  --host 127.0.0.1 --port "$PORT" --model-id "qwen3.8-27b-${KV}" \
++  --max-context "$CTX" --kv-capacity "$CTX" --kv-dtype "$KV" \
++  --device-profile-path "$ROOT/device-profiles.json" \
++  --no-cuda-graph \
++  --max-concurrency 1 --max-pending-requests 4 --prefill-chunk 1024 \
++  --device-state-slots 1 --host-state-slots 1 --host-kv-mib 256 --context-cache-policy rolling \
++  --media-cache-mib 128 --media-live-mib 256 \
++  --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
++  --chat-template /data/ninfer/chat_template.jinja \
++  --default-reasoning-effort high --default-max-tokens 64 \
++  "$@"
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.cu b/src/ops/kv_cache/append/kvarn128_launch.cu
+index d6c1f6e..2865a89 100644
+--- a/src/ops/kv_cache/append/kvarn128_launch.cu
++++ b/src/ops/kv_cache/append/kvarn128_launch.cu
+@@ -255,31 +255,65 @@ __global__ void __launch_bounds__(kThreads) kvarn128_decode_kernel(
+ }
+ 
+ // ---------------------------------------------------------------------------
+-// staging 池：双槽 ping-pong（MTP 拒 draft 回滚会重开上一组，单槽会静默读错源）。
++// staging 池：**每层一份**（键 = 量化 K 平面基址，与窗口同键），双槽 ping-pong
++// （MTP 拒 draft 回滚会重开上一组，单槽会静默读错源）。
++//
++// 为什么必须按层分：stage 承载的语义是「**这块 tile 的旋转域累积值**」，不是「本次 append 的暂存」——
++//   * rotate 只写 [tt_begin, tt_end)（本次 append 覆盖的那一段）；
++//   * encode 在**封口**时读满 128 槽（整块 tile 都要）；
++//   * 未封口窗口读 [0, tt_end)（这块 tile 到目前为止的全部 token）。
++// 用一块全局 stage 时，后两处读到的 [0, tt_begin) 是**别的 layer / 别的 append 的残留**。
++// 实测（KVARN128_DUMP_DIR 的 pre/cont 对拍）：未封口窗口的「保持段」[0,51) 被 51/51 个 token
++// 覆盖成别人的值（cos 由 1.000000 掉到 -0.237~-0.103）⇒ 窗口里已经不是这块 tile 的真值。
++// 按层分之后 stage 就是这块 tile 的累积值：rotate 写一段、其余保持上一次 append 写的内容。
+ // 必须在 CUDA Graph capture 之前分配（capture 期禁 malloc）。
+ // ---------------------------------------------------------------------------
+-__half* g_stage       = nullptr;
+-int     g_stage_heads = 0;
++constexpr int kMaxStages = 256;
++
++struct KvarnStage {
++    const void* key   = nullptr;
++    int         heads = 0;
++    __half*     buf   = nullptr;
++};
++
++KvarnStage g_stages[kMaxStages];
++int        g_stage_count = 0;
+ 
+-const char* ensure_stage_impl(int kv_heads, cudaStream_t stream) {
++// 取本层 staging；不存在则建（含 capture 前置检查）。成功时 *out 有效并返回 nullptr。
++const char* ensure_stage_for(const void* key, int kv_heads, cudaStream_t stream, __half** out) {
++    *out = nullptr;
+     const int heads = kv_heads > 0 ? kv_heads : kMaxKVHeads;
+-    if (g_stage != nullptr && g_stage_heads >= heads) { return nullptr; }
++    for (int i = 0; i < g_stage_count; ++i) {
++        if (g_stages[i].key == key) {
++            if (g_stages[i].heads < heads) {
++                return "KVarN staging 形状不一致（同一层的 KVHeads 变大了）";
++            }
++            *out = g_stages[i].buf;
++            return nullptr;
++        }
++    }
+     cudaStreamCaptureStatus cap = cudaStreamCaptureStatusNone;
+     cudaStreamIsCapturing(stream, &cap);
+     if (cap != cudaStreamCaptureStatusNone) {
+         return "KVarN staging 必须在 CUDA Graph capture 之前完成分配（warmup 里第一次 append 就会触发）";
+     }
+-    const std::size_t bytes =
+-        static_cast<std::size_t>(2) * heads * kKvarnTileTokens * kKvarnHeadDim * sizeof(__half);
++    if (g_stage_count >= kMaxStages) { return "KVarN staging 池已满"; }
++    // 布局 = [which(K/V)][slot][head][token][dim]，rotate/encode/window 三处同一式
++    //   stage[which * 128*256*heads*2 + (slot*heads + head)*128*256 + tt*256 + d]
++    // ⇒ 需要 2(which) × kKvarnPagesPerTile(slot) × heads × 128 × 256 个 half。
++    // （旧值 2*heads*128*256 漏了 which 那一维 ⇒ V 平面整段落在分配尾后：heads=4 时每个
++    //   rotate/encode/window 都越界读写 512 KiB；cudaMemcpy 从该地址取数直接报错。）
++    const std::size_t elements = static_cast<std::size_t>(2) * kKvarnPagesPerTile * heads *
++                                 kKvarnTileTokens * kKvarnHeadDim;
++    const std::size_t bytes = elements * sizeof(__half);
+     __half* fresh = nullptr;
+     if (cudaMalloc(&fresh, bytes) != cudaSuccess) {
+         cudaGetLastError();
+-        return "KVarN staging cudaMalloc 失败（2 slot × KVHeads × 128 × 256 × 2 B）";
++        return "KVarN staging cudaMalloc 失败（2 which × 2 slot × KVHeads × 128 × 256 × 2 B）";
+     }
+     if (cudaMemset(fresh, 0, bytes) != cudaSuccess) { cudaGetLastError(); }
+-    if (g_stage != nullptr) { cudaFree(g_stage); }
+-    g_stage       = fresh;
+-    g_stage_heads = heads;
++    g_stages[g_stage_count++] = KvarnStage{key, heads, fresh};
++    *out = fresh;
+     return nullptr;
+ }
+ 
+@@ -425,11 +459,12 @@ void kvarn128_write_kvd1(FILE* f, const char* name, int kind, int bits, int code
+     std::fwrite(&of, 4, 1, f);
+ }
+ 
+-void kvarn128_write_kvo1_head(FILE* f, const char* name, int kind, const float* data) {
++void kvarn128_write_kvo1_head(FILE* f, const char* name, int kind, int domain, const float* data) {
+     const std::uint32_t nl = static_cast<std::uint32_t>(std::strlen(name));
+     std::fwrite(&nl, 4, 1, f);
+     std::fwrite(name, 1, nl, f);
+-    const std::int32_t h[4] = {kind, kKvarnTileTokens, kKvarnHeadDim, 1 /*domain: 1=已逆旋转*/};
++    // domain: 1 = 已逆旋转（真实域，引擎窗口的值）；0 = 旋转域（stage 的原始值）
++    const std::int32_t h[4] = {kind, kKvarnTileTokens, kKvarnHeadDim, domain};
+     std::fwrite(h, 4, 4, f);
+     const std::uint32_t nf = static_cast<std::uint32_t>(kKvarnTileTokens * kKvarnHeadDim);
+     std::fwrite(&nf, 4, 1, f);
+@@ -443,14 +478,178 @@ float kvarn128_bf16_bits_to_f32(std::uint16_t h) {
+     return f;
+ }
+ 
++bool kvarn128_dump_verbose() {
++    static const bool on = [] {
++        const char* e = std::getenv("KVARN128_DUMP_VERBOSE");
++        return e != nullptr && e[0] != '\0' && e[0] != '0';
++    }();
++    return on;
++}
++
++// 窗口 tile/head0 的 128×256 bf16 → f32（页表与量化平面一致；host 只 cudaMemcpy）。
++void kvarn128_read_window(const __nv_bfloat16* win_k, const __nv_bfloat16* win_v, int kv_heads,
++                          const std::int32_t* phys, std::vector<float>& wk,
++                          std::vector<float>& wv) {
++    for (int tt = 0; tt < kKvarnTileTokens; ++tt) {
++        const int          p   = tt / kKvarnPageTokens;
++        const int          off = tt % kKvarnPageTokens;
++        const std::int64_t base =
++            static_cast<std::int64_t>(kKvarnHeadDim) * kKvarnPageTokens *
++                (static_cast<std::int64_t>(kv_heads) * phys[p]) +
++            static_cast<std::int64_t>(kKvarnHeadDim) * off;
++        std::uint16_t tmp[2 * kKvarnHeadDim];
++        if (!kvarn128_d2h(tmp, win_k + base, kKvarnHeadDim * 2) ||
++            !kvarn128_d2h(tmp + kKvarnHeadDim, win_v + base, kKvarnHeadDim * 2)) {
++            return;
++        }
++        for (int d = 0; d < kKvarnHeadDim; ++d) {
++            wk[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
++                kvarn128_bf16_bits_to_f32(tmp[d]);
++            wv[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
++                kvarn128_bf16_bits_to_f32(tmp[kKvarnHeadDim + d]);
++        }
++    }
++}
++
++// ===========================================================================
++// 未封口 tile 的判定 dump：stage（旋转域 fp16→f32，domain=0）与窗口（bf16→f32，domain=1）
++// 各 128×256，主机侧对 stage 做一次 inverse_rotate_d256 后与窗口逐 token 比 cos：
++//   ≈1 ⇒ 窗口的未封口分支写的就是 stage 的值（分支本身没错）；
++//   ≪1 ⇒ 窗口写进了非本次 append 的 stage 内容（陈旧/越界写）。
++// 触发：KVARN128_DUMP_DIR 非空、非 capture、且本次 append 的 tile 未封口。
++//   首次 tt_begin==0（起始 append）写 kvarn128_unsealed_pre_{stage,win}.kvo；
++//   之后 tt_begin>0（续写 append）写 kvarn128_unsealed_cont<N>_{stage,win}.kvo（最多 4 次）。
++// ===========================================================================
++void kvarn128_dbg(const char* msg, int a, int b) {
++    if (!kvarn128_dump_verbose()) { return; }
++    std::fprintf(stderr, "ninfer: KVarN128 dump-dbg %s a=%d b=%d\n", msg, a, b);
++    std::fflush(stderr);
++}
++
++void kvarn128_dump_unsealed(const void* k_code, const void* v_code, const __nv_bfloat16* win_k,
++                            const __nv_bfloat16* win_v, const __half* stage,
++                            KvarnTile128BlockTable table, int kv_heads,
++                            const std::int32_t* positions, int tokens, cudaStream_t stream,
++                            const char* dir) {
++    kvarn128_dbg("enter", tokens, kv_heads);
++    if (positions == nullptr || win_k == nullptr || win_v == nullptr) {
++        kvarn128_dbg("bail-null", positions == nullptr, win_k == nullptr);
++        return;
++    }
++    std::int32_t pos0 = 0, poslast = 0;
++    if (!kvarn128_d2h(&pos0, positions, 4) ||
++        !kvarn128_d2h(&poslast, positions + (tokens - 1), 4)) {
++        kvarn128_dbg("bail-pos-d2h", tokens, 0);
++        return;
++    }
++    const int  tile     = pos0 / kKvarnTileTokens;
++    const int  base     = tile * kKvarnTileTokens;
++    const bool sealed   = (base + kKvarnTileTokens <= poslast + 1);
++    const int  tt_begin = pos0 > base ? pos0 - base : 0;
++    const int  tt_end   = (poslast + 1 < base + kKvarnTileTokens) ? poslast + 1 - base
++                                                                 : kKvarnTileTokens;
++    kvarn128_dbg("geom", pos0, poslast);
++    if (sealed) {
++        kvarn128_dbg("bail-sealed", tile, tt_end);
++        return; // 已封口走 KVD1 路
++    }
++
++    static int prefill_done = 0, cont_count = 0;
++    const bool continuation = tt_begin > 0;
++    if (!continuation) {
++        if (prefill_done != 0) { return; }
++        prefill_done = 1;
++    } else if (cont_count >= 4) {
++        return;
++    }
++    const int idx = continuation ? cont_count++ : 0;
++    kvarn128_dbg("accepted", continuation ? 1 : 0, idx);
++
++    std::int32_t        row = 0, page0 = -1, page1 = -1;
++    const std::int32_t* bt  = table.direct;
++    if (bt == nullptr) {
++        if (!kvarn128_d2h(&row, table.table_rows, sizeof(row))) {
++            kvarn128_dbg("bail-row-d2h", tokens, 0);
++            return;
++        }
++        bt = table.tables + static_cast<std::int64_t>(row) * table.table_stride;
++    }
++    if (!kvarn128_d2h(&page0, bt + 2 * tile, 4) ||
++        !kvarn128_d2h(&page1, bt + 2 * tile + 1, 4)) {
++        kvarn128_dbg("bail-page-d2h", tile, row);
++        return;
++    }
++    if (page0 < 0 || page1 < 0) {
++        kvarn128_dbg("bail-page-neg", page0, page1);
++        return;
++    }
++    const std::int32_t phys[2] = {page0, page1};
++
++    const std::size_t elems = static_cast<std::size_t>(kKvarnTileTokens) * kKvarnHeadDim;
++    std::vector<float> sk(elems), sv(elems), wk(elems), wv(elems);
++
++    // stage 布局 = [which][slot][head][tile_token][dim]，slot = tile % 2，head = 0
++    const int          slot = tile % kKvarnPagesPerTile;
++    const std::int64_t stage_plane = static_cast<std::int64_t>(kKvarnTileTokens) * kKvarnHeadDim *
++                                     kv_heads * kKvarnPagesPerTile;
++    const std::int64_t stage_head =
++        static_cast<std::int64_t>(slot) * kv_heads * kKvarnTileTokens * kKvarnHeadDim;
++    if (stage == nullptr) {
++        kvarn128_dbg("bail-stage-null", tokens, 0);
++        return;
++    }
++    std::vector<std::uint16_t> raw(2 * elems);
++    if (!kvarn128_d2h(raw.data(), stage + stage_head, elems * 2) ||
++        !kvarn128_d2h(raw.data() + elems, stage + stage_plane + stage_head, elems * 2)) {
++        kvarn128_dbg("bail-stage-d2h", slot, kv_heads);
++        return;
++    }
++    for (std::size_t i = 0; i < elems; ++i) {
++        const __half hk = *reinterpret_cast<const __half*>(&raw[i]);
++        const __half hv = *reinterpret_cast<const __half*>(&raw[elems + i]);
++        sk[i]           = __half2float(hk);
++        sv[i]           = __half2float(hv);
++    }
++    kvarn128_read_window(win_k, win_v, kv_heads, phys, wk, wv);
++
++    char path[1024];
++    const char* tag = continuation ? "cont" : "pre";
++    std::snprintf(path, sizeof(path), "%s/kvarn128_unsealed_%s%d_stage.kvo", dir, tag, idx);
++    FILE* f = std::fopen(path, "wb");
++    if (f != nullptr) {
++        const std::uint32_t magic = 0x314F564Bu, ver = 1, n = 2;
++        std::fwrite(&magic, 4, 1, f);
++        std::fwrite(&ver, 4, 1, f);
++        std::fwrite(&n, 4, 1, f);
++        kvarn128_write_kvo1_head(f, "L0-K-h0", 0, 0 /*旋转域*/, sk.data());
++        kvarn128_write_kvo1_head(f, "L0-V-h0", 1, 0 /*旋转域*/, sv.data());
++        std::fclose(f);
++    }
++    std::snprintf(path, sizeof(path), "%s/kvarn128_unsealed_%s%d_win.kvo", dir, tag, idx);
++    f = std::fopen(path, "wb");
++    if (f != nullptr) {
++        const std::uint32_t magic = 0x314F564Bu, ver = 1, n = 2;
++        std::fwrite(&magic, 4, 1, f);
++        std::fwrite(&ver, 4, 1, f);
++        std::fwrite(&n, 4, 1, f);
++        kvarn128_write_kvo1_head(f, "L0-K-h0", 0, 1 /*已逆旋转*/, wk.data());
++        kvarn128_write_kvo1_head(f, "L0-V-h0", 1, 1 /*已逆旋转*/, wv.data());
++        std::fclose(f);
++    }
++    std::fprintf(stderr,
++                 "ninfer: KVarN128 unsealed dump[%s#%d] tokens=%d pos0=%d poslast=%d tile=%d "
++                 "tt=[%d,%d) heads=%d pages=%d/%d\n",
++                 tag, idx, tokens, pos0, poslast, tile, tt_begin, tt_end, kv_heads, page0, page1);
++    std::fflush(stderr);
++}
++
+ void kvarn128_dump_probe(const void* k_code, const void* k_scale, const void* v_code,
+                          const void* v_scale, KvarnTile128BlockTable table, int kv_heads,
+-                         const __nv_bfloat16* win_k, const __nv_bfloat16* win_v, int tokens,
++                         const __nv_bfloat16* win_k, const __nv_bfloat16* win_v,
++                         const __half* stage, const std::int32_t* positions, int tokens,
+                          cudaStream_t stream) {
+-    static bool done = false;
+-    const char* dir  = std::getenv("KVARN128_DUMP_DIR");
+-    if (done || dir == nullptr || dir[0] == '\0') { return; }
+-    if (tokens < kKvarnTileTokens) { return; } // 只 dump 已封口的 tile 0（真解码路）
++    const char* dir = std::getenv("KVARN128_DUMP_DIR");
++    if (dir == nullptr || dir[0] == '\0') { return; }
+     cudaStreamCaptureStatus cap = cudaStreamCaptureStatusNone;
+     cudaStreamIsCapturing(stream, &cap);
+     if (cap != cudaStreamCaptureStatusNone) {
+@@ -458,8 +657,16 @@ void kvarn128_dump_probe(const void* k_code, const void* k_scale, const void* v_
+         std::fflush(stderr);
+         return;
+     }
+-    done = true;
+     if (cudaStreamSynchronize(stream) != cudaSuccess) { cudaGetLastError(); return; }
++    kvarn128_dbg("probe-enter", tokens, kv_heads);
++    if (tokens < kKvarnTileTokens) { // 未封口 tile：走 stage/窗口对拍分支
++        kvarn128_dump_unsealed(k_code, v_code, win_k, win_v, stage, table, kv_heads, positions,
++                               tokens, stream, dir);
++        return;
++    }
++    static bool done = false;
++    if (done) { return; }
++    done = true;
+     constexpr int KB = 4, VB = 4;
+     constexpr int CK = 32 * KB, CV = 32 * VB;
+     constexpr int SK = kKvarnKScaleLeading, SV = kKvarnVScaleLeading;
+@@ -505,25 +712,7 @@ void kvarn128_dump_probe(const void* k_code, const void* k_scale, const void* v_
+     // 窗口值（bf16，已逆旋转）→ f32
+     std::vector<float> wk(kKvarnTileTokens * kKvarnHeadDim);
+     std::vector<float> wv(kKvarnTileTokens * kKvarnHeadDim);
+-    for (int tt = 0; tt < kKvarnTileTokens; ++tt) {
+-        const int          p   = tt / kKvarnPageTokens;
+-        const int          off = tt % kKvarnPageTokens;
+-        const std::int64_t base =
+-            static_cast<std::int64_t>(kKvarnHeadDim) * kKvarnPageTokens *
+-                (static_cast<std::int64_t>(kv_heads) * phys[p]) +
+-            static_cast<std::int64_t>(kKvarnHeadDim) * off;
+-        std::uint16_t tmp[2 * kKvarnHeadDim];
+-        if (!kvarn128_d2h(tmp, win_k + base, kKvarnHeadDim * 2) ||
+-            !kvarn128_d2h(tmp + kKvarnHeadDim, win_v + base, kKvarnHeadDim * 2)) {
+-            return;
+-        }
+-        for (int d = 0; d < kKvarnHeadDim; ++d) {
+-            wk[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
+-                kvarn128_bf16_bits_to_f32(tmp[d]);
+-            wv[static_cast<std::size_t>(tt) * kKvarnHeadDim + d] =
+-                kvarn128_bf16_bits_to_f32(tmp[kKvarnHeadDim + d]);
+-        }
+-    }
++    kvarn128_read_window(win_k, win_v, kv_heads, phys, wk, wv);
+ 
+     char path[1024];
+     std::snprintf(path, sizeof(path), "%s/kvarn128_p1.dump", dir);
+@@ -548,8 +737,8 @@ void kvarn128_dump_probe(const void* k_code, const void* k_scale, const void* v_
+         std::fwrite(&magic, 4, 1, f);
+         std::fwrite(&ver, 4, 1, f);
+         std::fwrite(&n, 4, 1, f);
+-        kvarn128_write_kvo1_head(f, "L0-K-h0", 0, wk.data());
+-        kvarn128_write_kvo1_head(f, "L0-V-h0", 1, wv.data());
++        kvarn128_write_kvo1_head(f, "L0-K-h0", 0, 1 /*已逆旋转*/, wk.data());
++        kvarn128_write_kvo1_head(f, "L0-V-h0", 1, 1 /*已逆旋转*/, wv.data());
+         std::fclose(f);
+         std::fprintf(stderr, "ninfer: KVarN128 dump 写出 %s\n", path);
+     } else {
+@@ -571,12 +760,13 @@ static_assert(kKvarnPageTokens == kPagedKVPageSize, "KVarN 的页粒度必须等
+ 
+ int kvarn128_stage_slots() { return kKvarnPagesPerTile; }
+ 
++// staging 现在**按层**在第一次 append 时分配（键 = 该层量化 K 平面基址），那次必然发生在
++// CUDA Graph capture 之前（capture 期禁 malloc 的检查在 ensure_stage_for 里）。所以这里
++// 不再需要"提前预热"；保留入口只为不破坏调用方（当前全树无调用）。
+ bool kvarn128_ensure_stage(int kv_heads, cudaStream_t stream) {
+-    const char* why = ensure_stage_impl(kv_heads, stream);
+-    if (why == nullptr) { return true; }
+-    std::fprintf(stderr, "ninfer: KVarN staging 池不可用: %s\n", why);
+-    std::fflush(stderr);
+-    return false;
++    (void)kv_heads;
++    (void)stream;
++    return true;
+ }
+ 
+ void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
+@@ -590,18 +780,22 @@ void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
+         std::fflush(stderr);
+         throw std::invalid_argument("kv_cache_append: KVarN128 unsupported KV head count");
+     }
+-    const char* why = ensure_stage_impl(kv_heads, stream);
+-    if (why != nullptr) {
+-        std::fprintf(stderr, "ninfer: KVarN128 append 前置条件不满足: %s\n", why);
+-        std::fflush(stderr);
+-        throw std::invalid_argument("kv_cache_append: KVarN128 staging unavailable");
+-    }
+     if (positions == nullptr || k_code == nullptr || k_scale == nullptr || v_code == nullptr ||
+         v_scale == nullptr) {
+         std::fprintf(stderr, "ninfer: KVarN128 append 实参缺失（positions/plane 有空指针）\n");
+         std::fflush(stderr);
+         throw std::invalid_argument("kv_cache_append: KVarN128 missing arguments");
+     }
++    // 本层的 staging（键 = k_code，与窗口同键）：stage 是"这块 tile 的旋转域累积值"，
++    // 不是"本次 append 的暂存" —— encode 封口时读满 128 槽、未封口窗口读 [0,tt_end)，
++    // 两处都需要 [0,tt_begin) 那段上一次 append 写进去的值。
++    __half*     stage = nullptr;
++    const char* why   = ensure_stage_for(k_code, kv_heads, stream, &stage);
++    if (why != nullptr) {
++        std::fprintf(stderr, "ninfer: KVarN128 append 前置条件不满足: %s\n", why);
++        std::fflush(stderr);
++        throw std::invalid_argument("kv_cache_append: KVarN128 staging unavailable");
++    }
+     ensure_encode_opt_in();
+ 
+     const auto* kp = static_cast<const __nv_bfloat16*>(k_bf16);
+@@ -631,28 +825,29 @@ void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
+     for (int index = 0; index < tiles_span; ++index) {
+         if (kv_heads == 4) {
+             kvarn128_rotate_tile_kernel<<<grid, kThreads, 0, stream>>>(kp, vp, positions, n, index, 4,
+-                                                                       g_stage);
++                                                                       stage);
+             CUDA_CHECK(cudaGetLastError());
+             kvarn128_encode_kernel<4, 4><<<grid, kThreads, kDynamicSmemBytes, stream>>>(
+-                g_stage, positions, n, index, kc, ks, vc, vs, table, kKvarnIters);
++                stage, positions, n, index, kc, ks, vc, vs, table, kKvarnIters);
+             CUDA_CHECK(cudaGetLastError());
+             kvarn128_window_kernel<4, 4><<<grid, kThreads, 0, stream>>>(
+-                kc, ks, vc, vs, g_stage, positions, n, index, table, wk, wv);
++                kc, ks, vc, vs, stage, positions, n, index, table, wk, wv);
+         } else {
+             kvarn128_rotate_tile_kernel<<<grid, kThreads, 0, stream>>>(kp, vp, positions, n, index, 2,
+-                                                                       g_stage);
++                                                                       stage);
+             CUDA_CHECK(cudaGetLastError());
+             kvarn128_encode_kernel<4, 2><<<grid, kThreads, kDynamicSmemBytes, stream>>>(
+-                g_stage, positions, n, index, kc, ks, vc, vs, table, kKvarnIters);
++                stage, positions, n, index, kc, ks, vc, vs, table, kKvarnIters);
+             CUDA_CHECK(cudaGetLastError());
+             kvarn128_window_kernel<4, 2><<<grid, kThreads, 0, stream>>>(
+-                kc, ks, vc, vs, g_stage, positions, n, index, table, wk, wv);
++                kc, ks, vc, vs, stage, positions, n, index, table, wk, wv);
+         }
+         CUDA_CHECK(cudaGetLastError());
+     }
+ 
+     // 对拍 dump（默认关闭；KVARN128_DUMP_DIR 打开时只写一次，不改数值路径）
+-    kvarn128_dump_probe(k_code, k_scale, v_code, v_scale, table, kv_heads, wk, wv, tokens, stream);
++    kvarn128_dump_probe(k_code, k_scale, v_code, v_scale, table, kv_heads, wk, wv, stage, positions,
++                        tokens, stream);
+ }
+ 
+ void kvarn128_decode_tile(const void* k_code, const void* k_scale, const void* v_code,
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.h b/src/ops/kv_cache/append/kvarn128_launch.h
+index 417205a..fc20f92 100644
+--- a/src/ops/kv_cache/append/kvarn128_launch.h
++++ b/src/ops/kv_cache/append/kvarn128_launch.h
+@@ -43,8 +43,9 @@ void kv_cache_append_kvarn128_launch(const void* k_bf16, const void* v_bf16,
+                                      void* v_scale, int tokens, int kv_heads, int pages,
+                                      cudaStream_t stream);
+ 
+-// staging（旋转域 fp16）必须在 **CUDA Graph capture 之前**预留（capture 期禁 malloc）。
+-// 消费端与 warmup 都会调它；已经够大就直接返回 true。
++// staging（旋转域 fp16）现在**按层**（键 = 量化 K 平面基址，与窗口同键）在第一次 append 时
++// 分配，那次必然在 CUDA Graph capture 之前（capture 期禁 malloc 的检查在分配点）。
++// 本入口保留为兼容 no-op（当前全树无调用）。
+ bool kvarn128_ensure_stage(int kv_heads, cudaStream_t stream);
+ // 当前 staging 的 slot 数（诊断用）。
+ int kvarn128_stage_slots();
+-- 
+2.52.0.windows.1
+

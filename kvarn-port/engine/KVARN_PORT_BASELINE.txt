@@ -1,0 +1,3 @@
+上游 = https://github.com/iamwavecut/ninfer-all  master HEAD 11327e96c69f289aa2010a3ff91079523bbe39f5
+取件 = codeload tar.gz 14862123 B  sha256 c5e3a9d971aebfefdfab830090cabdaff47d1455a2078a61c849bd349cdc9fb0
+本目录 = 该基线的 git 化副本，之后 KVarN KV codec 的改动全部在本目录内 commit（可回退）。

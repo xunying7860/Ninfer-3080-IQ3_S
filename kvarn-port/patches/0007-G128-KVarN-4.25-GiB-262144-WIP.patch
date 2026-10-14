@@ -1,0 +1,2078 @@
+From 9392b8eb54cfbc35e965fd7cf7b3606f6fc1e0bb Mon Sep 17 00:00:00 2001
+From: Hermes <hermes@local>
+Date: Wed, 14 Oct 2026 15:33:49 +0800
+Subject: [PATCH 7/7] =?UTF-8?q?G128=20KVarN=20=E7=AA=97=E5=8F=A3=E6=94=B9?=
+ =?UTF-8?q?=E3=80=8E=E8=99=9A=E6=8B=9F=E9=A2=84=E7=95=99=20+=20=E6=83=B0?=
+ =?UTF-8?q?=E6=80=A7=E7=89=A9=E7=90=86=E5=90=8E=E5=A4=87=E3=80=8F=EF=BC=9A?=
+ =?UTF-8?q?4.25=20GiB=20=E5=80=92=E4=BA=8F=E6=B8=85=E9=9B=B6=E3=80=8126214?=
+ =?UTF-8?q?4=20=E8=83=BD=E8=B5=B7=EF=BC=88=E6=94=B6=E5=8D=95=E6=97=B6?=
+ =?UTF-8?q?=E8=A2=AB=E5=81=9C=EF=BC=8C=E6=95=85=E6=A0=87=20WIP=20=E5=86=BB?=
+ =?UTF-8?q?=E7=BB=93=EF=BC=89=20=E5=AE=9E=E6=B5=8B=E8=AF=81=E6=8D=AE?=
+ =?UTF-8?q?=EF=BC=88x99=20=E6=97=A5=E5=BF=97=20/data/kvarn/g128-window-202?=
+ =?UTF-8?q?61014/logs/=EF=BC=89=EF=BC=9A=20=20=20=C2=B7=20=E7=AA=97?=
+ =?UTF-8?q?=E5=8F=A3=E5=88=86=E9=85=8D=E8=A1=8C=E5=8E=9F=E6=96=87=EF=BC=9A?=
+ =?UTF-8?q?`KVarN128=20=E7=AA=97=E5=8F=A3=E5=B7=B2=E5=88=86=E9=85=8D=20#16?=
+ =?UTF-8?q?=20pages=3D4097=20heads=3D4=20=E8=99=9A=E6=8B=9F=20514.0=20MiB?=
+ =?UTF-8?q?=C3=972=20=E5=B7=B2=E6=8F=90=E4=BA=A4=208.0=20MiB=C3=972?=
+ =?UTF-8?q?=EF=BC=88=E6=83=B0=E6=80=A7=E7=89=A9=E7=90=86=E5=90=8E=E5=A4=87?=
+ =?UTF-8?q?=EF=BC=8C=E4=B8=8E=E9=87=8F=E5=8C=96=E5=B9=B3=E9=9D=A2=E5=90=8C?=
+ =?UTF-8?q?=E9=A1=B5=E8=A1=A8=EF=BC=89`=20=E2=80=94=E2=80=94=20=E6=AF=8F?=
+ =?UTF-8?q?=E5=B1=82=E5=8F=AA=E6=8F=90=E4=BA=A4=208.0=20MiB=EF=BC=88?=
+ =?UTF-8?q?=E5=8E=9F=E6=9D=A5=E6=98=AF=20128.0=20MiB=C3=972=EF=BC=89?=
+ =?UTF-8?q?=EF=BC=8C17=20=E5=B1=82=E5=85=B1=E6=8F=90=E4=BA=A4=20~272=20MiB?=
+ =?UTF-8?q?=EF=BC=8C=E5=8E=9F=E6=9D=A5=2017=C3=97256=20MiB=20=3D=204.25=20?=
+ =?UTF-8?q?GiB=E3=80=82=20=20=20=C2=B7=2065,536=20=E7=AA=97=E5=8F=A3?=
+ =?UTF-8?q?=E5=AF=B9=E7=85=A7=EF=BC=9Akvarn128=20`capacity=20|=20KV=2065,5?=
+ =?UTF-8?q?36=20tokens,=20kvarn128,=20explicit=20|=20pages=201,024/1,024?=
+ =?UTF-8?q?=20|=20runtime=202.63=20GiB=20|=20free=205.35=20GiB`=20vs=20rk4?=
+ =?UTF-8?q?v4=20`runtime=202.58=20GiB=20|=20free=205.42=20GiB`=20=E2=87=92?=
+ =?UTF-8?q?=20=E5=B7=AE=20**0.05=20GiB**=EF=BC=88=E5=88=A4=E6=8D=AE=20?=
+ =?UTF-8?q?=E2=89=A4=20+0.1=20GiB=EF=BC=9B=E6=94=B9=E5=89=8D=E6=98=AF=20+4?=
+ =?UTF-8?q?.43=20GiB=EF=BC=89=E3=80=82=20=20=20=C2=B7=20**262,144=20?=
+ =?UTF-8?q?=E8=B5=B7=E6=9D=A5=E4=BA=86**=EF=BC=9A`capacity=20|=20KV=20262,?=
+ =?UTF-8?q?144=20tokens,=20kvarn128,=20explicit=20|=20pages=204,096/4,096?=
+ =?UTF-8?q?=20|=20runtime=206.26=20GiB=20|=20free=201.71=20GiB`=20+=20`api?=
+ =?UTF-8?q?=20base=20http://127.0.0.1:18141/v1`=EF=BC=88=E6=94=B9=E5=89=8D?=
+ =?UTF-8?q?=20131072/196608/262144=20=E5=85=A8=E9=83=A8=20startup=20failed?=
+ =?UTF-8?q?=EF=BC=89=E3=80=82=20=20=20=C2=B7=20=E6=95=B0=E5=80=BC=E6=9C=AA?=
+ =?UTF-8?q?=E5=8A=A8=EF=BC=9A=E6=96=B0=E4=BA=8C=E8=BF=9B=E5=88=B6=20PPL=20?=
+ =?UTF-8?q?`5.84802`=EF=BC=8816,382=20token=EF=BC=89/`6.60954`=EF=BC=888,1?=
+ =?UTF-8?q?91=20token=EF=BC=89=EF=BC=8C=E4=B8=8E=E4=B8=8D=E5=8F=98?=
+ =?UTF-8?q?=E9=87=8F=205.848024456522766=20/=206.609538479127182=20?=
+ =?UTF-8?q?=E5=9C=A8=E6=89=93=E5=8D=B0=E7=B2=BE=E5=BA=A6=E5=86=85=E4=B8=80?=
+ =?UTF-8?q?=E8=87=B4=EF=BC=9BFULL=3D1=20=E5=9B=9E=E9=80=80=E8=B7=AF?=
+ =?UTF-8?q?=E5=90=8C=E5=80=BC=E3=80=82=20=20=20=C2=B7=20nvidia-smi=20?=
+ =?UTF-8?q?=E9=87=87=E6=A0=B7=E5=B3=B0=E5=80=BC=E4=BB=8E=2018,987=20MiB=20?=
+ =?UTF-8?q?=E9=99=8D=E5=88=B0=2014,901=20MiB=20=E4=B8=80=E6=A1=A3=E3=80=82?=
+ =?UTF-8?q?=20=E9=A1=BA=E5=B8=A6=E8=A1=A5=E4=B8=8A=E4=B8=A4=E6=9D=A1?=
+ =?UTF-8?q?=E6=88=91=E8=AF=BB=E4=BB=A3=E7=A0=81=E5=8F=91=E7=8E=B0=E7=9A=84?=
+ =?UTF-8?q?=E6=BD=9C=E4=BC=8F=E7=BC=BA=E9=99=B7=EF=BC=88=E5=8E=9F=E6=A0=B7?=
+ =?UTF-8?q?=E4=BF=9D=E7=95=99=E6=B3=A8=E9=87=8A=EF=BC=89=EF=BC=9A=20=20=20?=
+ =?UTF-8?q?=C2=B7=20startup.cpp=EF=BC=9AKvarnTile128=20=E8=A6=81=E6=B1=82?=
+ =?UTF-8?q?=20max=5Fcontext=20=E6=98=AF=20128=20=E7=9A=84=E5=80=8D?=
+ =?UTF-8?q?=E6=95=B0=EF=BC=88=E9=A1=B5=E6=95=B0=E4=B8=BA=E5=81=B6=E6=95=B0?=
+ =?UTF-8?q?=EF=BC=89=EF=BC=8C=E5=90=A6=E5=88=99=20bt[2*tile+1]=20=E8=B6=8A?=
+ =?UTF-8?q?=E7=95=8C=E4=B8=80=E6=A0=BC=EF=BC=9Bfprintf+fflush=20=E5=90=8E?=
+ =?UTF-8?q?=20throw=EF=BC=8C=E4=B8=8D=E6=94=B9=E5=85=B1=E7=94=A8=E7=9A=84?=
+ =?UTF-8?q?=20page=5Fcount=E3=80=82=20=20=20=C2=B7=20request=5Flog.cpp?=
+ =?UTF-8?q?=EF=BC=9Akv=5Fcache=5Fname()=20=E8=A1=A5=20KvarnTile128=20?=
+ =?UTF-8?q?=E2=86=92=20kvarn128=EF=BC=88=E5=8E=9F=E6=9D=A5=E4=BC=9A?=
+ =?UTF-8?q?=E6=89=93=20unknown=EF=BC=8C=E8=B7=9F=20capacity=20=E8=A1=8C?=
+ =?UTF-8?q?=E5=AF=B9=E4=B8=8D=E4=B8=8A=E8=B4=A6=EF=BC=89=E3=80=82=20?=
+ =?UTF-8?q?=E6=9C=AA=E5=AE=8C=E6=88=90=E9=A1=B9=EF=BC=88=E5=86=BB=E7=BB=93?=
+ =?UTF-8?q?=EF=BC=8C=E5=A6=82=E5=AE=9E=E7=99=BB=E8=AE=B0=EF=BC=89=EF=BC=9A?=
+ =?UTF-8?q?=E5=B0=81=E5=8F=A3/=E6=9C=AA=E5=B0=81=E5=8F=A3=E5=AF=B9?=
+ =?UTF-8?q?=E6=8B=8D=20FAIL=EF=BC=88cos=3D0=E3=80=81|inv=5Frot(stage)|=3D0?=
+ =?UTF-8?q?=EF=BC=8C=E4=B8=94=20NINFER=5FKVARN128=5FWINDOW=5FFULL=3D1=20?=
+ =?UTF-8?q?=E5=9B=9E=E9=80=80=E8=B7=AF=E5=90=8C=E6=A0=B7=20FAIL=20?=
+ =?UTF-8?q?=E2=87=92=20=E6=9B=B4=E5=83=8F=20dump/=E5=AF=B9=E6=8B=8D?=
+ =?UTF-8?q?=E8=84=9A=E6=9C=AC=E5=8F=A3=E5=BE=84=E9=97=AE=E9=A2=98=E8=80=8C?=
+ =?UTF-8?q?=E9=9D=9E=E7=AA=97=E5=8F=A3=E6=94=B9=E5=8A=A8=E5=BC=95=E5=85=A5?=
+ =?UTF-8?q?=EF=BC=8C=E6=9C=AA=E6=9F=A5=E5=88=B0=E5=BA=95=EF=BC=89=EF=BC=9B?=
+ =?UTF-8?q?=E9=97=A8=E7=A6=81=20ctrl-rst=20/=20toolsctrl-vs-tools=20?=
+ =?UTF-8?q?=E4=B8=8E=E7=9F=AD=E6=8F=90=E7=A4=BA=E8=AF=8D=20106/51/1=20?=
+ =?UTF-8?q?=E6=9C=AA=E8=B7=91=EF=BC=9Bgeneration=5Fservice.cpp=20=E6=94=B9?=
+ =?UTF-8?q?=E5=8A=A8=E9=9D=A2=E5=A4=A7=EF=BC=88=C2=B11473=20=E8=A1=8C?=
+ =?UTF-8?q?=EF=BC=89=EF=BC=8C**=E6=9C=AA=E7=BB=8F=E5=AE=8C=E6=95=B4?=
+ =?UTF-8?q?=E9=97=A8=E7=A6=81=EF=BC=8C=E5=88=AB=E5=BD=93=E5=B7=B2=E9=AA=8C?=
+ =?UTF-8?q?=E8=AF=81=E4=BB=B6=E7=94=A8**=E3=80=82=20=E7=BA=BF=E4=B8=8A?=
+ =?UTF-8?q?=E5=BD=B1=E5=93=8D=EF=BC=9A=E9=9B=B6=E3=80=82=E7=94=9F=E4=BA=A7?=
+ =?UTF-8?q?=20/data/ninfer=20=E6=9C=AA=E5=8A=A8=EF=BC=8Cninfer/ninfer-watc?=
+ =?UTF-8?q?hdog=20=E4=BB=8D=20inactive+disabled=EF=BC=9B=E6=9C=AC=E4=BB=B6?=
+ =?UTF-8?q?=E5=8F=AA=E9=83=A8=E7=BD=B2=E5=9C=A8=20/data/kvarn/g128-engine/?=
+ =?UTF-8?q?bin=EF=BC=88md5=2065acded4d4d1784f2e8dd576ae45338d=EF=BC=8C?=
+ =?UTF-8?q?=E6=97=A7=E4=BB=B6=20prev-2532acf8=20=E7=AD=89=209=20=E4=BB=BD?=
+ =?UTF-8?q?=E7=95=99=E6=A1=A3=E6=9C=AA=E5=88=A0=EF=BC=89=E3=80=82?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/core/paged_kv_cache.h                     |    7 +
+ .../qwen3_5/program/planning/startup.cpp      |   14 +
+ src/models/qwen3_5/program/program_impl.cpp   |    6 +
+ .../qwen3_5/program/storage/context.cpp       |    5 +
+ src/models/qwen3_5/program/storage/kv_store.h |   18 +
+ src/ops/kv_cache/append/kvarn128_launch.cu    |  246 +++
+ src/ops/kv_cache/append/kvarn128_launch.h     |   16 +
+ src/serve/generation_service.cpp              | 1473 +++++++++--------
+ src/serve/request_log.cpp                     |    3 +
+ 9 files changed, 1055 insertions(+), 733 deletions(-)
+
+diff --git a/src/core/paged_kv_cache.h b/src/core/paged_kv_cache.h
+index d7d7e3e..de07e6e 100644
+--- a/src/core/paged_kv_cache.h
++++ b/src/core/paged_kv_cache.h
+@@ -331,6 +331,13 @@ public:
+                         std::span<const DeviceKVPageHandle> destination,
+                         RankStreams streams = {}) const;
+ 
++    // Physical page number of `handle`, as the execution tables store it. Exposed for consumers
++    // that must mirror a page pool's layout outside the table pool (the KVarN bf16 window keeps a
++    // lazily backed plane indexed by these numbers).
++    [[nodiscard]] std::int32_t index_of(DeviceKVPageHandle handle) const {
++        return physical_index(handle);
++    }
++
+ private:
+     friend class DeviceKVPageLease;
+     friend class DeviceKVPageReservation;
+diff --git a/src/models/qwen3_5/program/planning/startup.cpp b/src/models/qwen3_5/program/planning/startup.cpp
+index b7ece02..ccfab09 100644
+--- a/src/models/qwen3_5/program/planning/startup.cpp
++++ b/src/models/qwen3_5/program/planning/startup.cpp
+@@ -27,6 +27,7 @@
+ #include "ninfer/ops/speculative_round.h"
+ #include <algorithm>
+ #include <cstdlib>
++#include <cstdio>
+ #include <initializer_list>
+ #include <limits>
+ #include <stdexcept>
+@@ -984,6 +985,19 @@ void validate_target_options(const execution::Parameters& parameters, DeviceCont
+                                     " devices are attached");
+     }
+     const std::uint32_t logical_pages = page_count(options.max_context);
++    // KVarN G128 的 tile = 2 逻辑页（kvarn128_launch.cu 取 bt[2*tile] 与 bt[2*tile+1]），而块表
++    // 长度 = page_count(max_context)：页数为奇数时最后一个 tile 的 page1 索引 = 长度本身 = 越界
++    // 一格（例：max_context=192 ⇒ 3 页 ⇒ 第 2 个 tile 越界）。所以这条 storage 要求 max_context
++    // 是 128 的倍数（⇔ 页数为偶数）。**不改 page_count 本身**（所有档位共用）。
++    if (options.kv_cache == KvCacheStorage::KvarnTile128 && (logical_pages % 2U) != 0U) {
++        std::fprintf(stderr,
++                     "ninfer: kvarn128 要求 max_context 是 128 的倍数（块表页数须为偶数）；"
++                     "收到 max_context=%u ⇒ page_count=%u 页，最后一个 tile 的 page1 会越界一格\n",
++                     options.max_context, logical_pages);
++        std::fflush(stderr);
++        throw std::invalid_argument(
++            "kvarn128 requires max_context to be a multiple of 128 (even block-table page count)");
++    }
+     const std::uint32_t minimum_pages = std::max(logical_pages, options.max_concurrency);
+     const std::uint64_t maximum_pages64 =
+         maximum_main_page_groups(options.max_concurrency, logical_pages, options.context_cache);
+diff --git a/src/models/qwen3_5/program/program_impl.cpp b/src/models/qwen3_5/program/program_impl.cpp
+index bf54391..193658b 100644
+--- a/src/models/qwen3_5/program/program_impl.cpp
++++ b/src/models/qwen3_5/program/program_impl.cpp
+@@ -9,6 +9,7 @@
+ #include "core/device.h"
+ #include <cuda_runtime.h>
+ #include "ninfer/ops/target_logprobs.h"
++#include "ops/kv_cache/append/kvarn128_launch.h"
+ 
+ #include <algorithm>
+ #include <cstddef>
+@@ -650,6 +651,11 @@ ProgramImpl::ProgramImpl(const execution::Parameters& parameters_in, const Seque
+     work.reset_peak();
+     workspace_logical_peak_bytes = 0;
+     create_hybrid_prefix_cache(startup_observer);
++    // KVarN128：惰性 bf16 消费窗口的物理后备在启动热身/抓图全部结束后释放（虚拟地址保留）。
++    // 空闲态窗口不占显存；真实请求由 ensure_sequence_kv_mapped 按覆盖量重新提交，且一定发生在
++    // 读到这些页的 attention 之前（append 先写后读）。不是 KVarN128 时窗口数为 0 ⇒ no-op。
++    device.synchronize();
++    ops::kvarn128_window_release_backing();
+ }
+ 
+ void ProgramImpl::synchronize_transfer_streams() const {
+diff --git a/src/models/qwen3_5/program/storage/context.cpp b/src/models/qwen3_5/program/storage/context.cpp
+index 9085edc..25b91f8 100644
+--- a/src/models/qwen3_5/program/storage/context.cpp
++++ b/src/models/qwen3_5/program/storage/context.cpp
+@@ -1,6 +1,7 @@
+ #include "models/qwen3_5/program/program_impl.h"
+ #include "models/qwen3_5/program/context_work.h"
+ #include "core/device.h"
++#include "ops/kv_cache/append/kvarn128_launch.h"
+ 
+ #include <algorithm>
+ #include <array>
+@@ -1709,6 +1710,10 @@ void ProgramImpl::ensure_sequence_kv_mapped(SequenceState& sequence, std::uint32
+         backend_kv_addresses->ensure_mapped_to_tokens(*sequence.kv->backend, backend_tokens,
+                                                       compute_streams);
+     }
++    // KVarN128：bf16 消费窗口的物理后备按 KV 页实际落地量同步提交（惰性窗口，见
++    // ops/kv_cache/append/kvarn128_launch.cu）。窗口必须在读到这些页的 attention 之前有物理
++    // 后备，所以这里与 KV 页 materialize 同步；不是 KVarN128 时 g_window_count==0 ⇒ no-op。
++    ops::kvarn128_window_commit_tokens(static_cast<int>(std::max(main_tokens, backend_tokens)));
+ }
+ 
+ void ProgramImpl::commit_sequence_kv(SequenceState& sequence, std::uint32_t main_tokens,
+diff --git a/src/models/qwen3_5/program/storage/kv_store.h b/src/models/qwen3_5/program/storage/kv_store.h
+index 9d578d3..3a44e25 100644
+--- a/src/models/qwen3_5/program/storage/kv_store.h
++++ b/src/models/qwen3_5/program/storage/kv_store.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include "core/paged_kv_cache.h"
++#include "ops/kv_cache/append/kvarn128_launch.h"
+ 
+ #include <algorithm>
+ #include <array>
+@@ -885,6 +886,7 @@ public:
+             free_[index] = address_capacity - 1U - index;
+         }
+         publish_scratch_.reserve(page_capacity_);
++        window_pages_scratch_.reserve(page_capacity_);
+     }
+ 
+     KVAddressSpaceStore(const KVAddressSpaceStore&)            = delete;
+@@ -1640,6 +1642,11 @@ public:
+                 " entitlement=" + std::to_string(entitlement(address)));
+         }
+         if (target <= address.page_count) { return; }
++        // KVarN128：bf16 消费窗口的**物理后备**与 KV 页落地量同步提交（惰性窗口，见
++        // ops/kv_cache/append/kvarn128_launch.cu）。这条是 KV 覆盖量扩展的唯一汇聚点
++        // （prefill / decode / causal scoring / graft 都走它），所以挂在这里最省事也最不容易漏。
++        // 不是 KVarN128 时窗口数为 0 ⇒ no-op；提交失败会 fprintf+fflush 后 throw。
++        ::ninfer::ops::kvarn128_window_commit_tokens(static_cast<int>(tokens));
+         const std::uint32_t begin       = address.page_count;
+         const std::uint32_t count       = target - begin;
+         const std::size_t address_index = static_cast<std::size_t>(&address - addresses_.data());
+@@ -1655,6 +1662,16 @@ public:
+                 publish_scratch_.push_back(pages_->physical(page));
+             }
+             tables_->publish(address.row->handle(), begin, publish_scratch_, stream);
++            // KVarN128：惰性 bf16 窗口的物理后备按**实际落地的物理页号**提交（不是逻辑页数 ——
++            // 第二个请求拿到的新地址空间物理页号可能整段在「逻辑页数」推出的已提交区之外，
++            // 实机 = 第二次整窗 prefill 报 illegal address）。不是 KVarN128 时窗口数为 0 ⇒ no-op。
++            window_pages_scratch_.clear();
++            window_pages_scratch_.reserve(publish_scratch_.size());
++            for (const DeviceKVPageHandle page : publish_scratch_) {
++                window_pages_scratch_.push_back(pages_->physical_pool().index_of(page));
++            }
++            ::ninfer::ops::kvarn128_window_commit_physical_pages(
++                window_pages_scratch_.data(), static_cast<int>(window_pages_scratch_.size()));
+         } catch (...) {
+             for (LogicalKVPageHandle& page : added) {
+                 pages_->dematerialize(page, address.reservation);
+@@ -2064,6 +2081,7 @@ private:
+     std::vector<std::uint32_t> free_;
+     std::vector<LogicalKVPageHandle> memberships_;
+     std::vector<DeviceKVPageHandle> publish_scratch_;
++    std::vector<std::int32_t>       window_pages_scratch_; // KVarN128 惰性窗口：落地物理页号暂存
+     std::uint32_t free_count_ = 0;
+ };
+ 
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.cu b/src/ops/kv_cache/append/kvarn128_launch.cu
+index 2865a89..a644f18 100644
+--- a/src/ops/kv_cache/append/kvarn128_launch.cu
++++ b/src/ops/kv_cache/append/kvarn128_launch.cu
+@@ -18,16 +18,20 @@
+ 
+ #include "core/device.h"
+ #include "core/paged_kv_cache.h"
++#include "core/vmm.h"
+ #include "ops/kv_cache/append/kvarn128_codec.cuh"
+ #include "ops/kv_cache/kvarn_layout.h"
+ 
++#include <cuda.h>
+ #include <cuda_bf16.h>
+ #include <cuda_fp16.h>
+ 
++#include <algorithm>
+ #include <cstddef>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
++#include <span>
+ #include <stdexcept>
+ #include <vector>
+ 
+@@ -331,8 +335,17 @@ void ensure_encode_opt_in() {
+ // ---------------------------------------------------------------------------
+ // 消费端窗口池：按量化 K 平面基址（每层唯一）索引。窗口页表与量化平面**完全一致**，
+ // 所以 bf16 消费核能直接读。
++//
++// 物理后备是**惰性**的（NINFER_KVARN128_WINDOW_FULL=1 退回旧的整块 cudaMalloc）：
++//   * 窗口的**虚拟地址**一次预留（张量形状、块表、CUDA Graph 抓到的指针全部不变）；
++//   * 物理块按 KV 页**实际落地量**分批提交（2 MiB = VMM 最小粒度）；
++//   * 启动热身/抓图期写入的块在 ProgramImpl 构造末尾释放（虚拟地址保留），此后由
++//     ensure_sequence_kv_mapped 按序列覆盖量重新提交。
++//   ⇒ 空闲态窗口不占显存；占用随上下文增长，与 KV 池自身的 materialize 同口径。
+ // ---------------------------------------------------------------------------
+ constexpr int kMaxWindows = 256;
++// 覆盖量之外多提交几页：物理页号相对逻辑页号可能有偏移（抓图期占过页）。
++constexpr std::size_t kWindowCommitMarginPages = 2;
+ 
+ struct KvarnWindow {
+     const void*    key      = nullptr;
+@@ -340,10 +353,106 @@ struct KvarnWindow {
+     int            kv_heads = 0;
+     __nv_bfloat16* k        = nullptr;
+     __nv_bfloat16* v        = nullptr;
++    // 惰性路账目；granule == 0 ⇒ 整块 cudaMalloc（无物理块账）。
++    std::size_t page_bytes   = 0; // 单 plane 一页（64 token × heads × 256 dim）的字节数
++    int         device       = -1;
++    std::size_t granule      = 0;
++    std::size_t reserved     = 0; // 虚拟预留字节（granule 整数倍）
++    std::size_t k_committed  = 0; // K 已提交字节（K/V 各自记账：共用会漏掉一片）
++    std::size_t v_committed  = 0;
++    CUdeviceptr k_base       = 0;
++    CUdeviceptr v_base       = 0;
++    std::vector<CUmemGenericAllocationHandle> k_handles;
++    std::vector<CUmemGenericAllocationHandle> v_handles;
+ };
+ 
+ KvarnWindow g_windows[kMaxWindows];
+ int         g_window_count = 0;
++// 已请求过的最大覆盖量（tokens）。窗口是**第一次 append** 时才建的，而 scoring/graft 路会在那之前
++// 就把覆盖量推到整窗（causal_score 里 create_active 后立刻 ensure_mapped_to_tokens(8192)），
++// 所以建窗时必须按这个高水位提交，否则那次提交会落空、随后 append 直接越过已提交区（= illegal address）。
++int g_commit_tokens = 0;
++
++std::size_t kvarn128_wanted_pages(int tokens) {
++    if (tokens <= 0) { return 0; }
++    return static_cast<std::size_t>(tokens) / kKvarnPageTokens + 1 + kWindowCommitMarginPages;
++}
++
++bool kvarn128_window_full_mode() {
++    static const bool on = [] {
++        const char* e = std::getenv("NINFER_KVARN128_WINDOW_FULL");
++        return e != nullptr && e[0] != '\0' && e[0] != '0';
++    }();
++    return on;
++}
++
++// 预留一段虚拟地址（不提交物理）。失败返回 false ⇒ 调用方退回整块 cudaMalloc。
++bool kvarn128_reserve_va(std::size_t bytes, int device, CUdeviceptr* out, std::size_t* reserved,
++                         std::size_t* granule) {
++    if (!vmm::supported(device)) { return false; }
++    const std::size_t g = vmm::granularity(device);
++    if (g == 0) { return false; }
++    vmm::ensure_driver_initialized();
++    const std::size_t r = (bytes + g - 1) / g * g;
++    CUdeviceptr       va = 0;
++    try {
++        NINFER_CU_CHECK(cuMemAddressReserve(&va, r, g, 0, 0));
++    } catch (...) {
++        return false;
++    }
++    *out      = va;
++    *reserved = r;
++    *granule  = g;
++    return true;
++}
++
++// 把某一 plane 的物理后备提交到至少 want 字节（按 granule 对齐）。false = 分配/映射失败。
++// K/V **各自记账**：共用一份 committed 会让第二次调用直接短路 ⇒ 另一片永不映射（实机 = illegal address）。
++bool kvarn128_commit_plane(KvarnWindow& w, bool is_k, std::size_t want) {
++    std::size_t& committed = is_k ? w.k_committed : w.v_committed;
++    if (w.granule == 0 || want <= committed) { return true; }
++    const std::size_t target  = (want + w.granule - 1) / w.granule * w.granule;
++    const CUdeviceptr base    = is_k ? w.k_base : w.v_base;
++    auto&             handles = is_k ? w.k_handles : w.v_handles;
++    while (committed < target && committed < w.reserved) {
++        const std::size_t piece = std::min(w.granule, w.reserved - committed);
++        CUmemGenericAllocationHandle handle{};
++        try {
++            handle = vmm::create(piece, w.device);
++        } catch (...) {
++            return false;
++        }
++        const int devices[1] = {w.device};
++        try {
++            vmm::map(base + committed, piece, handle, std::span<const int>(devices, 1));
++        } catch (...) {
++            (void)cuMemRelease(handle);
++            return false;
++        }
++        handles.push_back(handle);
++        committed += piece;
++    }
++    return true;
++}
++
++// 释放一个窗口的物理后备（虚拟地址与内容指针保留）；两片记账归零。
++void kvarn128_release_window_backing(KvarnWindow& w) {
++    if (w.granule == 0) { return; }
++    const auto release = [&](CUdeviceptr base, std::vector<CUmemGenericAllocationHandle>& handles) {
++        std::size_t offset = 0;
++        for (const CUmemGenericAllocationHandle handle : handles) {
++            const std::size_t piece = std::min(w.granule, w.reserved - offset);
++            (void)cuMemUnmap(base + offset, piece);
++            (void)cuMemRelease(handle);
++            offset += piece;
++        }
++        handles.clear();
++    };
++    release(w.k_base, w.k_handles);
++    release(w.v_base, w.v_handles);
++    w.k_committed = 0;
++    w.v_committed = 0;
++}
+ 
+ } // namespace
+ 
+@@ -390,8 +499,84 @@ bool kvarn128_window(const void* k_code, int pages, int kv_heads, cudaStream_t s
+     }
+     const std::size_t bytes = static_cast<std::size_t>(kKvarnHeadDim) * kKvarnPageTokens * kv_heads *
+                               pages * sizeof(__nv_bfloat16);
++    const std::size_t page_bytes =
++        static_cast<std::size_t>(kKvarnHeadDim) * kKvarnPageTokens * kv_heads * sizeof(__nv_bfloat16);
+     __nv_bfloat16* k = nullptr;
+     __nv_bfloat16* v = nullptr;
++
++    // 惰性路优先：虚拟地址一次预留，只提交「这一块 tile（2 页）」所需的物理块。
++    // warmup 的 eager append 会真写这一页，所以首块必须立刻提交；此后由
++    // kvarn128_window_commit_tokens 按覆盖量追加。
++    if (!kvarn128_window_full_mode()) {
++        int device = -1;
++        if (cudaGetDevice(&device) != cudaSuccess) {
++            cudaGetLastError();
++            device = -1;
++        }
++        CUdeviceptr kb = 0;
++        CUdeviceptr vb = 0;
++        std::size_t res = 0;
++        std::size_t gran = 0;
++        if (device >= 0 && kvarn128_reserve_va(bytes, device, &kb, &res, &gran)) {
++            if (!kvarn128_reserve_va(bytes, device, &vb, &res, &gran)) {
++                (void)cuMemAddressFree(kb, res);
++            } else {
++                KvarnWindow w;
++                w.key       = k_code;
++                w.pages     = pages;
++                w.kv_heads  = kv_heads;
++                w.k         = reinterpret_cast<__nv_bfloat16*>(kb);
++                w.v         = reinterpret_cast<__nv_bfloat16*>(vb);
++                w.page_bytes = page_bytes;
++                w.device    = device;
++                w.granule   = gran;
++                w.reserved  = res;
++                w.k_base    = kb;
++                w.v_base    = vb;
++                // 首块：按「已请求过的最大覆盖量」提交，且至少 4 个 granule。
++                // 抓图热身期块表是「全部逻辑页 → 抓图行的同一物理页」（见 graphs.cpp
++                // reserve_capture_rows 的 publish_repeated），只会碰那一页；而 scoring 路会在建窗前
++                // 就把覆盖量推到整窗（g_commit_tokens）⇒ 两者都要覆盖。
++                // **不能**无条件按整池提交（131072 时整池 = 8.5 GiB，直接 OOM，就是原病灶）。
++                const std::size_t by_coverage =
++                    kvarn128_wanted_pages(g_commit_tokens) * page_bytes;
++                const std::size_t first = std::min(
++                    w.reserved,
++                    std::max(static_cast<std::size_t>(4) * w.granule, by_coverage));
++                if (!kvarn128_commit_plane(w, true, first) ||
++                    !kvarn128_commit_plane(w, false, first)) {
++                    kvarn128_release_window_backing(w);
++                    (void)cuMemAddressFree(kb, res);
++                    (void)cuMemAddressFree(vb, res);
++                    std::fprintf(stderr,
++                                 "ninfer: KVarN128 窗口物理后备提交失败（pages=%d heads=%d 首块 %zu B）\n",
++                                 pages, kv_heads, first);
++                    std::fflush(stderr);
++                    return false;
++                }
++                if (cudaMemset(reinterpret_cast<void*>(kb), 0, w.k_committed) != cudaSuccess ||
++                    cudaMemset(reinterpret_cast<void*>(vb), 0, w.v_committed) != cudaSuccess) {
++                    cudaGetLastError();
++                }
++                g_windows[g_window_count++] = w;
++                std::fprintf(stderr,
++                             "ninfer: KVarN128 窗口已分配 #%d pages=%d heads=%d 虚拟 %.1f MiB×2 "
++                             "已提交 %.1f MiB×2（惰性物理后备，与量化平面同页表）\n",
++                             g_window_count - 1, pages, kv_heads,
++                             static_cast<double>(res) / (1024.0 * 1024.0),
++                             static_cast<double>(w.k_committed) / (1024.0 * 1024.0));
++                std::fflush(stderr);
++                if (win_k != nullptr) { *win_k = w.k; }
++                if (win_v != nullptr) { *win_v = w.v; }
++                return true;
++            }
++        }
++        std::fprintf(stderr,
++                     "ninfer: KVarN128 窗口惰性后备不可用（device=%d），退回整块 cudaMalloc\n",
++                     device);
++        std::fflush(stderr);
++    }
++
+     if (cudaMalloc(&k, bytes) != cudaSuccess || cudaMalloc(&v, bytes) != cudaSuccess) {
+         cudaGetLastError();
+         if (k != nullptr) { cudaFree(k); }
+@@ -415,6 +600,67 @@ bool kvarn128_window(const void* k_code, int pages, int kv_heads, cudaStream_t s
+     return true;
+ }
+ 
++// 按 KV 页实际落地量提交窗口的物理后备（惰性窗口）。tokens ≤ 0 或没有窗口时 no-op。
++// 提交失败**大声失败**：窗口内容会被 attention 真读，静默留洞 = 静默读错。
++void kvarn128_window_commit_tokens(int tokens) {
++    if (tokens <= 0) { return; }
++    if (tokens > g_commit_tokens) { g_commit_tokens = tokens; }
++    if (g_window_count == 0) { return; }
++    const std::size_t pages_wanted = kvarn128_wanted_pages(tokens);
++    for (int i = 0; i < g_window_count; ++i) {
++        KvarnWindow& w = g_windows[i];
++        if (w.granule == 0) { continue; }
++        const std::size_t want = std::min(pages_wanted * w.page_bytes, w.reserved);
++        if (want <= w.k_committed && want <= w.v_committed) { continue; }
++        if (!kvarn128_commit_plane(w, true, want) || !kvarn128_commit_plane(w, false, want)) {
++            std::fprintf(stderr,
++                         "ninfer: KVarN128 窗口物理后备提交失败（层 #%d pages=%d 需要 %zu B，"
++                         "K 已提交 %zu B / V 已提交 %zu B）\n",
++                         i, w.pages, want, w.k_committed, w.v_committed);
++            std::fflush(stderr);
++            throw std::runtime_error("kvarn128 window backing commit failed");
++        }
++    }
++}
++
++// 按**实际落地的物理页号**提交窗口后备。见头文件说明：只按逻辑页数提交会在「第二个请求拿到一段
++// 物理页号更靠后的新地址空间」时漏掉整段（实机 = 第二次整窗 prefill 报 illegal address）。
++void kvarn128_window_commit_physical_pages(const std::int32_t* pages, int count) {
++    if (pages == nullptr || count <= 0 || g_window_count == 0) { return; }
++    std::int32_t max_page = -1;
++    for (int i = 0; i < count; ++i) {
++        if (pages[i] > max_page) { max_page = pages[i]; }
++    }
++    if (max_page < 0) { return; }
++    const std::size_t wanted_pages =
++        static_cast<std::size_t>(max_page) + 1 + kWindowCommitMarginPages;
++    for (int i = 0; i < g_window_count; ++i) {
++        KvarnWindow& w = g_windows[i];
++        if (w.granule == 0) { continue; }
++        const std::size_t want = std::min(wanted_pages * w.page_bytes, w.reserved);
++        if (want <= w.k_committed && want <= w.v_committed) { continue; }
++        if (!kvarn128_commit_plane(w, true, want) || !kvarn128_commit_plane(w, false, want)) {
++            std::fprintf(stderr,
++                         "ninfer: KVarN128 窗口物理后备提交失败（层 #%d pages=%d 需要 %zu B，"
++                         "K 已提交 %zu B / V 已提交 %zu B）\n",
++                         i, w.pages, want, w.k_committed, w.v_committed);
++            std::fflush(stderr);
++            throw std::runtime_error("kvarn128 window backing commit failed");
++        }
++    }
++}
++
++// 释放所有窗口的物理后备（虚拟地址保留）。启动热身/抓图结束后调用：空闲态不占显存。
++// 调用后窗口内容未定义 ⇒ 后续 append 必须先写后读（attention 只读序列写过的页）。
++void kvarn128_window_release_backing() {
++    if (g_window_count == 0) { return; }
++    for (int i = 0; i < g_window_count; ++i) { kvarn128_release_window_backing(g_windows[i]); }
++    std::fprintf(stderr,
++                 "ninfer: KVarN128 窗口物理后备已释放（%d 份，虚拟地址保留；按覆盖量重新提交）\n",
++                 g_window_count);
++    std::fflush(stderr);
++}
++
+ // ===========================================================================
+ // 对拍 dump（KVARN128_DUMP_DIR=<dir> 打开；只 dump 一次；不改数值路径）
+ //   <dir>/kvarn128_p1.dump —— KVD1(layout=1)：tile0/head0 的 K、V 两条（各 2 页）
+diff --git a/src/ops/kv_cache/append/kvarn128_launch.h b/src/ops/kv_cache/append/kvarn128_launch.h
+index fc20f92..3b1ec01 100644
+--- a/src/ops/kv_cache/append/kvarn128_launch.h
++++ b/src/ops/kv_cache/append/kvarn128_launch.h
+@@ -74,4 +74,20 @@ int kvarn128_window_count();
+ // 窗口每 token 每 head 的 bf16 元素数（= kKvarnHeadDim）。
+ int kvarn128_window_leading();
+ 
++// ---------------------------------------------------------------------------
++// 窗口的**惰性物理后备**（默认开；NINFER_KVARN128_WINDOW_FULL=1 退回整块 cudaMalloc）。
++// 窗口虚拟地址一次预留，物理块按 KV 页实际落地量分批提交：
++//   * kvarn128_window_commit_tokens —— 把窗口覆盖量提到「tokens 个位置所需页数 + 余量」；
++//     由引擎在序列覆盖量扩展时调用（ProgramImpl::ensure_sequence_kv_mapped），必须发生在
++//     读到这些页的 attention 之前。提交失败会 fprintf+fflush 后 throw（不许静默留洞）。
++//   * kvarn128_window_release_backing —— 释放全部窗口的物理后备（虚拟地址保留）；启动
++//     热身/抓图结束后调用，空闲态窗口不占显存。调用后窗口内容未定义。
++// ---------------------------------------------------------------------------
++void kvarn128_window_commit_tokens(int tokens);
++// 按**实际落地的物理页号**提交窗口后备。逻辑页数不够用：第二个请求拿到的新地址空间，其物理页号
++// 可能整段落在「逻辑页数」推出来的已提交区之外（实机 = 第二次整窗 prefill 报 illegal address）。
++// pages/count 为 DeviceKVPagePool 的物理页号数组（block table 里写的就是它们）。
++void kvarn128_window_commit_physical_pages(const std::int32_t* pages, int count);
++void kvarn128_window_release_backing();
++
+ } // namespace ninfer::ops
+diff --git a/src/serve/generation_service.cpp b/src/serve/generation_service.cpp
+index 02cc5aa..2505185 100644
+--- a/src/serve/generation_service.cpp
++++ b/src/serve/generation_service.cpp
+@@ -1,733 +1,740 @@
+-#include <cstdio>
+-#include "serve/generation_service.h"
+-
+-#include "product/media_acquire/acquire.h"
+-#include "serve/console_log.h"
+-#include "serve/translate.h"
+-
+-#include <cuda_runtime_api.h>
+-
+-#include <algorithm>
+-#include <chrono>
+-#include <cstddef>
+-#include <iterator>
+-#include <mutex>
+-#include <stdexcept>
+-#include <string>
+-#include <string_view>
+-#include <utility>
+-
+-namespace ninfer::serve {
+-
+-struct RequestCapacity {
+-    explicit RequestCapacity(std::size_t limit) : maximum(limit) {}
+-
+-    std::mutex mutex;
+-    std::size_t active = 0;
+-    std::size_t peak   = 0;
+-    const std::size_t maximum;
+-};
+-
+-struct RequestLifetime {
+-    RequestLifetime(std::shared_ptr<RequestCapacity> owner,
+-                    std::chrono::steady_clock::time_point begin,
+-                    std::chrono::steady_clock::time_point limit)
+-        : capacity(std::move(owner)), started(begin), deadline(limit) {}
+-
+-    ~RequestLifetime() {
+-        std::lock_guard lock(capacity->mutex);
+-        --capacity->active;
+-    }
+-
+-    std::shared_ptr<RequestCapacity> capacity;
+-    std::chrono::steady_clock::time_point started;
+-    std::chrono::steady_clock::time_point deadline;
+-};
+-
+-ApiError request_error_to_api_error(const ninfer::RequestError& exception) {
+-    ApiError error;
+-    error.param   = "messages";
+-    error.message = exception.what();
+-    switch (exception.kind()) {
+-    case ninfer::RequestErrorKind::ContextLengthExceeded:
+-        error.status = 400;
+-        error.code   = "context_length_exceeded";
+-        break;
+-    case ninfer::RequestErrorKind::MediaBudgetExceeded:
+-        error.status = 400;
+-        error.code   = "media_budget_exceeded";
+-        break;
+-    case ninfer::RequestErrorKind::InvalidMedia:
+-        error.status = 400;
+-        error.code   = "invalid_media";
+-        break;
+-    case ninfer::RequestErrorKind::Overloaded:
+-        error.param.clear();
+-        error.status = 429;
+-        error.type   = "rate_limit_error";
+-        error.code   = "server_overloaded";
+-        break;
+-    case ninfer::RequestErrorKind::QueueTimeout:
+-        error.param.clear();
+-        error.status = 503;
+-        error.type   = "server_error";
+-        error.code   = "request_queue_timeout";
+-        break;
+-    case ninfer::RequestErrorKind::Cancelled:
+-        error.param.clear();
+-        error.status = 499;
+-        error.type   = "request_cancelled";
+-        error.code   = "client_disconnected";
+-        break;
+-    case ninfer::RequestErrorKind::Unavailable:
+-        error.param.clear();
+-        error.status = 503;
+-        error.type   = "server_error";
+-        error.code   = "service_unavailable";
+-        break;
+-    }
+-    return error;
+-}
+-
+-namespace {
+-
+-using Clock = std::chrono::steady_clock;
+-
+-// A raw prompt has no message structure to checkpoint, so the same prompt sent again (a regenerated
+-// completion) resumes only from a private anchor one token short of its end. The anchor costs one
+-// more prefill pass -- about 20 ms for a 27B model on the RTX 3090 -- and saves the whole prefill
+-// when the prompt comes back (1,602 tokens: 590 ms to 26 ms), so only a prompt whose prefill is
+-// several times that pass gets one.
+-constexpr std::size_t kRawPromptAnchorMinimumTokens = 512;
+-
+-[[noreturn]] void throw_preparation_cancelled();
+-
+-[[noreturn]] void throw_media_error(const ninfer::product::media_acquire::Error& exception) {
+-    ApiError error;
+-    error.param   = "messages";
+-    error.message = exception.what();
+-    switch (exception.kind()) {
+-    case ninfer::product::media_acquire::ErrorKind::BudgetExceeded:
+-        error.status = 400;
+-        error.code   = "media_budget_exceeded";
+-        break;
+-    case ninfer::product::media_acquire::ErrorKind::RemoteUnavailable:
+-        error.status = 502;
+-        error.type   = "server_error";
+-        error.code   = "media_fetch_failed";
+-        break;
+-    case ninfer::product::media_acquire::ErrorKind::RemoteTimeout:
+-        error.status = 504;
+-        error.type   = "server_error";
+-        error.code   = "media_fetch_timeout";
+-        break;
+-    case ninfer::product::media_acquire::ErrorKind::DeadlineExceeded:
+-        error.param.clear();
+-        error.status = 503;
+-        error.type   = "server_error";
+-        error.code   = "request_queue_timeout";
+-        break;
+-    case ninfer::product::media_acquire::ErrorKind::Cancelled:
+-        throw_preparation_cancelled();
+-    }
+-    throw ApiException(std::move(error));
+-}
+-
+-[[noreturn]] void throw_invalid_input(const std::exception& exception, const char* code) {
+-    ApiError error;
+-    error.status  = 400;
+-    error.param   = "messages";
+-    error.code    = code;
+-    error.message = exception.what();
+-    // Translation already refuses a graft the server did not load; the Engine's own check is the
+-    // same contract, so it keeps the protocol code.
+-    if (std::string_view(error.message).starts_with("unknown graft '")) {
+-        error.param = "graft";
+-        error.code  = "unknown_graft";
+-    }
+-    throw ApiException(std::move(error));
+-}
+-
+-[[noreturn]] void throw_preparation_cancelled() {
+-    ApiError error;
+-    error.status  = 499;
+-    error.type    = "request_cancelled";
+-    error.code    = "client_disconnected";
+-    error.message = "client disconnected during media preparation";
+-    throw ApiException(std::move(error));
+-}
+-
+-ninfer::OwnedMedia acquire_media(const ContentPart& part, Clock::time_point deadline,
+-                                 const std::function<bool()>& is_cancelled,
+-                                 std::size_t& remaining_bytes) {
+-    if (remaining_bytes == 0) {
+-        throw_media_error(ninfer::product::media_acquire::Error(
+-            ninfer::product::media_acquire::ErrorKind::BudgetExceeded,
+-            "request media exceeds aggregate byte limit"));
+-    }
+-    ninfer::product::media_acquire::Policy policy;
+-    policy.max_bytes    = std::min(policy.max_bytes, remaining_bytes);
+-    policy.deadline     = deadline;
+-    policy.is_cancelled = is_cancelled;
+-    std::vector<std::uint8_t> source_bytes;
+-    try {
+-        source_bytes = ninfer::product::media_acquire::acquire_bytes(part.source, policy);
+-    } catch (const ninfer::product::media_acquire::Error& exception) {
+-        throw_media_error(exception);
+-    } catch (const std::invalid_argument& exception) {
+-        throw_invalid_input(exception, "invalid_media");
+-    }
+-
+-    remaining_bytes -= source_bytes.size();
+-    ninfer::OwnedMedia media;
+-    media.kind =
+-        part.kind == ContentKind::Image ? ninfer::MediaKind::Image : ninfer::MediaKind::Video;
+-    media.media_type = part.source.media_type;
+-    switch (part.source.kind) {
+-    case ninfer::product::media_acquire::SourceKind::Path:
+-    case ninfer::product::media_acquire::SourceKind::Url:
+-        media.source_name = part.source.value;
+-        break;
+-    case ninfer::product::media_acquire::SourceKind::Data:
+-        media.source_name = "inline-data";
+-        break;
+-    case ninfer::product::media_acquire::SourceKind::Bytes:
+-        media.source_name = "inline-bytes";
+-        break;
+-    }
+-    media.bytes               = std::move(source_bytes);
+-    media.image_resize_policy = part.image_resize_policy;
+-    media.image_detail        = part.image_detail;
+-    return media;
+-}
+-
+-void trim_cache_markers(std::vector<ninfer::PromptCacheMarker>& markers, std::uint32_t maximum) {
+-    std::vector<ninfer::PromptCacheMarker> unique;
+-    unique.reserve(markers.size());
+-    for (const ninfer::PromptCacheMarker& marker : markers) {
+-        if (std::find(unique.begin(), unique.end(), marker) == unique.end()) {
+-            unique.push_back(marker);
+-        }
+-    }
+-    if (unique.size() > maximum) {
+-        unique.erase(unique.begin(), unique.end() - static_cast<std::ptrdiff_t>(maximum));
+-    }
+-    markers = std::move(unique);
+-}
+-
+-[[noreturn]] void throw_request_error(const ninfer::RequestError& exception) {
+-    throw ApiException(request_error_to_api_error(exception));
+-}
+-
+-void check_preparation_control(Clock::time_point deadline,
+-                               const std::function<bool()>& is_cancelled) {
+-    if (is_cancelled && is_cancelled()) { throw_preparation_cancelled(); }
+-    if (Clock::now() >= deadline) {
+-        throw_request_error(ninfer::RequestError(RequestErrorKind::QueueTimeout,
+-                                                 "inference request expired during preparation"));
+-    }
+-}
+-
+-class ServiceOutputSink final : public ninfer::OutputSink {
+-public:
+-    explicit ServiceOutputSink(const StreamSink& sink) : sink_(&sink) {}
+-
+-    void start(ninfer::GenerationStart start) override {
+-        if (sink_->on_start) { sink_->on_start(start); }
+-    }
+-
+-    void progress(ninfer::PromptProgress progress) override {
+-        if (sink_->on_progress) { sink_->on_progress(progress); }
+-    }
+-
+-    void timing(ninfer::GenerationTimingObservation timing) override {
+-        if (sink_->on_timing) { sink_->on_timing(timing); }
+-    }
+-
+-    void publish(ninfer::OutputDelta delta) override {
+-        if (delta.channel == ninfer::OutputChannel::Reasoning) {
+-            if (!delta.text.empty() && sink_->on_reasoning) { sink_->on_reasoning(delta.text); }
+-            return;
+-        }
+-        if (delta.text.empty() && delta.logprobs.empty()) { return; }
+-        if (sink_->on_content) { sink_->on_content(delta.text, delta.logprobs); }
+-    }
+-
+-private:
+-    const StreamSink* sink_ = nullptr;
+-};
+-
+-} // namespace
+-
+-ninfer::EngineOptions make_engine_options(const ServeOptions& options) {
+-    ninfer::EngineOptions engine_options;
+-    engine_options.artifact_path            = options.artifact_path;
+-    engine_options.chat_template_path       = options.chat_template_path;
+-    engine_options.device                   = options.device;
+-    engine_options.max_context              = options.max_context;
+-    engine_options.kv_capacity              = options.kv_capacity;
+-    engine_options.max_concurrency          = options.max_concurrency;
+-    engine_options.max_pending_requests     = options.max_pending_requests;
+-    engine_options.pending_timeout_ms       = options.pending_timeout_ms;
+-    engine_options.prefill_chunk            = options.prefill_chunk;
+-    engine_options.decode_rounds_per_prefill = options.decode_rounds_per_prefill;
+-    engine_options.fast_prefill_kernel      = options.fast_prefill_kernel;
+-    engine_options.kv_cache                 = options.kv_cache;
+-    engine_options.enable_vision            = options.enable_vision;
+-    engine_options.grafts                   = options.grafts;
+-    engine_options.vision_residency         = options.vision_residency;
+-    engine_options.vision_max_merged_tokens = options.vision_max_merged_tokens;
+-    engine_options.use_cuda_graph           = options.use_cuda_graph;
+-    engine_options.lm_head_q4               = options.lm_head_q4;
+-    engine_options.lm_head_q6               = options.lm_head_q6;
+-    engine_options.embedding_q4             = options.embedding_q4;
+-    engine_options.embedding_q6             = options.embedding_q6;
+-    engine_options.mtp_experts_q4           = options.mtp_experts_q4;
+-    engine_options.gdn_state_fp16           = options.gdn_state_fp16;
+-    engine_options.rope_yarn                = options.rope_yarn;
+-    engine_options.rope_yarn_factor         = options.rope_yarn_factor;
+-    engine_options.rope_scaling_factor           = options.rope_scaling_factor;
+-    engine_options.rope_scaling_original_context = options.rope_scaling_original_context;
+-    engine_options.structured_output        = options.structured_output;
+-    engine_options.concurrent_prefill       = options.concurrent_prefill;
+-    engine_options.recover_invariant_failures = options.recover_invariant_failures;
+-    engine_options.thinking_budget_message  = options.thinking_budget_message;
+-    engine_options.cuda_graph_allowance_bytes =
+-        static_cast<std::size_t>(options.cuda_graph_allowance_mib) << 20;
+-    engine_options.wddm_evictable_budget    = options.wddm_evictable_budget;
+-    engine_options.suspend                  = options.suspend;
+-    engine_options.mlp_a8_decode            = options.mlp_a8_decode;
+-    engine_options.prefill_a8               = options.prefill_a8;
+-    engine_options.prefill_cublas           = options.prefill_cublas;
+-    engine_options.prefill_cublas_projections = options.prefill_cublas_projections;
+-    engine_options.speculative              = options.speculative;
+-    engine_options.context_cache            = options.context_cache;
+-    engine_options.slot_auto_save.enabled   = options.auto_save_evicted;
+-    engine_options.devices                  = options.devices;
+-    engine_options.stage_layers             = options.stage_layers;
+-    engine_options.expert_residency           = options.expert_residency;
+-    engine_options.ngram_table                = options.ngram_table;
+-    engine_options.expert_cache_bytes         = options.expert_cache_bytes;
+-    engine_options.hybrid_experts             = options.hybrid_experts;
+-    engine_options.context_cost.preset_path = options.context_cost_presets;
+-    engine_options.device_profile           = options.device_profile;
+-    engine_options.device_profile_path      = options.device_profile_path;
+-    engine_options.media_cache_bytes        = options.media_cache_bytes;
+-    engine_options.media_live_bytes         = options.media_live_bytes;
+-    engine_options.media_preprocess_threads = options.media_preprocess_threads;
+-    return engine_options;
+-}
+-
+-GenerationService::GenerationService(
+-    ServeOptions options, StartupObserver startup_observer, DiagnosticObserver diagnostic_observer,
+-    std::function<void(const ninfer::SlotAutoSaveEvent&)> auto_save_listener)
+-    : options_(std::move(options)) {
+-    // Inline ECC on GDDR6X GeForce cards reserves ~6.25% of VRAM for checksums and taxes
+-    // memory bandwidth on every access. Decode is bandwidth-bound, so an ECC-enabled card
+-    // silently loses a large share of its published throughput and KV capacity while looking
+-    // exactly like an engine regression. ECC is off by default on GeForce; warn loudly when
+-    // someone (or some tool) left it on.
+-    {
+-        cudaDeviceProp props{};
+-        if (cudaGetDeviceProperties(&props, options_.device) == cudaSuccess &&
+-            props.ECCEnabled != 0) {
+-            write_console_log(ConsoleLogLevel::Warning,
+-                              std::string("ECC is ENABLED on ") + props.name +
+-                                  ": GDDR6X stores ECC checksums in VRAM, costing ~6.25% of "
+-                                  "capacity (23,028 vs 24,564 MiB on a 24 GB card) and ~12% of "
+-                                  "memory bandwidth (measured 803 vs 902 GB/s on an RTX 3090 Ti). "
+-                                  "KV capacity and prefill suffer accordingly. ECC is off by "
+-                                  "default on GeForce; if this is not a deliberate reliability "
+-                                  "choice, disable it with `nvidia-smi -e 0` and reboot.");
+-        }
+-    }
+-    ninfer::EngineOptions engine_options = make_engine_options(options_);
+-    engine_options.startup_observer      = std::move(startup_observer);
+-    engine_options.diagnostic_observer   = std::move(diagnostic_observer);
+-    engine_options.slot_auto_save.listener = std::move(auto_save_listener);
+-    engine_           = std::make_unique<ninfer::Engine>(std::move(engine_options));
+-    // A request that says nothing about thinking gets its template's default. Qwen's templates
+-    // think unless told not to; Gemma 4's chat template keeps thinking off unless enable_thinking
+-    // asks for it, so without --no-thinking or a request flag a Gemma 4 server answers directly.
+-    if (!options_.enable_thinking && engine_->load_summary().architecture == "Gemma4ForCausalLM") {
+-        options_.enable_thinking = false;
+-    }
+-    request_capacity_ = std::make_shared<RequestCapacity>(
+-        static_cast<std::size_t>(options_.max_concurrency) + options_.max_pending_requests);
+-    count_capacity_ = std::make_shared<RequestCapacity>(
+-        static_cast<std::size_t>(options_.max_concurrency) + options_.max_pending_requests);
+-}
+-
+-std::size_t GenerationService::admitted_requests() const {
+-    std::lock_guard lock(request_capacity_->mutex);
+-    return request_capacity_->active;
+-}
+-
+-std::size_t GenerationService::peak_admitted_requests() const {
+-    std::lock_guard lock(request_capacity_->mutex);
+-    return request_capacity_->peak;
+-}
+-
+-std::shared_ptr<RequestLifetime>
+-GenerationService::acquire_request_lifetime(DeadlinePolicy deadline_policy) const {
+-    return acquire_lifetime(request_capacity_, deadline_policy, "inference request queue is full");
+-}
+-
+-std::shared_ptr<RequestLifetime>
+-GenerationService::acquire_lifetime(const std::shared_ptr<RequestCapacity>& capacity,
+-                                    DeadlinePolicy deadline_policy,
+-                                    const char* full_message) const {
+-    const auto started = Clock::now();
+-    {
+-        std::lock_guard lock(capacity->mutex);
+-        if (capacity->active >= capacity->maximum) {
+-            throw_request_error(ninfer::RequestError(RequestErrorKind::Overloaded, full_message));
+-        }
+-        ++capacity->active;
+-        capacity->peak = std::max(capacity->peak, capacity->active);
+-    }
+-    try {
+-        const Clock::time_point deadline =
+-            deadline_policy == DeadlinePolicy::UnboundedStartup
+-                ? Clock::time_point::max()
+-                : started + std::chrono::milliseconds(options_.pending_timeout_ms);
+-        return std::make_shared<RequestLifetime>(capacity, started, deadline);
+-    } catch (...) {
+-        std::lock_guard lock(capacity->mutex);
+-        --capacity->active;
+-        throw;
+-    }
+-}
+-
+-PreparedRequest GenerationService::prepare(const GenerationRequest& request,
+-                                           GenerationConsumerMode consumer_mode,
+-                                           ninfer::GenerationObservationOptions observation,
+-                                           std::function<bool()> is_cancelled,
+-                                           ContextCacheHints context_cache) const {
+-    return prepare_impl(
+-        request, consumer_mode, observation, std::move(is_cancelled), std::move(context_cache),
+-        options_.allow_prefix_reuse ? CacheParticipation::ReadWrite : CacheParticipation::Disabled,
+-        DeadlinePolicy::ClientPendingTimeout);
+-}
+-
+-PreparedRequest GenerationService::prepare_impl(const GenerationRequest& incoming,
+-                                                GenerationConsumerMode consumer_mode,
+-                                                ninfer::GenerationObservationOptions observation,
+-                                                std::function<bool()> is_cancelled,
+-                                                ContextCacheHints context_cache,
+-                                                CacheParticipation cache_participation,
+-                                                DeadlinePolicy deadline_policy) const {
+-    std::optional<GenerationRequest> unconstrained;
+-    if (incoming.structured_output.kind != StructuredOutputKind::None &&
+-        !options_.structured_output) {
+-        if (!options_.unconstrained_response_format) {
+-            ApiError error;
+-            error.message =
+-                "structured output requires the server to start with --structured-output";
+-            error.param = "response_format";
+-            error.code  = "response_format_not_supported";
+-            throw ApiException(std::move(error));
+-        }
+-        unconstrained.emplace(incoming);
+-        unconstrained->structured_output = {};
+-    }
+-    const GenerationRequest& request = unconstrained ? *unconstrained : incoming;
+-    if (!request.cache_prompt) { cache_participation = CacheParticipation::Disabled; }
+-    PreparedRequest prepared;
+-    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
+-    ninfer::RequestOptions request_options  = to_request_options(
+-        request, options_, semantics, cache_participation == CacheParticipation::ReadWrite);
+-    request_options.ngram_session        = request.ngram_session;
+-    prepared.thinking_budget             = request_options.execution.thinking.budget;
+-    prepared.reasoning_effort            = semantics.reasoning_effort;
+-    prepared.requested_reasoning_effort  = semantics.requested_reasoning_effort;
+-    prepared.preserve_thinking           = semantics.preserve_thinking;
+-    prepared.requested_preserve_thinking = semantics.requested_preserve_thinking;
+-    prepared.parallel_tool_calls         = request.parallel_tool_calls;
+-    const bool request_has_media         = request.media_item_count() != 0;
+-    if (request_has_media && !options_.enable_vision) {
+-        const std::invalid_argument error("Vision is disabled for this server");
+-        throw_invalid_input(error, "vision_disabled");
+-    }
+-    prepared.lifetime = acquire_request_lifetime(deadline_policy);
+-
+-    try {
+-        const auto acquisition_started = Clock::now();
+-        ninfer::PreparedPrompt prompt;
+-        if (request.raw_prompt) {
+-            std::vector<ninfer::TokenId> tokens;
+-            for (const RawPromptPiece& piece : *request.raw_prompt) {
+-                if (piece.token) {
+-                    tokens.push_back(*piece.token);
+-                    continue;
+-                }
+-                const std::vector<ninfer::TokenId> encoded = engine_->tokenize_text(piece.text);
+-                tokens.insert(tokens.end(), encoded.begin(), encoded.end());
+-            }
+-            const auto invalid_prompt = [](std::string message) {
+-                ApiError error;
+-                error.status  = 400;
+-                error.param   = "prompt";
+-                error.code    = "invalid_prompt";
+-                error.message = std::move(message);
+-                throw ApiException(std::move(error));
+-            };
+-            if (tokens.empty()) { invalid_prompt("prompt must not be empty"); }
+-            const bool cached = cache_participation == CacheParticipation::ReadWrite;
+-            const bool anchor = cached && tokens.size() >= kRawPromptAnchorMinimumTokens;
+-            try {
+-                prompt = engine_->prepare_tokens(std::move(tokens), cached, anchor);
+-            } catch (const std::out_of_range& exception) {
+-                // A token id outside the vocabulary is the client's input, not a server fault.
+-                invalid_prompt(exception.what());
+-            }
+-            prepared.acquisition_seconds =
+-                std::chrono::duration<double>(Clock::now() - acquisition_started).count();
+-        } else {
+-            std::size_t remaining_media_bytes =
+-                std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
+-            ninfer::PromptInput input =
+-                to_prompt_input(request, semantics, [&](const ContentPart& part) {
+-                    return acquire_media(part, prepared.lifetime->deadline, is_cancelled,
+-                                         remaining_media_bytes);
+-                });
+-            std::vector<PromptCacheMarker> protocol_markers =
+-                std::move(input.context_cache.markers);
+-            const bool protocol_allows_engine_automatic =
+-                input.context_cache.allow_engine_automatic_shared_prefixes;
+-            input.context_cache = std::move(context_cache);
+-            input.context_cache.markers.insert(input.context_cache.markers.end(),
+-                                               std::make_move_iterator(protocol_markers.begin()),
+-                                               std::make_move_iterator(protocol_markers.end()));
+-            input.context_cache.allow_engine_automatic_shared_prefixes =
+-                input.context_cache.allow_engine_automatic_shared_prefixes &&
+-                protocol_allows_engine_automatic;
+-            input.context_cache.allow_engine_prefix_grid =
+-                input.context_cache.allow_engine_prefix_grid || options_.auto_prefix_grid;
+-            if (options_.derive_session_keys && !input.context_cache.session_key &&
+-                cache_participation == CacheParticipation::ReadWrite) {
+-                input.context_cache.session_key = derived_session_key(request);
+-            }
+-            trim_cache_markers(
+-                input.context_cache.markers,
+-                engine_->options().context_cache.max_cache_markers_per_request.value());
+-            prepared.acquisition_seconds =
+-                std::chrono::duration<double>(Clock::now() - acquisition_started).count();
+-            check_preparation_control(prepared.lifetime->deadline, is_cancelled);
+-            const PreparationControl control{
+-                .deadline     = prepared.lifetime->deadline,
+-                .cancellation = CancellationView(is_cancelled),
+-            };
+-            prompt = engine_->prepare(std::move(input), control);
+-        }
+-        check_preparation_control(prepared.lifetime->deadline, is_cancelled);
+-        prepared.enable_thinking = prompt.summary().starts_in_reasoning;
+-        if (!prepared.enable_thinking) {
+-            request_options.execution.thinking.budget.reset();
+-            prepared.thinking_budget.reset();
+-            prepared.effective_thinking_budget.reset();
+-        }
+-        prepared.prompt_tokens = static_cast<int>(prompt.summary().prompt_tokens);
+-        if (request.derive_output_budget) {
+-            request_options.execution.requested_output_tokens =
+-                engine_->concurrent_output_budget(prompt);
+-        }
+-        prepared.requested_output_tokens =
+-            static_cast<int>(request_options.execution.requested_output_tokens);
+-        prepared.preparation   = prompt.preparation_stats();
+-        prepared.prepare_seconds =
+-            std::chrono::duration<double>(Clock::now() - prepared.lifetime->started).count();
+-        prepared.generation = engine_->submit(std::move(prompt), std::move(request_options),
+-                                              consumer_mode == GenerationConsumerMode::Streaming
+-                                                  ? ninfer::OutputConsumerMode::Streaming
+-                                                  : ninfer::OutputConsumerMode::Aggregate,
+-                                              observation, prepared.lifetime->deadline);
+-        prepared.sampling                  = prepared.generation.resolved_sampling();
+-        prepared.effective_thinking_budget = prepared.generation.effective_thinking_budget();
+-    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
+-        throw_request_error(exception);
+-    } catch (const std::invalid_argument& exception) {
+-        throw_invalid_input(exception, "invalid_prompt");
+-    }
+-    return prepared;
+-}
+-
+-int GenerationService::count_prompt_tokens(const GenerationRequest& request,
+-                                           std::function<bool()> is_cancelled) const {
+-    const bool request_has_media = request.media_item_count() != 0;
+-    if (request_has_media && !options_.enable_vision) {
+-        const std::invalid_argument error("Vision is disabled for this server");
+-        throw_invalid_input(error, "vision_disabled");
+-    }
+-    const std::shared_ptr<RequestLifetime> lifetime = acquire_lifetime(
+-        count_capacity_, DeadlinePolicy::ClientPendingTimeout, "token count queue is full");
+-    const Clock::time_point deadline        = lifetime->deadline;
+-    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
+-    try {
+-        std::size_t remaining_media_bytes =
+-            std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
+-        ninfer::PromptInput input =
+-            to_prompt_input(request, semantics, [&](const ContentPart& part) {
+-                return acquire_media(part, deadline, is_cancelled, remaining_media_bytes);
+-            });
+-        check_preparation_control(deadline, is_cancelled);
+-        const PreparationControl control{
+-            .deadline     = deadline,
+-            .cancellation = CancellationView(is_cancelled),
+-        };
+-        const int prompt_tokens =
+-            static_cast<int>(engine_->count_tokens(std::move(input), control));
+-        check_preparation_control(deadline, is_cancelled);
+-        return prompt_tokens;
+-    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
+-        throw_request_error(exception);
+-    } catch (const std::invalid_argument& exception) {
+-        throw_invalid_input(exception, "invalid_prompt");
+-    }
+-}
+-
+-std::string GenerationService::render_prompt(const GenerationRequest& request,
+-                                             std::function<bool()> is_cancelled) const {
+-    const bool request_has_media = request.media_item_count() != 0;
+-    if (request_has_media && !options_.enable_vision) {
+-        const std::invalid_argument error("Vision is disabled for this server");
+-        throw_invalid_input(error, "vision_disabled");
+-    }
+-    const std::shared_ptr<RequestLifetime> lifetime = acquire_lifetime(
+-        count_capacity_, DeadlinePolicy::ClientPendingTimeout, "token count queue is full");
+-    const Clock::time_point deadline        = lifetime->deadline;
+-    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
+-    try {
+-        std::size_t remaining_media_bytes =
+-            std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
+-        ninfer::PromptInput input =
+-            to_prompt_input(request, semantics, [&](const ContentPart& part) {
+-                return acquire_media(part, deadline, is_cancelled, remaining_media_bytes);
+-            });
+-        const PreparationControl control{
+-            .deadline     = deadline,
+-            .cancellation = CancellationView(is_cancelled),
+-        };
+-        const ninfer::PreparedPrompt prompt = engine_->prepare(std::move(input), control);
+-        std::string text;
+-        for (const ninfer::TokenId token : prompt.token_ids()) {
+-            text += engine_->token_bytes(token);
+-        }
+-        return text;
+-    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
+-        throw_request_error(exception);
+-    } catch (const std::invalid_argument& exception) {
+-        throw_invalid_input(exception, "invalid_prompt");
+-    }
+-}
+-
+-GenerationOutcome GenerationService::run(PreparedRequest& prepared, const StreamSink* sink,
+-                                         std::function<bool()> is_cancelled) {
+-    std::unique_ptr<ServiceOutputSink> output_sink;
+-    if (sink != nullptr) { output_sink = std::make_unique<ServiceOutputSink>(*sink); }
+-    ninfer::OutputSink* public_sink = output_sink.get();
+-    ninfer::CancellationView cancellation;
+-    if (is_cancelled || (sink != nullptr && sink->is_cancelled)) {
+-        cancellation = ninfer::CancellationView([external = std::move(is_cancelled), sink]() {
+-            return (external && external()) ||
+-                   (sink != nullptr && sink->is_cancelled && sink->is_cancelled());
+-        });
+-    }
+-
+-    ninfer::GenerationResult result;
+-    try {
+-        result = prepared.generation.wait(public_sink, cancellation);
+-    } catch (const ninfer::RequestError& exception) { throw_request_error(exception); }
+-    GenerationOutcome outcome;
+-    outcome.tokens              = result.generated_token_ids;
+-    outcome.text                = std::move(result.content);
+-    outcome.reasoning           = std::move(result.reasoning);
+-    outcome.content_logprobs    = std::move(result.content_logprobs);
+-    outcome.prompt_tokens       = static_cast<int>(result.prompt.prompt_tokens);
+-    outcome.completion_tokens   = static_cast<int>(result.generated_token_ids.size());
+-    outcome.reasoning_tokens    = static_cast<int>(result.reasoning_tokens);
+-    outcome.thinking            = result.thinking;
+-    outcome.finish_reason       = result.finish_reason;
+-    outcome.matched_stop_string = std::move(result.matched_stop_string);
+-
+-    outcome.metrics.prepare_seconds = prepared.prepare_seconds;
+-    outcome.metrics.ttft_seconds =
+-        prepared.prepare_seconds +
+-        std::max(0.0, result.timings.first_token_seconds - result.timings.prepare_seconds);
+-    outcome.metrics.vision_seconds  = result.timings.vision_seconds;
+-    outcome.metrics.overlay_windows           = result.timings.overlay_windows;
+-    outcome.metrics.overlay_exclusive_windows = result.timings.overlay_exclusive_windows;
+-    outcome.metrics.overlay_window_seconds  = result.timings.overlay_window_seconds;
+-    outcome.metrics.overlay_evict_seconds   = result.timings.overlay_evict_seconds;
+-    outcome.metrics.overlay_restore_seconds = result.timings.overlay_restore_seconds;
+-    outcome.metrics.overlay_evicted_bytes   = result.timings.overlay_evicted_bytes;
+-    outcome.metrics.overlay_staged_bytes    = result.timings.overlay_staged_bytes;
+-    outcome.metrics.prefill_seconds         = result.timings.prefill_seconds;
+-    outcome.metrics.decode_seconds          = result.timings.decode_seconds;
+-    outcome.metrics.prompt_wall_seconds     = result.timings.prompt_wall_seconds;
+-    outcome.metrics.generation_wall_seconds = result.timings.generation_wall_seconds;
+-    outcome.metrics.total_seconds =
+-        prepared.prepare_seconds +
+-        std::max(0.0, result.timings.total_seconds - result.timings.prepare_seconds);
+-    outcome.metrics.engine_timing                = result.engine_timing;
+-    outcome.metrics.prefix_cache_hit_tokens      = result.reused_prompt_tokens;
+-    outcome.id_slot                              = result.slot;
+-    outcome.session_digest                       = result.session_digest;
+-    outcome.metrics.prefix_reuse_path            = result.prefix_reuse_path;
+-    outcome.metrics.materialization              = result.materialization;
+-    outcome.metrics.speculative_backend          = result.speculative.backend;
+-    outcome.metrics.speculative_draft_window     = result.speculative.draft_window;
+-    outcome.metrics.speculative_rounds           = result.speculative.rounds;
+-    outcome.metrics.speculative_draft_tokens     = result.speculative.drafted_tokens;
+-    outcome.metrics.speculative_accepted_tokens  = result.speculative.accepted_tokens;
+-    outcome.metrics.speculative_fallback_steps   = result.speculative.fallback_steps;
+-    outcome.metrics.ngram_rounds                 = result.speculative.ngram_rounds;
+-    outcome.metrics.ngram_drafted_tokens         = result.speculative.ngram_drafted_tokens;
+-    outcome.metrics.ngram_accepted_tokens        = result.speculative.ngram_accepted_tokens;
+-    outcome.metrics.ngram_archive_rounds         = result.speculative.ngram_archive_rounds;
+-    outcome.metrics.ngram_archive_drafted_tokens = result.speculative.ngram_archive_drafted_tokens;
+-    outcome.metrics.ngram_archive_accepted_tokens =
+-        result.speculative.ngram_archive_accepted_tokens;
+-    outcome.metrics.ngram_archive = result.ngram_archive;
+-    outcome.metrics.speculative_accepted_per_position =
+-        std::move(result.speculative.accepted_per_position);
+-    outcome.metrics.speculative_adaptive           = result.speculative.adaptive;
+-    outcome.metrics.speculative_window_transitions = result.speculative.window_transitions;
+-    outcome.metrics.speculative_rounds_per_window = std::move(result.speculative.rounds_per_window);
+-
+-    outcome.tool_calls      = std::move(result.tool_calls);
+-    outcome.tool_call_parse = result.tool_call_parse;
+-    // parallel_tool_calls=false promises the caller at most one tool call per assistant turn.
+-    // Decoding is not constrained, so enforce it here: keep the first call and drop the rest. The
+-    // model can ask for the next one on the following turn, which is how a sequential executor
+-    // consumes them anyway.
+-    if (!prepared.parallel_tool_calls && outcome.tool_calls.size() > 1) {
+-        outcome.tool_calls.resize(1);
+-    }
+-    return outcome;
+-}
+-
+-void GenerationService::warmup() {
+-    // 实机死点取证：引擎停在 DEBUG warming up 后连一次 write(2) 都没有（strace 里 ninfer 进程最后的系统调用就是这条日志写），
+-    // 主线程侧只有 bash/timeout 传回的 exit_group(1) ⇒ 只能自己在 warmup 里打标记，看它走到哪一段。
+-    std::fprintf(stderr, "warmup trace: 进入\n"); std::fflush(stderr);
+-    GenerationRequest request;
+-    ChatTurn turn;
+-    turn.role = ChatRole::User;
+-    ContentPart content;
+-    content.kind     = ContentKind::Text;
+-    content.text     = "hi";
+-    content.type_raw = "text";
+-    turn.content.push_back(std::move(content));
+-    request.messages.push_back(std::move(turn));
+-    request.max_tokens = 4;
+-    std::fprintf(stderr, "warmup trace: 请求已构造，进 prepare_impl\n"); std::fflush(stderr);
+-    PreparedRequest prepared =
+-        prepare_impl(request, GenerationConsumerMode::Aggregate, {}, {}, {},
+-                     CacheParticipation::Disabled, DeadlinePolicy::UnboundedStartup);
+-    std::fprintf(stderr, "warmup trace: prepare_impl 返回，进 run()\n"); std::fflush(stderr);
+-    run(prepared, nullptr);
+-    std::fprintf(stderr, "warmup trace: run() 返回\n"); std::fflush(stderr);
+-}
+-
+-} // namespace ninfer::serve
++#include <cstdio>
++#include "serve/generation_service.h"
++
++#include "ops/kv_cache/append/kvarn128_launch.h"
++#include "product/media_acquire/acquire.h"
++#include "serve/console_log.h"
++#include "serve/translate.h"
++
++#include <cuda_runtime_api.h>
++
++#include <algorithm>
++#include <chrono>
++#include <cstddef>
++#include <iterator>
++#include <mutex>
++#include <stdexcept>
++#include <string>
++#include <string_view>
++#include <utility>
++
++namespace ninfer::serve {
++
++struct RequestCapacity {
++    explicit RequestCapacity(std::size_t limit) : maximum(limit) {}
++
++    std::mutex mutex;
++    std::size_t active = 0;
++    std::size_t peak   = 0;
++    const std::size_t maximum;
++};
++
++struct RequestLifetime {
++    RequestLifetime(std::shared_ptr<RequestCapacity> owner,
++                    std::chrono::steady_clock::time_point begin,
++                    std::chrono::steady_clock::time_point limit)
++        : capacity(std::move(owner)), started(begin), deadline(limit) {}
++
++    ~RequestLifetime() {
++        std::lock_guard lock(capacity->mutex);
++        --capacity->active;
++    }
++
++    std::shared_ptr<RequestCapacity> capacity;
++    std::chrono::steady_clock::time_point started;
++    std::chrono::steady_clock::time_point deadline;
++};
++
++ApiError request_error_to_api_error(const ninfer::RequestError& exception) {
++    ApiError error;
++    error.param   = "messages";
++    error.message = exception.what();
++    switch (exception.kind()) {
++    case ninfer::RequestErrorKind::ContextLengthExceeded:
++        error.status = 400;
++        error.code   = "context_length_exceeded";
++        break;
++    case ninfer::RequestErrorKind::MediaBudgetExceeded:
++        error.status = 400;
++        error.code   = "media_budget_exceeded";
++        break;
++    case ninfer::RequestErrorKind::InvalidMedia:
++        error.status = 400;
++        error.code   = "invalid_media";
++        break;
++    case ninfer::RequestErrorKind::Overloaded:
++        error.param.clear();
++        error.status = 429;
++        error.type   = "rate_limit_error";
++        error.code   = "server_overloaded";
++        break;
++    case ninfer::RequestErrorKind::QueueTimeout:
++        error.param.clear();
++        error.status = 503;
++        error.type   = "server_error";
++        error.code   = "request_queue_timeout";
++        break;
++    case ninfer::RequestErrorKind::Cancelled:
++        error.param.clear();
++        error.status = 499;
++        error.type   = "request_cancelled";
++        error.code   = "client_disconnected";
++        break;
++    case ninfer::RequestErrorKind::Unavailable:
++        error.param.clear();
++        error.status = 503;
++        error.type   = "server_error";
++        error.code   = "service_unavailable";
++        break;
++    }
++    return error;
++}
++
++namespace {
++
++using Clock = std::chrono::steady_clock;
++
++// A raw prompt has no message structure to checkpoint, so the same prompt sent again (a regenerated
++// completion) resumes only from a private anchor one token short of its end. The anchor costs one
++// more prefill pass -- about 20 ms for a 27B model on the RTX 3090 -- and saves the whole prefill
++// when the prompt comes back (1,602 tokens: 590 ms to 26 ms), so only a prompt whose prefill is
++// several times that pass gets one.
++constexpr std::size_t kRawPromptAnchorMinimumTokens = 512;
++
++[[noreturn]] void throw_preparation_cancelled();
++
++[[noreturn]] void throw_media_error(const ninfer::product::media_acquire::Error& exception) {
++    ApiError error;
++    error.param   = "messages";
++    error.message = exception.what();
++    switch (exception.kind()) {
++    case ninfer::product::media_acquire::ErrorKind::BudgetExceeded:
++        error.status = 400;
++        error.code   = "media_budget_exceeded";
++        break;
++    case ninfer::product::media_acquire::ErrorKind::RemoteUnavailable:
++        error.status = 502;
++        error.type   = "server_error";
++        error.code   = "media_fetch_failed";
++        break;
++    case ninfer::product::media_acquire::ErrorKind::RemoteTimeout:
++        error.status = 504;
++        error.type   = "server_error";
++        error.code   = "media_fetch_timeout";
++        break;
++    case ninfer::product::media_acquire::ErrorKind::DeadlineExceeded:
++        error.param.clear();
++        error.status = 503;
++        error.type   = "server_error";
++        error.code   = "request_queue_timeout";
++        break;
++    case ninfer::product::media_acquire::ErrorKind::Cancelled:
++        throw_preparation_cancelled();
++    }
++    throw ApiException(std::move(error));
++}
++
++[[noreturn]] void throw_invalid_input(const std::exception& exception, const char* code) {
++    ApiError error;
++    error.status  = 400;
++    error.param   = "messages";
++    error.code    = code;
++    error.message = exception.what();
++    // Translation already refuses a graft the server did not load; the Engine's own check is the
++    // same contract, so it keeps the protocol code.
++    if (std::string_view(error.message).starts_with("unknown graft '")) {
++        error.param = "graft";
++        error.code  = "unknown_graft";
++    }
++    throw ApiException(std::move(error));
++}
++
++[[noreturn]] void throw_preparation_cancelled() {
++    ApiError error;
++    error.status  = 499;
++    error.type    = "request_cancelled";
++    error.code    = "client_disconnected";
++    error.message = "client disconnected during media preparation";
++    throw ApiException(std::move(error));
++}
++
++ninfer::OwnedMedia acquire_media(const ContentPart& part, Clock::time_point deadline,
++                                 const std::function<bool()>& is_cancelled,
++                                 std::size_t& remaining_bytes) {
++    if (remaining_bytes == 0) {
++        throw_media_error(ninfer::product::media_acquire::Error(
++            ninfer::product::media_acquire::ErrorKind::BudgetExceeded,
++            "request media exceeds aggregate byte limit"));
++    }
++    ninfer::product::media_acquire::Policy policy;
++    policy.max_bytes    = std::min(policy.max_bytes, remaining_bytes);
++    policy.deadline     = deadline;
++    policy.is_cancelled = is_cancelled;
++    std::vector<std::uint8_t> source_bytes;
++    try {
++        source_bytes = ninfer::product::media_acquire::acquire_bytes(part.source, policy);
++    } catch (const ninfer::product::media_acquire::Error& exception) {
++        throw_media_error(exception);
++    } catch (const std::invalid_argument& exception) {
++        throw_invalid_input(exception, "invalid_media");
++    }
++
++    remaining_bytes -= source_bytes.size();
++    ninfer::OwnedMedia media;
++    media.kind =
++        part.kind == ContentKind::Image ? ninfer::MediaKind::Image : ninfer::MediaKind::Video;
++    media.media_type = part.source.media_type;
++    switch (part.source.kind) {
++    case ninfer::product::media_acquire::SourceKind::Path:
++    case ninfer::product::media_acquire::SourceKind::Url:
++        media.source_name = part.source.value;
++        break;
++    case ninfer::product::media_acquire::SourceKind::Data:
++        media.source_name = "inline-data";
++        break;
++    case ninfer::product::media_acquire::SourceKind::Bytes:
++        media.source_name = "inline-bytes";
++        break;
++    }
++    media.bytes               = std::move(source_bytes);
++    media.image_resize_policy = part.image_resize_policy;
++    media.image_detail        = part.image_detail;
++    return media;
++}
++
++void trim_cache_markers(std::vector<ninfer::PromptCacheMarker>& markers, std::uint32_t maximum) {
++    std::vector<ninfer::PromptCacheMarker> unique;
++    unique.reserve(markers.size());
++    for (const ninfer::PromptCacheMarker& marker : markers) {
++        if (std::find(unique.begin(), unique.end(), marker) == unique.end()) {
++            unique.push_back(marker);
++        }
++    }
++    if (unique.size() > maximum) {
++        unique.erase(unique.begin(), unique.end() - static_cast<std::ptrdiff_t>(maximum));
++    }
++    markers = std::move(unique);
++}
++
++[[noreturn]] void throw_request_error(const ninfer::RequestError& exception) {
++    throw ApiException(request_error_to_api_error(exception));
++}
++
++void check_preparation_control(Clock::time_point deadline,
++                               const std::function<bool()>& is_cancelled) {
++    if (is_cancelled && is_cancelled()) { throw_preparation_cancelled(); }
++    if (Clock::now() >= deadline) {
++        throw_request_error(ninfer::RequestError(RequestErrorKind::QueueTimeout,
++                                                 "inference request expired during preparation"));
++    }
++}
++
++class ServiceOutputSink final : public ninfer::OutputSink {
++public:
++    explicit ServiceOutputSink(const StreamSink& sink) : sink_(&sink) {}
++
++    void start(ninfer::GenerationStart start) override {
++        if (sink_->on_start) { sink_->on_start(start); }
++    }
++
++    void progress(ninfer::PromptProgress progress) override {
++        if (sink_->on_progress) { sink_->on_progress(progress); }
++    }
++
++    void timing(ninfer::GenerationTimingObservation timing) override {
++        if (sink_->on_timing) { sink_->on_timing(timing); }
++    }
++
++    void publish(ninfer::OutputDelta delta) override {
++        if (delta.channel == ninfer::OutputChannel::Reasoning) {
++            if (!delta.text.empty() && sink_->on_reasoning) { sink_->on_reasoning(delta.text); }
++            return;
++        }
++        if (delta.text.empty() && delta.logprobs.empty()) { return; }
++        if (sink_->on_content) { sink_->on_content(delta.text, delta.logprobs); }
++    }
++
++private:
++    const StreamSink* sink_ = nullptr;
++};
++
++} // namespace
++
++ninfer::EngineOptions make_engine_options(const ServeOptions& options) {
++    ninfer::EngineOptions engine_options;
++    engine_options.artifact_path            = options.artifact_path;
++    engine_options.chat_template_path       = options.chat_template_path;
++    engine_options.device                   = options.device;
++    engine_options.max_context              = options.max_context;
++    engine_options.kv_capacity              = options.kv_capacity;
++    engine_options.max_concurrency          = options.max_concurrency;
++    engine_options.max_pending_requests     = options.max_pending_requests;
++    engine_options.pending_timeout_ms       = options.pending_timeout_ms;
++    engine_options.prefill_chunk            = options.prefill_chunk;
++    engine_options.decode_rounds_per_prefill = options.decode_rounds_per_prefill;
++    engine_options.fast_prefill_kernel      = options.fast_prefill_kernel;
++    engine_options.kv_cache                 = options.kv_cache;
++    engine_options.enable_vision            = options.enable_vision;
++    engine_options.grafts                   = options.grafts;
++    engine_options.vision_residency         = options.vision_residency;
++    engine_options.vision_max_merged_tokens = options.vision_max_merged_tokens;
++    engine_options.use_cuda_graph           = options.use_cuda_graph;
++    engine_options.lm_head_q4               = options.lm_head_q4;
++    engine_options.lm_head_q6               = options.lm_head_q6;
++    engine_options.embedding_q4             = options.embedding_q4;
++    engine_options.embedding_q6             = options.embedding_q6;
++    engine_options.mtp_experts_q4           = options.mtp_experts_q4;
++    engine_options.gdn_state_fp16           = options.gdn_state_fp16;
++    engine_options.rope_yarn                = options.rope_yarn;
++    engine_options.rope_yarn_factor         = options.rope_yarn_factor;
++    engine_options.rope_scaling_factor           = options.rope_scaling_factor;
++    engine_options.rope_scaling_original_context = options.rope_scaling_original_context;
++    engine_options.structured_output        = options.structured_output;
++    engine_options.concurrent_prefill       = options.concurrent_prefill;
++    engine_options.recover_invariant_failures = options.recover_invariant_failures;
++    engine_options.thinking_budget_message  = options.thinking_budget_message;
++    engine_options.cuda_graph_allowance_bytes =
++        static_cast<std::size_t>(options.cuda_graph_allowance_mib) << 20;
++    engine_options.wddm_evictable_budget    = options.wddm_evictable_budget;
++    engine_options.suspend                  = options.suspend;
++    engine_options.mlp_a8_decode            = options.mlp_a8_decode;
++    engine_options.prefill_a8               = options.prefill_a8;
++    engine_options.prefill_cublas           = options.prefill_cublas;
++    engine_options.prefill_cublas_projections = options.prefill_cublas_projections;
++    engine_options.speculative              = options.speculative;
++    engine_options.context_cache            = options.context_cache;
++    engine_options.slot_auto_save.enabled   = options.auto_save_evicted;
++    engine_options.devices                  = options.devices;
++    engine_options.stage_layers             = options.stage_layers;
++    engine_options.expert_residency           = options.expert_residency;
++    engine_options.ngram_table                = options.ngram_table;
++    engine_options.expert_cache_bytes         = options.expert_cache_bytes;
++    engine_options.hybrid_experts             = options.hybrid_experts;
++    engine_options.context_cost.preset_path = options.context_cost_presets;
++    engine_options.device_profile           = options.device_profile;
++    engine_options.device_profile_path      = options.device_profile_path;
++    engine_options.media_cache_bytes        = options.media_cache_bytes;
++    engine_options.media_live_bytes         = options.media_live_bytes;
++    engine_options.media_preprocess_threads = options.media_preprocess_threads;
++    return engine_options;
++}
++
++GenerationService::GenerationService(
++    ServeOptions options, StartupObserver startup_observer, DiagnosticObserver diagnostic_observer,
++    std::function<void(const ninfer::SlotAutoSaveEvent&)> auto_save_listener)
++    : options_(std::move(options)) {
++    // Inline ECC on GDDR6X GeForce cards reserves ~6.25% of VRAM for checksums and taxes
++    // memory bandwidth on every access. Decode is bandwidth-bound, so an ECC-enabled card
++    // silently loses a large share of its published throughput and KV capacity while looking
++    // exactly like an engine regression. ECC is off by default on GeForce; warn loudly when
++    // someone (or some tool) left it on.
++    {
++        cudaDeviceProp props{};
++        if (cudaGetDeviceProperties(&props, options_.device) == cudaSuccess &&
++            props.ECCEnabled != 0) {
++            write_console_log(ConsoleLogLevel::Warning,
++                              std::string("ECC is ENABLED on ") + props.name +
++                                  ": GDDR6X stores ECC checksums in VRAM, costing ~6.25% of "
++                                  "capacity (23,028 vs 24,564 MiB on a 24 GB card) and ~12% of "
++                                  "memory bandwidth (measured 803 vs 902 GB/s on an RTX 3090 Ti). "
++                                  "KV capacity and prefill suffer accordingly. ECC is off by "
++                                  "default on GeForce; if this is not a deliberate reliability "
++                                  "choice, disable it with `nvidia-smi -e 0` and reboot.");
++        }
++    }
++    ninfer::EngineOptions engine_options = make_engine_options(options_);
++    engine_options.startup_observer      = std::move(startup_observer);
++    engine_options.diagnostic_observer   = std::move(diagnostic_observer);
++    engine_options.slot_auto_save.listener = std::move(auto_save_listener);
++    engine_           = std::make_unique<ninfer::Engine>(std::move(engine_options));
++    // A request that says nothing about thinking gets its template's default. Qwen's templates
++    // think unless told not to; Gemma 4's chat template keeps thinking off unless enable_thinking
++    // asks for it, so without --no-thinking or a request flag a Gemma 4 server answers directly.
++    if (!options_.enable_thinking && engine_->load_summary().architecture == "Gemma4ForCausalLM") {
++        options_.enable_thinking = false;
++    }
++    request_capacity_ = std::make_shared<RequestCapacity>(
++        static_cast<std::size_t>(options_.max_concurrency) + options_.max_pending_requests);
++    count_capacity_ = std::make_shared<RequestCapacity>(
++        static_cast<std::size_t>(options_.max_concurrency) + options_.max_pending_requests);
++}
++
++std::size_t GenerationService::admitted_requests() const {
++    std::lock_guard lock(request_capacity_->mutex);
++    return request_capacity_->active;
++}
++
++std::size_t GenerationService::peak_admitted_requests() const {
++    std::lock_guard lock(request_capacity_->mutex);
++    return request_capacity_->peak;
++}
++
++std::shared_ptr<RequestLifetime>
++GenerationService::acquire_request_lifetime(DeadlinePolicy deadline_policy) const {
++    return acquire_lifetime(request_capacity_, deadline_policy, "inference request queue is full");
++}
++
++std::shared_ptr<RequestLifetime>
++GenerationService::acquire_lifetime(const std::shared_ptr<RequestCapacity>& capacity,
++                                    DeadlinePolicy deadline_policy,
++                                    const char* full_message) const {
++    const auto started = Clock::now();
++    {
++        std::lock_guard lock(capacity->mutex);
++        if (capacity->active >= capacity->maximum) {
++            throw_request_error(ninfer::RequestError(RequestErrorKind::Overloaded, full_message));
++        }
++        ++capacity->active;
++        capacity->peak = std::max(capacity->peak, capacity->active);
++    }
++    try {
++        const Clock::time_point deadline =
++            deadline_policy == DeadlinePolicy::UnboundedStartup
++                ? Clock::time_point::max()
++                : started + std::chrono::milliseconds(options_.pending_timeout_ms);
++        return std::make_shared<RequestLifetime>(capacity, started, deadline);
++    } catch (...) {
++        std::lock_guard lock(capacity->mutex);
++        --capacity->active;
++        throw;
++    }
++}
++
++PreparedRequest GenerationService::prepare(const GenerationRequest& request,
++                                           GenerationConsumerMode consumer_mode,
++                                           ninfer::GenerationObservationOptions observation,
++                                           std::function<bool()> is_cancelled,
++                                           ContextCacheHints context_cache) const {
++    return prepare_impl(
++        request, consumer_mode, observation, std::move(is_cancelled), std::move(context_cache),
++        options_.allow_prefix_reuse ? CacheParticipation::ReadWrite : CacheParticipation::Disabled,
++        DeadlinePolicy::ClientPendingTimeout);
++}
++
++PreparedRequest GenerationService::prepare_impl(const GenerationRequest& incoming,
++                                                GenerationConsumerMode consumer_mode,
++                                                ninfer::GenerationObservationOptions observation,
++                                                std::function<bool()> is_cancelled,
++                                                ContextCacheHints context_cache,
++                                                CacheParticipation cache_participation,
++                                                DeadlinePolicy deadline_policy) const {
++    std::optional<GenerationRequest> unconstrained;
++    if (incoming.structured_output.kind != StructuredOutputKind::None &&
++        !options_.structured_output) {
++        if (!options_.unconstrained_response_format) {
++            ApiError error;
++            error.message =
++                "structured output requires the server to start with --structured-output";
++            error.param = "response_format";
++            error.code  = "response_format_not_supported";
++            throw ApiException(std::move(error));
++        }
++        unconstrained.emplace(incoming);
++        unconstrained->structured_output = {};
++    }
++    const GenerationRequest& request = unconstrained ? *unconstrained : incoming;
++    if (!request.cache_prompt) { cache_participation = CacheParticipation::Disabled; }
++    PreparedRequest prepared;
++    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
++    ninfer::RequestOptions request_options  = to_request_options(
++        request, options_, semantics, cache_participation == CacheParticipation::ReadWrite);
++    request_options.ngram_session        = request.ngram_session;
++    prepared.thinking_budget             = request_options.execution.thinking.budget;
++    prepared.reasoning_effort            = semantics.reasoning_effort;
++    prepared.requested_reasoning_effort  = semantics.requested_reasoning_effort;
++    prepared.preserve_thinking           = semantics.preserve_thinking;
++    prepared.requested_preserve_thinking = semantics.requested_preserve_thinking;
++    prepared.parallel_tool_calls         = request.parallel_tool_calls;
++    const bool request_has_media         = request.media_item_count() != 0;
++    if (request_has_media && !options_.enable_vision) {
++        const std::invalid_argument error("Vision is disabled for this server");
++        throw_invalid_input(error, "vision_disabled");
++    }
++    prepared.lifetime = acquire_request_lifetime(deadline_policy);
++
++    try {
++        const auto acquisition_started = Clock::now();
++        ninfer::PreparedPrompt prompt;
++        if (request.raw_prompt) {
++            std::vector<ninfer::TokenId> tokens;
++            for (const RawPromptPiece& piece : *request.raw_prompt) {
++                if (piece.token) {
++                    tokens.push_back(*piece.token);
++                    continue;
++                }
++                const std::vector<ninfer::TokenId> encoded = engine_->tokenize_text(piece.text);
++                tokens.insert(tokens.end(), encoded.begin(), encoded.end());
++            }
++            const auto invalid_prompt = [](std::string message) {
++                ApiError error;
++                error.status  = 400;
++                error.param   = "prompt";
++                error.code    = "invalid_prompt";
++                error.message = std::move(message);
++                throw ApiException(std::move(error));
++            };
++            if (tokens.empty()) { invalid_prompt("prompt must not be empty"); }
++            const bool cached = cache_participation == CacheParticipation::ReadWrite;
++            const bool anchor = cached && tokens.size() >= kRawPromptAnchorMinimumTokens;
++            try {
++                prompt = engine_->prepare_tokens(std::move(tokens), cached, anchor);
++            } catch (const std::out_of_range& exception) {
++                // A token id outside the vocabulary is the client's input, not a server fault.
++                invalid_prompt(exception.what());
++            }
++            prepared.acquisition_seconds =
++                std::chrono::duration<double>(Clock::now() - acquisition_started).count();
++        } else {
++            std::size_t remaining_media_bytes =
++                std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
++            ninfer::PromptInput input =
++                to_prompt_input(request, semantics, [&](const ContentPart& part) {
++                    return acquire_media(part, prepared.lifetime->deadline, is_cancelled,
++                                         remaining_media_bytes);
++                });
++            std::vector<PromptCacheMarker> protocol_markers =
++                std::move(input.context_cache.markers);
++            const bool protocol_allows_engine_automatic =
++                input.context_cache.allow_engine_automatic_shared_prefixes;
++            input.context_cache = std::move(context_cache);
++            input.context_cache.markers.insert(input.context_cache.markers.end(),
++                                               std::make_move_iterator(protocol_markers.begin()),
++                                               std::make_move_iterator(protocol_markers.end()));
++            input.context_cache.allow_engine_automatic_shared_prefixes =
++                input.context_cache.allow_engine_automatic_shared_prefixes &&
++                protocol_allows_engine_automatic;
++            input.context_cache.allow_engine_prefix_grid =
++                input.context_cache.allow_engine_prefix_grid || options_.auto_prefix_grid;
++            if (options_.derive_session_keys && !input.context_cache.session_key &&
++                cache_participation == CacheParticipation::ReadWrite) {
++                input.context_cache.session_key = derived_session_key(request);
++            }
++            trim_cache_markers(
++                input.context_cache.markers,
++                engine_->options().context_cache.max_cache_markers_per_request.value());
++            prepared.acquisition_seconds =
++                std::chrono::duration<double>(Clock::now() - acquisition_started).count();
++            check_preparation_control(prepared.lifetime->deadline, is_cancelled);
++            const PreparationControl control{
++                .deadline     = prepared.lifetime->deadline,
++                .cancellation = CancellationView(is_cancelled),
++            };
++            prompt = engine_->prepare(std::move(input), control);
++        }
++        check_preparation_control(prepared.lifetime->deadline, is_cancelled);
++        prepared.enable_thinking = prompt.summary().starts_in_reasoning;
++        if (!prepared.enable_thinking) {
++            request_options.execution.thinking.budget.reset();
++            prepared.thinking_budget.reset();
++            prepared.effective_thinking_budget.reset();
++        }
++        prepared.prompt_tokens = static_cast<int>(prompt.summary().prompt_tokens);
++        if (request.derive_output_budget) {
++            request_options.execution.requested_output_tokens =
++                engine_->concurrent_output_budget(prompt);
++        }
++        prepared.requested_output_tokens =
++            static_cast<int>(request_options.execution.requested_output_tokens);
++        prepared.preparation   = prompt.preparation_stats();
++        prepared.prepare_seconds =
++            std::chrono::duration<double>(Clock::now() - prepared.lifetime->started).count();
++        prepared.generation = engine_->submit(std::move(prompt), std::move(request_options),
++                                              consumer_mode == GenerationConsumerMode::Streaming
++                                                  ? ninfer::OutputConsumerMode::Streaming
++                                                  : ninfer::OutputConsumerMode::Aggregate,
++                                              observation, prepared.lifetime->deadline);
++        prepared.sampling                  = prepared.generation.resolved_sampling();
++        prepared.effective_thinking_budget = prepared.generation.effective_thinking_budget();
++    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
++        throw_request_error(exception);
++    } catch (const std::invalid_argument& exception) {
++        throw_invalid_input(exception, "invalid_prompt");
++    }
++    return prepared;
++}
++
++int GenerationService::count_prompt_tokens(const GenerationRequest& request,
++                                           std::function<bool()> is_cancelled) const {
++    const bool request_has_media = request.media_item_count() != 0;
++    if (request_has_media && !options_.enable_vision) {
++        const std::invalid_argument error("Vision is disabled for this server");
++        throw_invalid_input(error, "vision_disabled");
++    }
++    const std::shared_ptr<RequestLifetime> lifetime = acquire_lifetime(
++        count_capacity_, DeadlinePolicy::ClientPendingTimeout, "token count queue is full");
++    const Clock::time_point deadline        = lifetime->deadline;
++    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
++    try {
++        std::size_t remaining_media_bytes =
++            std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
++        ninfer::PromptInput input =
++            to_prompt_input(request, semantics, [&](const ContentPart& part) {
++                return acquire_media(part, deadline, is_cancelled, remaining_media_bytes);
++            });
++        check_preparation_control(deadline, is_cancelled);
++        const PreparationControl control{
++            .deadline     = deadline,
++            .cancellation = CancellationView(is_cancelled),
++        };
++        const int prompt_tokens =
++            static_cast<int>(engine_->count_tokens(std::move(input), control));
++        check_preparation_control(deadline, is_cancelled);
++        return prompt_tokens;
++    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
++        throw_request_error(exception);
++    } catch (const std::invalid_argument& exception) {
++        throw_invalid_input(exception, "invalid_prompt");
++    }
++}
++
++std::string GenerationService::render_prompt(const GenerationRequest& request,
++                                             std::function<bool()> is_cancelled) const {
++    const bool request_has_media = request.media_item_count() != 0;
++    if (request_has_media && !options_.enable_vision) {
++        const std::invalid_argument error("Vision is disabled for this server");
++        throw_invalid_input(error, "vision_disabled");
++    }
++    const std::shared_ptr<RequestLifetime> lifetime = acquire_lifetime(
++        count_capacity_, DeadlinePolicy::ClientPendingTimeout, "token count queue is full");
++    const Clock::time_point deadline        = lifetime->deadline;
++    const ResolvedPromptSemantics semantics = resolve_prompt_semantics(request, options_);
++    try {
++        std::size_t remaining_media_bytes =
++            std::min(options_.max_request_bytes, ninfer::kMaximumPromptMediaBytes);
++        ninfer::PromptInput input =
++            to_prompt_input(request, semantics, [&](const ContentPart& part) {
++                return acquire_media(part, deadline, is_cancelled, remaining_media_bytes);
++            });
++        const PreparationControl control{
++            .deadline     = deadline,
++            .cancellation = CancellationView(is_cancelled),
++        };
++        const ninfer::PreparedPrompt prompt = engine_->prepare(std::move(input), control);
++        std::string text;
++        for (const ninfer::TokenId token : prompt.token_ids()) {
++            text += engine_->token_bytes(token);
++        }
++        return text;
++    } catch (const ApiException&) { throw; } catch (const ninfer::RequestError& exception) {
++        throw_request_error(exception);
++    } catch (const std::invalid_argument& exception) {
++        throw_invalid_input(exception, "invalid_prompt");
++    }
++}
++
++GenerationOutcome GenerationService::run(PreparedRequest& prepared, const StreamSink* sink,
++                                         std::function<bool()> is_cancelled) {
++    std::unique_ptr<ServiceOutputSink> output_sink;
++    if (sink != nullptr) { output_sink = std::make_unique<ServiceOutputSink>(*sink); }
++    ninfer::OutputSink* public_sink = output_sink.get();
++    ninfer::CancellationView cancellation;
++    if (is_cancelled || (sink != nullptr && sink->is_cancelled)) {
++        cancellation = ninfer::CancellationView([external = std::move(is_cancelled), sink]() {
++            return (external && external()) ||
++                   (sink != nullptr && sink->is_cancelled && sink->is_cancelled());
++        });
++    }
++
++    ninfer::GenerationResult result;
++    try {
++        result = prepared.generation.wait(public_sink, cancellation);
++    } catch (const ninfer::RequestError& exception) { throw_request_error(exception); }
++    GenerationOutcome outcome;
++    outcome.tokens              = result.generated_token_ids;
++    outcome.text                = std::move(result.content);
++    outcome.reasoning           = std::move(result.reasoning);
++    outcome.content_logprobs    = std::move(result.content_logprobs);
++    outcome.prompt_tokens       = static_cast<int>(result.prompt.prompt_tokens);
++    outcome.completion_tokens   = static_cast<int>(result.generated_token_ids.size());
++    outcome.reasoning_tokens    = static_cast<int>(result.reasoning_tokens);
++    outcome.thinking            = result.thinking;
++    outcome.finish_reason       = result.finish_reason;
++    outcome.matched_stop_string = std::move(result.matched_stop_string);
++
++    outcome.metrics.prepare_seconds = prepared.prepare_seconds;
++    outcome.metrics.ttft_seconds =
++        prepared.prepare_seconds +
++        std::max(0.0, result.timings.first_token_seconds - result.timings.prepare_seconds);
++    outcome.metrics.vision_seconds  = result.timings.vision_seconds;
++    outcome.metrics.overlay_windows           = result.timings.overlay_windows;
++    outcome.metrics.overlay_exclusive_windows = result.timings.overlay_exclusive_windows;
++    outcome.metrics.overlay_window_seconds  = result.timings.overlay_window_seconds;
++    outcome.metrics.overlay_evict_seconds   = result.timings.overlay_evict_seconds;
++    outcome.metrics.overlay_restore_seconds = result.timings.overlay_restore_seconds;
++    outcome.metrics.overlay_evicted_bytes   = result.timings.overlay_evicted_bytes;
++    outcome.metrics.overlay_staged_bytes    = result.timings.overlay_staged_bytes;
++    outcome.metrics.prefill_seconds         = result.timings.prefill_seconds;
++    outcome.metrics.decode_seconds          = result.timings.decode_seconds;
++    outcome.metrics.prompt_wall_seconds     = result.timings.prompt_wall_seconds;
++    outcome.metrics.generation_wall_seconds = result.timings.generation_wall_seconds;
++    outcome.metrics.total_seconds =
++        prepared.prepare_seconds +
++        std::max(0.0, result.timings.total_seconds - result.timings.prepare_seconds);
++    outcome.metrics.engine_timing                = result.engine_timing;
++    outcome.metrics.prefix_cache_hit_tokens      = result.reused_prompt_tokens;
++    outcome.id_slot                              = result.slot;
++    outcome.session_digest                       = result.session_digest;
++    outcome.metrics.prefix_reuse_path            = result.prefix_reuse_path;
++    outcome.metrics.materialization              = result.materialization;
++    outcome.metrics.speculative_backend          = result.speculative.backend;
++    outcome.metrics.speculative_draft_window     = result.speculative.draft_window;
++    outcome.metrics.speculative_rounds           = result.speculative.rounds;
++    outcome.metrics.speculative_draft_tokens     = result.speculative.drafted_tokens;
++    outcome.metrics.speculative_accepted_tokens  = result.speculative.accepted_tokens;
++    outcome.metrics.speculative_fallback_steps   = result.speculative.fallback_steps;
++    outcome.metrics.ngram_rounds                 = result.speculative.ngram_rounds;
++    outcome.metrics.ngram_drafted_tokens         = result.speculative.ngram_drafted_tokens;
++    outcome.metrics.ngram_accepted_tokens        = result.speculative.ngram_accepted_tokens;
++    outcome.metrics.ngram_archive_rounds         = result.speculative.ngram_archive_rounds;
++    outcome.metrics.ngram_archive_drafted_tokens = result.speculative.ngram_archive_drafted_tokens;
++    outcome.metrics.ngram_archive_accepted_tokens =
++        result.speculative.ngram_archive_accepted_tokens;
++    outcome.metrics.ngram_archive = result.ngram_archive;
++    outcome.metrics.speculative_accepted_per_position =
++        std::move(result.speculative.accepted_per_position);
++    outcome.metrics.speculative_adaptive           = result.speculative.adaptive;
++    outcome.metrics.speculative_window_transitions = result.speculative.window_transitions;
++    outcome.metrics.speculative_rounds_per_window = std::move(result.speculative.rounds_per_window);
++
++    outcome.tool_calls      = std::move(result.tool_calls);
++    outcome.tool_call_parse = result.tool_call_parse;
++    // parallel_tool_calls=false promises the caller at most one tool call per assistant turn.
++    // Decoding is not constrained, so enforce it here: keep the first call and drop the rest. The
++    // model can ask for the next one on the following turn, which is how a sequential executor
++    // consumes them anyway.
++    if (!prepared.parallel_tool_calls && outcome.tool_calls.size() > 1) {
++        outcome.tool_calls.resize(1);
++    }
++    return outcome;
++}
++
++void GenerationService::warmup() {
++    // 实机死点取证：引擎停在 DEBUG warming up 后连一次 write(2) 都没有（strace 里 ninfer 进程最后的系统调用就是这条日志写），
++    // 主线程侧只有 bash/timeout 传回的 exit_group(1) ⇒ 只能自己在 warmup 里打标记，看它走到哪一段。
++    std::fprintf(stderr, "warmup trace: 进入\n"); std::fflush(stderr);
++    GenerationRequest request;
++    ChatTurn turn;
++    turn.role = ChatRole::User;
++    ContentPart content;
++    content.kind     = ContentKind::Text;
++    content.text     = "hi";
++    content.type_raw = "text";
++    turn.content.push_back(std::move(content));
++    request.messages.push_back(std::move(turn));
++    request.max_tokens = 4;
++    std::fprintf(stderr, "warmup trace: 请求已构造，进 prepare_impl\n"); std::fflush(stderr);
++    PreparedRequest prepared =
++        prepare_impl(request, GenerationConsumerMode::Aggregate, {}, {}, {},
++                     CacheParticipation::Disabled, DeadlinePolicy::UnboundedStartup);
++    std::fprintf(stderr, "warmup trace: prepare_impl 返回，进 run()\n"); std::fflush(stderr);
++    run(prepared, nullptr);
++    std::fprintf(stderr, "warmup trace: run() 返回\n"); std::fflush(stderr);
++    // KVarN128：惰性 bf16 消费窗口 —— 热身请求本身也会把窗口的物理后备提交起来（VMM 粒度 2 MiB
++    // ⇒ 17 份 × 2 MiB × 2 = 68 MiB）。热身的 KV 是 CacheParticipation::Disabled、不会被任何请求
++    // 复用，窗口内容随后由真实请求按覆盖量重写，所以这里释放回空闲态（虚拟地址保留）。
++    // 只允许在启动热身全部结束后调用：此前不存在会被复用的 KV。
++    (void)cudaDeviceSynchronize();
++    ::ninfer::ops::kvarn128_window_release_backing();
++}
++
++} // namespace ninfer::serve
+diff --git a/src/serve/request_log.cpp b/src/serve/request_log.cpp
+index 6d94460..c4b0256 100644
+--- a/src/serve/request_log.cpp
++++ b/src/serve/request_log.cpp
+@@ -151,6 +151,9 @@ const char* kv_cache_name(ninfer::KvCacheStorage storage) {
+         return "nvfp4";
+     case ninfer::KvCacheStorage::Fp8KeyNvfp4Value:
+         return "k8v4";
++    case ninfer::KvCacheStorage::KvarnTile128:
++        // G128 KVarN（K4V4）：请求日志的 kv 字段不加这条会打成 "unknown"，跟 capacity 行对不上账。
++        return "kvarn128";
+     }
+     return "unknown";
+ }
+-- 
+2.52.0.windows.1
+

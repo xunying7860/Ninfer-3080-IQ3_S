@@ -1,0 +1,401 @@
+From 628a6d2c0bd05863122fc47ea8837b638072da48 Mon Sep 17 00:00:00 2001
+From: kvarn-g128 <kvarn@local>
+Date: Tue, 13 Oct 2026 23:11:24 +0800
+Subject: [PATCH 2/7] =?UTF-8?q?G128=20=E6=8E=A5=E7=BA=BF=EF=BC=9A=E4=BA=A4?=
+ =?UTF-8?q?=E4=BB=98=E6=96=87=E6=A1=A3=20+=20x99=20=E9=83=A8=E7=BD=B2?=
+ =?UTF-8?q?=E8=84=9A=E6=9C=AC=20+=20=E5=AE=9E=E6=9C=BA=E5=8F=96=E8=AF=81?=
+ =?UTF-8?q?=EF=BC=88rk4v4=20=E5=AF=B9=E7=85=A7=E8=87=82=E8=B5=B7=E5=88=B0?=
+ =?UTF-8?q?=20api=20base=EF=BC=9Bkvarn128=20=E5=9C=A8=E6=B6=88=E8=B4=B9?=
+ =?UTF-8?q?=E7=AB=AF=20SIGSEGV=EF=BC=89=E3=80=82?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+实机原始行（/data/kvarn/g128-engine/logs/）：
+- rk4v4（同一二进制）：'capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.57 GiB | free 5.44 GiB'
+  + 'warmup complete | 518 ms' + 'api base http://127.0.0.1:18093/v1'
+- kvarn128：'host KV pinned | 256.0 MiB | 82.0 ms' 之后 SIGSEGV（RC=139），ctx 65536 与 8192 崩在同一行。
+- dmesg 故障 IP offset 0x10ae961 → addr2line 落在
+  small_t_i8::launch_tc_partial_i8<CausalAttentionGeometry<24,4,1>,2,true,false,...> 的内层 lambda，
+  模板实参 KvKeyCoding(2)=Int4E8 ⇒ route/tier 把 kvarn128 映射到了别的档位的内核，host 段坏指针解引（零日志）。
+- Xid 13 在 uptime 10451，本次 uptime 59914 ⇒ 那批 Xid 是旧的。
+- 收尾：无我起的实例；GPU0 21 MiB；ninfer/ninfer-watchdog inactive+disabled、ninfer-monitor active+enabled。
+---
+ ...2\277\344\272\244\344\273\230-20261013.md" | 296 ++++++++++++++++++
+ build_check/g128_container_build.sh           |   2 +-
+ build_check/run-g128.sh                       |  27 ++
+ build_check/start-g128.sh                     |  12 +
+ 4 files changed, 336 insertions(+), 1 deletion(-)
+ create mode 100644 "build_check/G128-\346\216\245\347\272\277\344\272\244\344\273\230-20261013.md"
+ create mode 100644 build_check/run-g128.sh
+ create mode 100644 build_check/start-g128.sh
+
+diff --git "a/build_check/G128-\346\216\245\347\272\277\344\272\244\344\273\230-20261013.md" "b/build_check/G128-\346\216\245\347\272\277\344\272\244\344\273\230-20261013.md"
+new file mode 100644
+index 0000000..8144d60
+--- /dev/null
++++ "b/build_check/G128-\346\216\245\347\272\277\344\272\244\344\273\230-20261013.md"
+@@ -0,0 +1,296 @@
++# G128 KVarN 接线交付 —— 阶段 2+3 第一段（仅 CH1 的 engine-g128 分支）
++
++生成时间：2026-10-13（本机 docker 实跑 + 独立 GPU 对拍；x99 见 §6）
++工作树：`H:\Hermes工作区\Hermes\kvarn-全档位移植-20261013\engine-g128\`
++基线：自 `kvarn-任务A-20261012\engine\ninfer-all-kvarn`（= `iamwavecut/ninfer-all@11327e96` + G64 旧路线改动）整树复制，`git init` 自建仓。
++提交：`a5ba7ba` 基线 → `034347f` G128 接线第一段。
++
++---
++
++## 1. 结论先行
++
++| # | 任务书里的目标 | 状态 | 判据 / 证据 |
++|---|---|---|---|
++| 1 | storage/profile/plane 注册 + 5 张名字表 + `kvarn_layout` 36 格核对 | **完成** | `kvarn_layout.h` 单一真值来源；36 格逐格与阶段 1 oracle 口径②一致（0/36 不一致）；五张表 + `paged_kv_storage.h`/`d256_profile.h` 全同步 |
++| 2 | 量化/存储 kernel 作新 TU 进构建 | **完成** | 新 TU `append/kvarn128_launch.cu` 进 `sources.cmake`；nvcc 单编 TU rc=0；全树构建见 §4 |
++| 3 | append 三路 A/B/C + device 侧页表解析 | **完成** | 分派在 `kvarn128_launch.cu`；`KvarnTile128BlockTable::resolve()` 只有 `__device__`；staging 双槽、capture 前预留 |
++| 4 | 消费端读路径 + “record 解码 == 主机反量化”对拍 | **判据达成、接线未做** | 对拍 cosine 0.99983~0.99999、nonfinite 0（见 §3）；**消费端内核未接**，原因见 §5 |
++| 5 | x99 起服务 + 真请求 + rk4v4 对照 | **未达成** | 见 §6（注册/几何的实机取证做到了，warmup 过不去，卡因见 §5） |
++| 6 | 做不到就写清卡在哪 | **本条** | §5 + §7 |
++
++**一句话**：格式/几何/编码/解码全部按 P1 落地并逐格验通（360 万+数据点、cosine ≥ 0.9998），
++**唯一没做的是“谁来读这些 record”**——现成 bf16 attention 读不了量化域，而能读的实现只有一条路（见 §5）。
++
++---
++
++## 2. 步骤 1 的落地细节（`kvarn_layout.h` = 单一真值来源）
++
++- `k_code_leading = 32*kb`、`v_code_leading = 32*vb`、`k_scale_leading = 10`、`v_scale_leading = 8`
++  （全部写成**推导式**，不是魔数：`kKvarnKScaleLeading = kKvarnSlices*kKvarnAxisPerToken*2 + kKvarnSlices`，`static_assert == 10` 钉住）。
++- 紧凑 record 口径 `32*(Kb+Vb)+24`（与 oracle 口径②一致）；P1 分配口径 `32*(Kb+Vb)+36`
++  ⇒ K4V4 **292**、K4V2 **228** B/token/head。与支路的 P1 几何定案逐位相同。
++- 槽位映射（K：0..3 scale_axis / 4..7 zp_axis / 8..9 other 两 slice；V：0..3 other / **4/5 scale_axis 两 slice / 6/7 zp_axis 两 slice**）
++  —— 本条按支路定案**改过一次**：我原先写的是 `4+2*slice+is_zp`，已改成 `4+2*is_zp+slice`，`kvarn_layout.h:kvarn_v_scale_slot_axes` 是唯一改点，encode/decode 共用同一 helper 所以一致性不受影响。
++- 页内寻址 `kvarn_plane_element_offset()` 与引擎 `paged_kv_element_offset` 同式，
++  在 `kvarn128_launch.cu` 用 `static_assert` 钉住；另加 `static_assert(kKvarnPageTokens == kPagedKVPageSize)`。
++- 五张名字/解析表：`include/ninfer/types.h`（枚举末位 `KvarnTile128`）、
++  `src/serve/operational_log.cpp:kv_cache_name`（`"kvarn128"`）、
++  `src/serve/serve_options.cpp:parse_kv_dtype`、`apps/cli/options.cpp`、`apps/cli/main.cpp:format_kv_cache`；
++  任务书未列的 `src/core/paged_kv_storage.h` 与 `apps/perplexity/main.cpp` 也补了 case（前者不补直接拿不到几何）。
++- `src/ops/kv_cache/d256_profile.h`：`{U8, U8, 128, 128, 128(quant_group=tile 粒度), FP16, 10, FP16, 8}`。
++
++---
++
++## 3. 步骤 2/3/4 的判据与原始输出
++
++### 3.1 独立对拍 harness（`build_check/kvarn128_gate.cu`，engine 用的**同一份** device 主体）
++
++复现：
++
++```bash
++docker exec g128build bash -lc 'cd /w && nvcc -O2 -std=c++17 -arch=sm_86 -I/src/src -I/src/include -o gate /src/build_check/kvarn128_gate.cu'
++docker run --rm --gpus all -v g128vol:/w nvidia/cuda:13.1.2-devel-ubuntu24.04 bash -lc 'cd /w && ./gate'
++```
++
++原始输出（全文）：
++
++```
++================ G128 KVarN 对拍（engine 用的同一份 device 主体）================
++[device] NVIDIA GeForce RTX 3080 sm_86
++[1] 紧凑 record 口径 vs 阶段 1 oracle 口径②（B/token/head）
++  36 格：不一致 0 / 36  ⇒ PASS
++  闭式自检：K4V2=216（应 216）；K4V4=280（应 280）
++[2] P1 实际分配口径（4 plane × 2 页 = 128 token）
++  K4V4: tile=37376 B ⇒ 292 B/token/head（record 口径 280；生产 rk4v4 = 280）
++  K4V2: tile=29184 B ⇒ 228 B/token/head（record 口径 216）
++[3-高斯] K record 解码 vs 主机反量化: cosine=0.9999773402 max|Δ|=6.653e-02 half 不一致=1581/32768 nonfinite=0
++[3-高斯] V record 解码 vs 主机反量化: cosine=0.9999678351 max|Δ|=6.647e-02 half 不一致=2323/32768 nonfinite=0
++[3-高斯] 判定：PASS（判据 A: cosine ≥ 0.999；判据 B: nonfinite == 0）
++[3b-高斯] iters=16（信息项，不作判据）K cosine=0.999977  V cosine=0.999969
++[4-高斯] staging 分段写 vs 一次写满：K 不一致=0  V 不一致=0 ⇒ PASS（应全 0）
++[3-离群通道] K record 解码 vs 主机反量化: cosine=0.9999517410 max|Δ|=1.281e+00 half 不一致=1697/32768 nonfinite=0
++[3-离群通道] V record 解码 vs 主机反量化: cosine=0.9998311600 max|Δ|=9.658e-01 half 不一致=4924/32768 nonfinite=0
++[3-离群通道] 判定：PASS（判据 A: cosine ≥ 0.999；判据 B: nonfinite == 0）
++[3b-离群通道] iters=16（信息项，不作判据）K cosine=0.999951  V cosine=0.999995
++[4-离群通道] staging 分段写 vs 一次写满：K 不一致=0  V 不一致=0 ⇒ PASS（应全 0）
++================ 汇总 ================
++36 格字节账不一致 = 0 / 36
++P1 K4V4 = 292 B/token/head（record 口径 280；生产 rk4v4 = 280，P1 多 12 B 是维轴按页存两份）
++总判定：PASS
++```
++
++读法：
++- **[3] 就是任务书要的“record 解码 == 主机反量化”**：GPU 走 `kvarn128_encode_tile`（engine kernel 用的同一份）
++  写 4 个 plane，再走 `kvarn128_decode_tile_device` 读回；主机走**自己写的标量** Sinkhorn+RTN+rank-1 反量化。
++  两组数据（高斯 / 离群通道）× K/V 全部 cosine ≥ 0.9998、nonfinite 0。
++- **[4] 是“满瓦片 vs 尾瓦片两条路径”**：同一份 stage 内容，一次写满 vs 分两段写（100 + 28，模拟 C 路封口），
++  解出来的 32768 个 half 逐个相同（K/V 都 0 不一致）。
++- half 不一致 1581~4924/32768 是**浮点末位**（max|Δ| ≤ 1.3，相对量级 ~1e-2 以下的个别点），
++  与 gate 2 的结论一致（宿主 libm vs 设备数学），不是布局错。
++
++### 3.2 修掉的两个真 bug（都留了记录，别重犯）
++
++1. **码流打包用全局维索引 per-slice 的 payload** → 跨 slice 读脏。
++   症状：K cosine 0.418、V `nan`（全 0）。修法：`kvarn128_pack_codes_to_plane` 里把全局维折成
++   `d - dim_offset` 再取码。修后 0.99998。
++2. **V 的 scale 页 token 轴槽序**与我原先写的不同 → 已按支路定案改成 4/5=scale_axis、6/7=zp_axis。
++
++---
++
++## 4. 构建（PC docker，独立容器/卷）
++
++- 容器 `g128build`、卷 `g128vol`（与旧 `kvarn-build`/`kvarnbuild` 完全隔离）。
++- **不 `cp -a` 进卷**：直接 `cmake -S /src -B /w/build`（bind mount 的 mtime 就是真 mtime），
++  从根上绕开 R12「cp -a 保时间戳 + ninja 按时间戳判新」。
++- 脚本 `build_check/g128_container_build.sh`：首档 `-j 12`（本机 VM 实测 **29 GB / 12 核**，
++  不是旧记录的 16 GB，所以敢从 12 起），逐级降档 + `-k 0`。
++
++构建结果：**BUILD_RC=0**。原始输出（末 8 行）：
++
++```
++[221/224] Linking CXX static library src/models/libninfer_model_runtime.a
++[222/224] Linking CXX static library src/runtime/libninfer_engine.a
++[223/224] Linking CXX static library src/serve/libninfer_serve.a
++[224/224] Linking CXX executable apps/ninfer-serve
++PASS_RC[12]=0
++BUILD_RC=0
++PRODUCT 750148152 /w/build/apps/ninfer-serve
++DONE-BUILD
++```
++
++**改动真的进了二进制**（不是只看 BUILD_RC，专门查过 R12 那条）：
++
++```
++$ strings apps/ninfer-serve | grep -c kvarn128
++49
++$ nm -C apps/ninfer-serve | grep kvarn128…
++T ninfer::ops::kv_cache_append_kvarn128_launch(void const*, void const*, int const*, ninfer::ops::KvarnTile128BlockTable, unsigned char*, void*, unsigned char*, void*, int, int, int, CUstream_st*)
++T ninfer::ops::kvarn128_decode_tile(void const*, void const*, void const*, void const*, ninfer::ops::KvarnTile128BlockTable, int, int, int, void*, void*, CUstream_st*)
++T ninfer::ops::kvarn128_ensure_stage(int, CUstream_st*)
++T ninfer::ops::kvarn128_stage_slots()
++  + kvarn128_rotate_stage_kernel / kvarn128_encode_kernel<4,4|4,2> / kvarn128_decode_kernel<4,4|4,2> 六条 __device_stub__
++$ md5sum apps/ninfer-serve
++b2a72ecc73a54eef2b1eaeec28226d70
++```
++
++（`kKvarnPageTokens == kPagedKVPageSize` 与页内寻址同式两条 `static_assert` 能过，本身也证明编译进去的是新代码。）
++
++产物落盘：本机 `kvarn-全档位移植-20261013\_artifacts\ninfer-serve-g128`（750,148,152 B，md5 同上）。
++
++---
++
++## 5. 没做到的那一步：消费端为什么没有现成解
++
++**任务书步骤 4 要两条：“不靠 mirror” + “record 解码 == 主机反量化”。我做到了第二条（§3），没做到第一条的接线。**
++
++### 5.1 已排除的候选（都算过账，不是猜）
++
++| 候选 | 结论 | 账 |
++|---|---|---|
++| 沿用 G64 旧路线的 **bf16 mirror**（编码时顺手写） | **不可用** | 旧路线实测 6/6 退化；且它的 mirror 是**全模型共用一片**（`g_mirror_k/v` 是文件级 static），48 个层互相覆写 —— 这本身就是 6/6 退化的一个充分解释 |
++| **materialize 到“每层一份 bf16 平面”** | **显存不够** | 每层每 KV head 512 B/token（K+V bf16 各 256 维×2 B）⇒ 65536 ctx × 4 head = **268 MB/层**；27B 按 ~48 层 = **12.9 GB**，加 13.5 GB 模型必然爆 |
++| **materialize 到“每次调用临时缓冲”** | **速度不可接受** | 缓冲必须盖住整个可见窗口；而缓冲区是跨层覆盖的 ⇒ 每 token 每层都要把**全部** 128-token tile 重解一遍 ⇒ `ctx/128 × 层数` 次 tile 解码/token；65536 ctx、48 层 ⇒ 24576 次/token。无法满足步骤 5 的“decode tok/s 与 rk4v4 同量级” |
++| 把 K/V 的**未旋转 bf16 塞回 plane**（bf16 当 k_pages） | **显存账更差** | 每 token/head = 512+512(KV bf16) + 148+144(码+轴) = 1316 B ⇒ 是 rk4v4 的 4.7 倍 |
++| 把 `KvarnTile128` 塞进 `kv_cache_is_int8_family` | **数值错（能跑）** | KVarN 的 scale 是「K 每维 1 份 + 每 token 1 份列因子」的 rank-1 向量；int8 家族是「每 token 自己 4 组」。已在 `launch.cu` 注释与 profile 里显式拒绝 |
++
++### 5.2 唯一可行的消费端：KVarN 量化域融合读核（照 `prompt_i8`/`small_t_i8` 骨架）
++
++- 数学分解（doc 05 §5.6）：
++  K 侧 `logit[g] = s_row[g]·(Σ_d (q[d]·s_col[d])·qc[d,g] + Σ_d q[d]·zp[d])`，
++  V 侧 `out[d] = s_col_V[d]·(Σ_g (p[g]·s_row_V[g])·vc[g,d] + Σ_g p[g]·zp_V[g])`。
++- 也就是说：**Q 侧要先做旋转 + `s_col[d]` 预乘**（与 int8 家族一样旋转，但多一次 s_col 预乘），
++  K 码用位串解（2/3/4/5/6/8-bit），归约用现成的 softmax/`pack_gqa`。
++- 落点：`prompt.cu`（prefill）与 `small_t.cu`（decode）各加一条分支，**不许掉到 bf16**。
++- 工作量评估：两条内核 + 路由 ≈ 400~600 行/条，且必须真机迭代；这是这一轮**没做完的部分**。
++
++### 5.3 为什么这一步必须先做、且不能用 workflow 绕过
++
++`small_t.cu:324` 与 `prompt.cu:271/:298` 的分派是
++`if (kv_cache_is_int8_family(...)) int8 核 else launch_tc_partial_bf16` ——
++**不加显式分支，`KvarnTile128` 会直接进 bf16 核并把 U8 码当 bf16 读**（`plane_types.h` 头注讲的就是这类静默故障）。
++所以“先让它能跑起来看一眼”这条路不存在：不做融合读核，就只能报错，不能出结果。
++
++---
++
++## 6. x99 实机（GPU0 空闲归我，GPU1 Strata 常驻未动）
++
++部署：新目录 `/data/kvarn/g128-engine/`（与旧 `/data/kvarn/ninfer-kvarn/` 隔离），
++`bin/ninfer-serve` md5 `b2a72ecc73a54eef2b1eaeec28226d70`（与本地逐位相同），
++`device-profiles.json` 独立一份，`run-g128.sh` 骨架照抄旧 `run-smoke.sh`
++（loader `/data/ninfer/bundle/libs/lib64/ld-linux-x86-64.so.2` + 同 LIBPATH + `--cuda-graph-allowance-mib 1024` + `--spec mtp`）。
++
++### 6.1 对照臂（同一二进制，`KV_DTYPE=rk4v4`，ctx 65536）—— **起到 api base**
++
++```
++2026-10-13 23:02:37.062  INFO  capacity | KV 65,536 tokens, rk4v4, explicit | pages 1,024/1,024 | runtime 2.57 GiB | free 5.44 GiB
++warmup trace: 进入 / prepare_impl 返回 / run() 返回
++2026-10-13 23:02:37.580  INFO  warmup complete | 518 ms
++2026-10-13 23:02:37.580  INFO  listening on http://127.0.0.1:18093 | model qwen3.8-27b-rk4v4 | auth disabled
++2026-10-13 23:02:37.580  INFO  api base http://127.0.0.1:18093/v1
++```
++
++⇒ 产物本身是好的（同一份 ELF 用生产档位能起服务、warmup 过、api base 出）。
++
++### 6.2 kvarn128 臂 —— **起不来，SIGSEGV（RC=139）**
++
++```
++$ KV_DTYPE=kvarn128 CTX_TOKENS=65536 timeout 100 ./run-g128.sh
++2026-10-13 23:00:21.715  INFO  build 0.12.0-rtx3090+034347f-dirty
++2026-10-13 23:00:28.159  INFO  host KV pinned | 256.0 MiB | 82.0 ms
++bash: line 1: 714414 Segmentation fault      (core dumped) KV_DTYPE=kvarn128 CTX_TOKENS=65536 setsid nohup ./run-g128.sh
++```
++
++- **不是容量问题**：`CTX_TOKENS=8192` 同样崩在**同一行**（host KV pinned 之后），
++  且 dmesg 两次的故障 IP 偏移完全相同。
++- **不是旧 Xid 的余波**：`cut -d. -f1 /proc/uptime` = **59914**，而 dmesg 里那条 Xid 13 在
++  uptime **10451**（≈13.7 小时前）⇒ 与本次无关（任务书点名的就是这批旧 Xid）。
++- **崩在哪（用 dmesg 的故障 IP 反查，offset 0x10ae961，与两次跑一致）**：
++
++```
++$ addr2line -C -f -i -e ninfer-serve 0x10ae961
++auto ninfer::ops::detail::small_t_i8::launch_tc_partial_i8<
++        ninfer::ops::CausalAttentionGeometry<24, 4, 1>, 2, true, false,
++        ninfer::ops::CausalAppendInput>(...)::{lambda<int,int,int,bool,int,bool>()#1}
++      ::operator()<4, 2, 32, false, 1, false>() const
++      ::{lambda<bool, ninfer::ops::KvKeyCoding, bool>()#1}::operator()<true, (ninfer::ops::KvKeyCoding)2, true>() const
++dmesg: ld-linux-x86-64[716718]: segfault at 7fa8bd69e900 ip 00007fac50696961 sp 00007ffc76bdc7c0 error 4 in ninfer-serve[7fac4fb88000+2e40000]
++       Code: ... 48 8b 04 24 <44> 8b 20 ...      # mov rax,[rsp] ; mov r12d,[rax] —— host 段空/坏指针解引用
++```
++
++读法：崩点在 **int8 family 的 small_t launcher**（`small_t_i8::launch_tc_partial_i8`，
++`KvKeyCoding(2) = Int4E8`），也就是 §5 说的那条“不加显式分支就会被现成内核接管”的路。
++**注意它是硬崩（SIGSEGV），不是可读报错** —— 与任务书警告的“静默死”同族：坏指针在 host 段被解引，
++没有任何引擎日志、没有异常文本，只有 dmesg 一行。
++
++### 6.3 收尾（全部已确认）
++
++| 项 | 状态 |
++|---|---|
++| 我起的实例 | `pgrep -af "[n]infer-serve"` = **none** |
++| GPU0 | **21 MiB**（= 基线）；GPU1 18807 MiB（Strata，未动） |
++| `ninfer` / `ninfer-watchdog` | inactive / **disabled**（未启未改） |
++| `ninfer-monitor` | active / enabled（未动） |
++| `/data/ninfer/`、`/data/models` | 未动（只读路径） |
++| 新目录 | 只写 `/data/kvarn/g128-engine/`（bin/logs/device-profiles/run-g128.sh/start-g128.sh） |
++| 删文件 | 无 |
++
++---
++
++## 7. 下一步最可能嫌疑 + 判据（给接手的人）
++
++1. **第一优先：把“路由/分级”这条先修成显式**（比写内核更便宜、且是实测崩点）。
++   实机崩点（§6.2）落在 `small_t_i8::launch_tc_partial_i8<Geometry<24,4,1>,2,…>` 且 `KvKeyCoding = Int4E8`，
++   而 `KvarnTile128` 既不是 int8 family、更不是 rk4v4-e8 ⇒ **tier/route 的解析把 kvarn128 映射到了别的档位的内核**，
++   然后在 host 段解引了一个坏指针（SIGSEGV，零日志）。
++   判据（分两步，都能单独验）：
++   (a) 在 `small_t_i8_route_key` / `route_catalog` 里给 kvarn128 一个**显式**条目（或让它显式 throw），
++       重跑后应变成**可读报错**而不是 SIGSEGV —— 这一步能立刻把“静默死”变成“能看见的死”。
++   (b) 再按 §5.2 写融合读核；重跑后 `capacity | … kvarn128 …` 与 `api base` 应出现（`capacity` 行本身
++       在崩点之前，所以只要不崩就该能看见）。
++2. **写 KVarN 融合读核**（§5.2），先只支持 K4V4（bits 编译期常量 4 两处）。
++   对拍顺序不要反：先用手工构造的 tile 走“内核读出的 logits == 主机按 §5.2 公式算的 logits”（fp32 比），
++   再上真模型。判据 cosine ≥ 0.999、nonfinite == 0（与 §3 同一口径）。
++3. **最可能踩的坑（按概率排）**：
++   a. Q 侧漏了 `s_col[d]` 预乘（或把 `s_col` 预乘到了 K 码上）⇒ logits 量级系统性偏。判据：单元对拍第一步就不过。
++   b. V 侧少一次 `s_col_V[d]` 外乘 ⇒ 输出方向对、幅值错。
++   c. 位串解按 4-bit 写死（`d/2`、`(d%2)*4`）⇒ 换成 `d/DimsPerByte`、`(d%DimsPerByte)*Bits`（`kvarn128_decode_plane` 已是通用式，直接照抄）。
++   d. `valid_tokens(width)` 没卡上界 ⇒ padding 列被当真。
++   e. `--kv-capacity` 不是 128 的倍数 ⇒ 逻辑页数为奇数，最后一个 tile 只有一页。
++4. **容量口径提醒**：容量取 128 的倍数即可（1 tile = 2 逻辑页，两页各自查 block table，
++   **不要求物理页相邻** ⇒ 不需要改 `paged_kv_cache.cpp` 的成对分配）。
++   K4V4 P1 = 292 B/token/head；65536 ctx × 4 head ⇒ 76 MB/层（对照 rk4v4 实测 `runtime 2.57 GiB`，见 §6.1）。
++5. **还没做的（任务书后续条目）**：全档位 2/3/4/5/6/8-bit 注册 + `--kvarn-k-bits/--kvarn-v-bits`；
++   `kvarn_layout.h` 的 **闭式已经按 36 档写成参数化**（`kvarn_code_leading(kb)` / `kvarn_compact_tile_bytes(kb,vb)` /
++   `kvarn_plane_tile_bytes(kb,vb)`，36 格已逐格核对过），扩档位主要是
++   ① 每档一个 storage 枚举 + profile case（leading 直接调这几个闭式函数）、
++   ② launcher 里把运行期 `bits` 显式展开成编译期分支（不要当模板实参）、
++   ③ 位串打包/解包已是通用式（`DimsPerByte = 8/bits`），3/5/6-bit 无需另写。
++
++---
++
++## 8. 文件清单（engine-g128）
++
++新增：
++```
++src/ops/kv_cache/kvarn_layout.h                       单一真值来源（几何/字节账/槽位映射/寻址）
++src/ops/kv_cache/append/kvarn128_codec.cuh            设备端编解码（量化数学逐行抄 gate2 已验版，写入端改 ninfer 平面）
++src/ops/kv_cache/append/kvarn128_launch.h             host 侧入口 + KvarnTile128BlockTable
++src/ops/kv_cache/append/kvarn128_launch.cu            新 TU：三路分派 + rotate/stage + encode/decode 核 + staging 池
++build_check/kvarn128_gate.cu                          独立对拍 harness（不进引擎构建）
++build_check/g128_container_build.sh                   自控并发容器构建
++build_check/run-g128.sh                               x99 smoke（骨架照抄旧 run-smoke.sh）
++```
++修改：
++```
++include/ninfer/types.h                                枚举末位 KvarnTile128
++src/ops/kv_cache/d256_profile.h                       +case（quant_group = tile 粒度 128）
++src/core/paged_kv_storage.h                           +case（P1 leading 128/128/10/8）
++src/serve/operational_log.cpp                         kv_cache_name → "kvarn128"
++src/serve/serve_options.cpp                           parse_kv_dtype → "kvarn128"
++apps/cli/options.cpp                                  parse_kv_cache → "kvarn128"
++apps/cli/main.cpp                                     format_kv_cache → "kvarn128"
++apps/perplexity/main.cpp                              +case（避免分类器 throw）
++src/ops/softmax_attention/dense/causal_cache/causal_softmax_attention.cpp  +prompt_limit case
++src/ops/kv_cache/append/launch.cu                      launch_full 里 KVarN128 分支（batch 元数据只带指针）
++src/ops/kv_cache/sources.cmake                        显式加新 TU
++```
+diff --git a/build_check/g128_container_build.sh b/build_check/g128_container_build.sh
+index ab0617f..9758b98 100644
+--- a/build_check/g128_container_build.sh
++++ b/build_check/g128_container_build.sh
+@@ -21,7 +21,7 @@ if [ ! -f /w/build/build.ninja ]; then
+   echo CONFIGURE_RC=$?
+ fi
+ rc=1
+-for jobs in 8 6 4 2; do
++for jobs in 12 8 6 4 2; do
+   echo "----- pass -j $jobs -----"
+   cmake --build /w/build --target ninfer-serve -j $jobs -- -k 0
+   rc=$?
+diff --git a/build_check/run-g128.sh b/build_check/run-g128.sh
+new file mode 100644
+index 0000000..d267f9d
+--- /dev/null
++++ b/build_check/run-g128.sh
+@@ -0,0 +1,27 @@
++#!/bin/bash
++# G128 KVarN 候选件 smoke（骨架照抄 /data/kvarn/ninfer-kvarn/run-smoke.sh，容器/目录独立，
++# 不用旧的 KVARN_STAGING_PAGES；device-profile 独立一份）。
++# 判活只认引擎自己报的行：capacity | …、api base http://…/v1、req#N done。
++set -u
++ROOT=/data/kvarn/g128-engine
++BIN=$ROOT/bin/ninfer-serve
++LOADER=/data/ninfer/bundle/libs/lib64/ld-linux-x86-64.so.2
++LIBPATH=/data/ninfer/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/lib/x86_64-linux-gnu
++MODEL=/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer
++export CUDA_VISIBLE_DEVICES=0
++KV=${KV_DTYPE:-kvarn128}
++CTX=${CTX_TOKENS:-16384}
++PORT=${PORT:-18093}
++mkdir -p "$ROOT/logs"
++exec "$LOADER" --library-path "$LIBPATH" "$BIN" "$MODEL" \
++  --host 127.0.0.1 --port "$PORT" --model-id "qwen3.8-27b-${KV}" \
++  --max-context "$CTX" --kv-capacity "$CTX" --kv-dtype "$KV" \
++  --device-profile-path "$ROOT/device-profiles.json" \
++  --cuda-graph-allowance-mib 1024 \
++  --max-concurrency 1 --max-pending-requests 4 --prefill-chunk 1024 \
++  --device-state-slots 1 --host-state-slots 1 --host-kv-mib 256 --context-cache-policy rolling \
++  --media-cache-mib 128 --media-live-mib 256 \
++  --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
++  --chat-template /data/ninfer/chat_template.jinja \
++  --default-reasoning-effort high --default-max-tokens 64 \
++  "$@"
+diff --git a/build_check/start-g128.sh b/build_check/start-g128.sh
+new file mode 100644
+index 0000000..0023f03
+--- /dev/null
++++ b/build_check/start-g128.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++# 起一个 G128 候选实例（一次只起一个；判活只认引擎自己报的行）
++dtype=${1:-kvarn128}
++ctx=${2:-65536}
++port=${3:-18093}
++TS=$(date +%Y%m%d-%H%M%S)
++LOGDIR=/data/kvarn/g128-engine/logs
++LOG=$LOGDIR/${dtype}-${TS}.log
++echo "$LOG" > $LOGDIR/last.log
++cd /data/kvarn/g128-engine || exit 1
++KV_DTYPE=$dtype CTX_TOKENS=$ctx PORT=$port setsid nohup ./run-g128.sh > "$LOG" 2>&1 < /dev/null &
++echo "started pid=$! log=$LOG"
+-- 
+2.52.0.windows.1
+

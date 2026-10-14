@@ -1,0 +1,59 @@
+From 1ddcccd28a8b6ee542710a5ad9ef89ab4805fd1e Mon Sep 17 00:00:00 2001
+From: Hermes <hermes@local>
+Date: Wed, 14 Oct 2026 11:54:42 +0800
+Subject: [PATCH 6/7] =?UTF-8?q?apps/perplexity=20=E7=9A=84=20--kv-dtype=20?=
+ =?UTF-8?q?=E8=A7=A3=E6=9E=90=E8=A1=A8=E8=A1=A5=E6=94=B6=20kvarn128?=
+ =?UTF-8?q?=EF=BC=88=E4=BB=A5=E5=8F=8A=E6=97=A7=E8=B7=AF=E7=BA=BF=20kvarn/?=
+ =?UTF-8?q?kvarn2=EF=BC=89=EF=BC=9A=E4=B8=8A=E4=B8=80=E6=89=8B=E6=8E=A5?=
+ =?UTF-8?q?=E7=BA=BF=E5=8F=AA=E6=8A=8A=20KvarnTile128=20=E5=8A=A0=E8=BF=9B?=
+ =?UTF-8?q?=E4=BA=86=20kv=5Fname()=20=E5=90=8D=E5=AD=97=E8=A1=A8=E3=80=81?=
+ =?UTF-8?q?=E6=B2=A1=E5=8A=A0=E8=BF=9B=20parse=20=E5=88=86=E6=94=AF?=
+ =?UTF-8?q?=EF=BC=8C=E5=AF=BC=E8=87=B4=20ninfer-perplexity=20=E6=8B=92?=
+ =?UTF-8?q?=E6=94=B6=20--kv-dtype=20kvarn128=EF=BC=88usage=5Ferror=20?=
+ =?UTF-8?q?=E5=8E=9F=E6=96=87=E5=8F=AA=E5=88=97=20bf16|=E2=80=A6|k8v4?=
+ =?UTF-8?q?=EF=BC=89=E3=80=82=E7=8E=B0=E5=90=8C=E6=AD=A5=20serve=20?=
+ =?UTF-8?q?=E4=BE=A7=E5=8F=A3=E5=BE=84=E5=B9=B6=E6=8A=8A=20usage=20?=
+ =?UTF-8?q?=E8=A1=8C=E4=B8=8E=E9=94=99=E8=AF=AF=E6=96=87=E6=A1=88=E4=B8=80?=
+ =?UTF-8?q?=E8=B5=B7=E6=9B=B4=E6=96=B0=E3=80=82?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ apps/perplexity/main.cpp | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/apps/perplexity/main.cpp b/apps/perplexity/main.cpp
+index 018d37a..b648989 100644
+--- a/apps/perplexity/main.cpp
++++ b/apps/perplexity/main.cpp
+@@ -95,7 +95,7 @@ std::string usage_text() {
+            "       [--ngram-table PATH] [--ngram-residency disk|ram|ram-hot] [--ngram-lock]\n"
+            "       [--ngram-io buffered|direct|mmap] [--ngram-io-depth N] [--ngram-ram-mib N]\n"
+            "       [--ngram-hot-profile PATH] [--no-ngram-table]   (Qwen3.8-Flash-Next)\n"
+-           "       [--kv-dtype bf16|int8|fp8|rk8v4|rk4v4|rk4v4-e8|rk2v4-e8|nvfp4|k8v4] [--output "
++           "       [--kv-dtype bf16|int8|fp8|rk8v4|rk4v4|rk4v4-e8|rk2v4-e8|nvfp4|k8v4|kvarn128|kvarn|kvarn2] [--output "
+            "<directory>]\n"
+            "       [--lm-head-q4|--lm-head-q6] [--embedding-q4|--embedding-q6] [--mtp-experts-q4] "
+            "[--gdn-state-fp16]\n"
+@@ -177,9 +177,16 @@ Options parse_options(int argc, char** argv) {
+                 out.kv = ninfer::KvCacheStorage::Nvfp4Group16;
+             } else if (dtype == "k8v4") {
+                 out.kv = ninfer::KvCacheStorage::Fp8KeyNvfp4Value;
++            } else if (dtype == "kvarn128") {
++                // G128 KVarN 全档位：页级 Sinkhorn 平衡后的 tile-128 量化（K/V 位宽由 profile 决定）。
++                out.kv = ninfer::KvCacheStorage::KvarnTile128;
++            } else if (dtype == "kvarn") {
++                out.kv = ninfer::KvCacheStorage::KvarnSinkhorn4KeyInt4ValueGroup64;
++            } else if (dtype == "kvarn2") {
++                out.kv = ninfer::KvCacheStorage::KvarnSinkhorn4KeyInt2ValueGroup64;
+             } else {
+                 usage_error("--kv-dtype must be bf16, int8, fp8, rk8v4, rk4v4, rk4v4-e8, "
+-                            "rk2v4-e8, nvfp4, or k8v4");
++                            "rk2v4-e8, nvfp4, k8v4, kvarn128, kvarn, or kvarn2");
+             }
+         } else if (option == "--output") {
+             out.output = std::filesystem::path(value("--output"));
+-- 
+2.52.0.windows.1
+
