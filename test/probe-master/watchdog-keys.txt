@@ -1,0 +1,3 @@
+llamacpp:prompt_tokens_total 53
+llamacpp:tokens_predicted_total 3
+llamacpp:kv_cache_usage_ratio 0

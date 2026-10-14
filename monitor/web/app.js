@@ -156,7 +156,9 @@ function renderMonitor(live, hw, st, eng, h, last, requests, totals, kept, ctx) 
   }
   spark("sp-disk", h.disk_read_mb);
 
-  // ---- context fill：KV 池占用（NInfer 的 /metrics 直接给 kv_cache_tokens / 占用比）
+  // ---- context fill：**当前会话**占逻辑上下文的比例（★2026-10-09 修正）
+  // 注意：引擎的 kv_cache_usage_ratio 是「设备 KV 池」占用（环档池 158,720 token，恒 ≈100%），
+  // 不是会话长度 —— 服务端 context.used_tokens/ratio 已改为「最近一次请求 prompt+output / max_context」。
   const maxCtx = eng.max_context || 0;
   const used = ctx && ctx.used_tokens != null ? ctx.used_tokens : 0;
   const frac = ctx && ctx.ratio != null ? Math.min(1, ctx.ratio) : (maxCtx ? Math.min(1, used / maxCtx) : 0);

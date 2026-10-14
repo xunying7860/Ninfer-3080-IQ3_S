@@ -124,3 +124,25 @@ exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
 #   --vision-max-merged 12288 → 4096；--cuda-graph-allowance-mib 1792 → 256
 #   硬账：reservation 随 ctx/槽位变（每槽 ≈32 MiB），available runtime capacity 恒为 7,553,613,824 B（不可调）
 #   现状：pages 4,960/4,960 | runtime 7.02 GiB | free 253.7 MiB | GPU0 19,853/20,480 MiB
+#
+# 2026-10-12 09:1x 事故修正（Hermes 执行「ninfer 交接任务」的测试期间，实测数字都在下面）：
+#   现象：生产起不来，反复
+#     FATAL server failed during startup | requested Engine runtime reservation requires
+#     7539767040 bytes, but only 7515865088 bytes are available for runtime capacity（差 23.9 MiB）
+#   根因：为测上游 master(0.12.0-rtx3090+25c5adfe) 引擎，它把**跨引擎共享**的
+#     ~/.cache/ninfer/device-profiles.json 覆盖成 schema_version 2（origin=calibration，
+#     ninfer_build=master-25c5adfe-docker）。生产引擎只读 v1（日志：
+#     "device-profiles.json ignored: not a ninfer.device-route-profiles v1 document"）
+#     ⇒ 每次启动都要重新标定（~49 s），标定期间占掉的设备内存使 available 从
+#     7,553,613,824 掉到 7,515,865,088（−37.7 MiB）⇒ 310K 起不来。
+#     原 v1 文件被覆盖且**无备份**（教训：跨引擎共享的文件也算"改动目标"，要先备份）。
+#   处置（单变量）：--cuda-graph-allowance-mib 256 → 224（腾 32 MiB），起来后：
+#     capacity | KV 317,440 tokens, rk4v4, explicit | pages 4,960/4,960 | runtime 6.99 GiB | free 219.7 MiB
+#   ★ 09:36 已恢复原配置 256：把 v2 profile 移开（留档 device-profiles.json.bak-v2-20261012 与 .moved-v2-20261012，
+#     没有删除）后，**生产件自己写出了 v1 profile**（5774 B，schema_version 1）⇒ 不再重标定 ⇒ 256 直接起来：
+#     capacity | KV 317,440 tokens, rk4v4, explicit | pages 4,960/4,960 | runtime 7.02 GiB | free 253.7 MiB
+#     （与 20261011 定案数字一字不差）。反证了根因：重标定本身吃掉约 37.7 MiB 的 runtime 预算。
+#     回退点：run.sh.bak-<时间戳>-pre-restore256。
+#   教训（给下次跑第二个引擎的人）：**任何会写 ~/.cache/ninfer/device-profiles.json 的引擎都要先备份它，
+#     并给第二个引擎单独的 --device-profile-path**，否则会把生产顶到标定路径上、凭空吃掉 37.7 MiB。
+#   回退点：/data/ninfer/run.sh.bak-20261012-0912-deviceprofile-incident

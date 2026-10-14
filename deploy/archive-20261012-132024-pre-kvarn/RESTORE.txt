@@ -1,0 +1,7 @@
+恢复生产的标准动作（顺序别乱）：
+  sudo systemctl start ninfer.service        # 会自动起 ExecStartPre 之类；等 /v1/models=200
+  curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:18082/v1/models
+  grep -a "capacity |" /data/ninfer/logs/ninfer-serve.log | tail -1   # 必须与 PRODUCTION-SNAPSHOT.txt 里那行一字不差
+  sudo systemctl start ninfer-watchdog.service                        # 移植期间被停掉的看门狗，交还时记得开回来
+若引擎起不来：先看 ~/.cache/ninfer/device-profiles.json 是不是被第二个引擎写成 schema_version 2（生产件只读 v1），
+处理办法与教训见交接文档 复测结论-20261012.md §5。

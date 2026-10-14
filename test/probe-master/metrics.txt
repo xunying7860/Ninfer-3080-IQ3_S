@@ -1,0 +1,128 @@
+# HELP llamacpp:prompt_tokens_total Prompt tokens evaluated by prefill; reused prefix tokens are excluded.
+# TYPE llamacpp:prompt_tokens_total counter
+llamacpp:prompt_tokens_total 53
+# HELP llamacpp:prompt_seconds_total Prefill execution time in seconds.
+# TYPE llamacpp:prompt_seconds_total counter
+llamacpp:prompt_seconds_total 0.42758699600000005
+# HELP llamacpp:tokens_predicted_total Tokens committed by decode rounds.
+# TYPE llamacpp:tokens_predicted_total counter
+llamacpp:tokens_predicted_total 3
+# HELP llamacpp:tokens_predicted_seconds_total Decode execution time in seconds.
+# TYPE llamacpp:tokens_predicted_seconds_total counter
+llamacpp:tokens_predicted_seconds_total 0.058076286000000005
+# HELP llamacpp:n_decode_total Decode rounds executed.
+# TYPE llamacpp:n_decode_total counter
+llamacpp:n_decode_total 2
+# HELP llamacpp:n_busy_slots_per_decode Average number of requests per decode round.
+# TYPE llamacpp:n_busy_slots_per_decode gauge
+llamacpp:n_busy_slots_per_decode 1
+# HELP llamacpp:prompt_tokens_seconds Average prefill throughput in tokens/s.
+# TYPE llamacpp:prompt_tokens_seconds gauge
+llamacpp:prompt_tokens_seconds 123.95138415294555
+# HELP llamacpp:predicted_tokens_seconds Average generation throughput in tokens/s.
+# TYPE llamacpp:predicted_tokens_seconds gauge
+llamacpp:predicted_tokens_seconds 51.656195783594008
+# HELP llamacpp:kv_cache_usage_ratio Occupied share of the device KV cache; 1 means full.
+# TYPE llamacpp:kv_cache_usage_ratio gauge
+llamacpp:kv_cache_usage_ratio 0
+# HELP llamacpp:kv_cache_tokens Tokens held in the device KV cache.
+# TYPE llamacpp:kv_cache_tokens gauge
+llamacpp:kv_cache_tokens 0
+# HELP llamacpp:requests_processing Requests holding an execution lane.
+# TYPE llamacpp:requests_processing gauge
+llamacpp:requests_processing 0
+# HELP llamacpp:requests_deferred Requests waiting for admission.
+# TYPE llamacpp:requests_deferred gauge
+llamacpp:requests_deferred 0
+# HELP ninfer:requests_total Requests completed with an outcome.
+# TYPE ninfer:requests_total counter
+ninfer:requests_total 0
+# HELP ninfer:requests_failed_total Accepted requests that ended in an error.
+# TYPE ninfer:requests_failed_total counter
+ninfer:requests_failed_total 0
+# HELP ninfer:requests_rejected_total Generation requests rejected during preparation, one per request_rejected log event (overload, invalid or oversized prompt or media). Unparseable and oversized HTTP bodies are not counted; failures after acceptance, including a queue timeout after submission, count in ninfer:requests_failed_total.
+# TYPE ninfer:requests_rejected_total counter
+ninfer:requests_rejected_total 0
+# HELP ninfer:requests_admitted Requests holding server ingress capacity, in any phase.
+# TYPE ninfer:requests_admitted gauge
+ninfer:requests_admitted 0
+# HELP ninfer:prefix_cache_hit_tokens_total Prompt tokens of completed requests served from a cached prefix.
+# TYPE ninfer:prefix_cache_hit_tokens_total counter
+ninfer:prefix_cache_hit_tokens_total 0
+# HELP ninfer:reused_prompt_tokens_total Prompt tokens restored from the context cache instead of prefilled.
+# TYPE ninfer:reused_prompt_tokens_total counter
+ninfer:reused_prompt_tokens_total 0
+# HELP ninfer:draft_tokens_total Speculative draft tokens proposed for completed requests.
+# TYPE ninfer:draft_tokens_total counter
+ninfer:draft_tokens_total 0
+# HELP ninfer:draft_accepted_tokens_total Speculative draft tokens accepted for completed requests.
+# TYPE ninfer:draft_accepted_tokens_total counter
+ninfer:draft_accepted_tokens_total 0
+# HELP ninfer:context_cache_exhausted_requests_total Requests failed because the context cache had no placement for them.
+# TYPE ninfer:context_cache_exhausted_requests_total counter
+ninfer:context_cache_exhausted_requests_total 0
+# HELP ninfer:engine_recoveries_total Host-side worker failures the Engine survived instead of latching unavailable.
+# TYPE ninfer:engine_recoveries_total counter
+ninfer:engine_recoveries_total 0
+# HELP ninfer:uptime_seconds Seconds since the Engine became ready.
+# TYPE ninfer:uptime_seconds gauge
+ninfer:uptime_seconds 0.250761281
+# HELP ninfer:waiting_cancelled_requests_total Requests the client cancelled while they waited for admission.
+# TYPE ninfer:waiting_cancelled_requests_total counter
+ninfer:waiting_cancelled_requests_total 0
+# HELP ninfer:waiting_expired_requests_total Requests that reached the pending timeout before admission.
+# TYPE ninfer:waiting_expired_requests_total counter
+ninfer:waiting_expired_requests_total 0
+# HELP ninfer:waiting_abandoned_seconds_total Time cancelled and expired requests had waited before they left the queue.
+# TYPE ninfer:waiting_abandoned_seconds_total counter
+ninfer:waiting_abandoned_seconds_total 0
+# HELP ninfer:cancelled_prefills_total Requests cancelled while their prompt prefilled.
+# TYPE ninfer:cancelled_prefills_total counter
+ninfer:cancelled_prefills_total 0
+# HELP ninfer:cancelled_prefill_computed_tokens_total Prompt tokens those requests had computed when they were cancelled.
+# TYPE ninfer:cancelled_prefill_computed_tokens_total counter
+ninfer:cancelled_prefill_computed_tokens_total 0
+# HELP ninfer:cancelled_prefills_salvaged_total Cancelled prefills the context cache kept, so a retry resumes where they stopped.
+# TYPE ninfer:cancelled_prefills_salvaged_total counter
+ninfer:cancelled_prefills_salvaged_total 0
+# HELP ninfer:context_selections_total Admissions by the context-cache source they started from; root is a miss.
+# TYPE ninfer:context_selections_total counter
+ninfer:context_selections_total{source="root"} 1
+ninfer:context_selections_total{source="private_endpoint"} 0
+ninfer:context_selections_total{source="private_turn_closure"} 0
+ninfer:context_selections_total{source="private_response_replay"} 0
+ninfer:context_selections_total{source="private_long_anchor"} 0
+ninfer:context_selections_total{source="shared_stable_prefix"} 0
+# HELP ninfer:context_pressure_events_total What pressure planning did to inactive context-cache owners.
+# TYPE ninfer:context_pressure_events_total counter
+ninfer:context_pressure_events_total{event="private_owner_evicted"} 0
+ninfer:context_pressure_events_total{event="private_owner_degraded"} 0
+ninfer:context_pressure_events_total{event="shared_owner_evicted"} 0
+ninfer:context_pressure_events_total{event="shared_owner_degraded"} 0
+ninfer:context_pressure_events_total{event="checkpoint_dropped"} 0
+# HELP ninfer:context_pressure_searches_total Pressure planning searches by how they ended.
+# TYPE ninfer:context_pressure_searches_total counter
+ninfer:context_pressure_searches_total{result="started"} 0
+ninfer:context_pressure_searches_total{result="budget_exhausted"} 0
+ninfer:context_pressure_searches_total{result="maximal_fallback"} 0
+# HELP ninfer:context_transfer_bytes_total Context-cache bytes moved between Device and Host, by object and direction.
+# TYPE ninfer:context_transfer_bytes_total counter
+ninfer:context_transfer_bytes_total{object="state",direction="d2h"} 0
+ninfer:context_transfer_bytes_total{object="state",direction="h2d"} 0
+ninfer:context_transfer_bytes_total{object="main_kv",direction="d2h"} 0
+ninfer:context_transfer_bytes_total{object="main_kv",direction="h2d"} 0
+ninfer:context_transfer_bytes_total{object="backend_kv",direction="d2h"} 0
+ninfer:context_transfer_bytes_total{object="backend_kv",direction="h2d"} 0
+# HELP ninfer:context_transfer_seconds_total Time admissions waited for context-cache transfers.
+# TYPE ninfer:context_transfer_seconds_total counter
+ninfer:context_transfer_seconds_total 0
+# HELP ninfer:context_historical_fork_hits_total Admissions that forked a historical checkpoint instead of the latest endpoint.
+# TYPE ninfer:context_historical_fork_hits_total counter
+ninfer:context_historical_fork_hits_total 0
+# HELP ninfer:context_occupancy Context-cache occupancy by pool: state slots and KV pages on the Device, state slots and KV bytes on the Host.
+# TYPE ninfer:context_occupancy gauge
+ninfer:context_occupancy{pool="device_state_slots"} 0
+ninfer:context_occupancy{pool="host_state_slots"} 0
+ninfer:context_occupancy{pool="device_main_kv_pages"} 0
+ninfer:context_occupancy{pool="device_backend_kv_pages"} 0
+ninfer:context_occupancy{pool="host_kv_bytes"} 0

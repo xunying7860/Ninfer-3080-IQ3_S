@@ -1,0 +1,26 @@
+{
+ "slots": {
+  "0": {
+   "filename": "slot-0",
+   "last_saved_digest": "d596557f9cae7614",
+   "last_seen_digest": "d596557f9cae7614",
+   "n_saved": 168275,
+   "n_written": 3367280208,
+   "save_ms": 17407.935380000003,
+   "saved_at": "2026-10-12T11:34:29"
+  },
+  "1": {
+   "filename": "slot-1",
+   "last_saved_digest": "db901992b2930281",
+   "last_seen_digest": "db901992b2930281",
+   "n_saved": 168055,
+   "n_written": 3283941800,
+   "save_ms": 117128.398145,
+   "saved_at": "2026-10-12T11:36:27",
+   "last_restored_from": "slot-1",
+   "restored_at": "2026-10-12T11:37:10",
+   "restored_digest_matches_saved": true
+  }
+ },
+ "engine_up": true
+}

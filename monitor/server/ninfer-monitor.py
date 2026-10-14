@@ -52,6 +52,7 @@ HISTORY = 60                               # 火花线保留的点数（1 s 一�
 REQ_KEEP = 200                             # 请求表保留的条数
 LOG_SCAN_TAIL = 8 * 1024 * 1024            # 启动时最多回读多少日志（用于填最近请求表）
 THRU_STALE = 7.0                           # throughput 行多久没来就认为引擎空闲
+N_CTX_TTL = 60.0                            # n_ctx 缓存存活秒数：到点重读 /v1/models（引擎换档/重启后不会卡旧值）
 
 # ────────────────────────────────────────────────────────────────── NVML
 class Nvml:
@@ -148,7 +149,8 @@ class State:
         self.thru = None                        # 最近一条 throughput 的解析结果
         self.thru_at = 0.0                      # 上面那条的时间（单调钟）
         self.ninfer_ok = False                  # 上一轮 /metrics 是否拿到（引擎存活指示）
-        self.n_ctx = None
+        self.n_ctx = None                       # 逻辑上下文（/v1/models 的 n_ctx/max_model_len）
+        self.n_ctx_at = 0.0                     # 上次读到 n_ctx 的时刻（单调钟）；见 sampler 的重读策略
         self.hw = {}
         self.hw_static = {}
         self.hist = {k: deque(maxlen=HISTORY) for k in
@@ -182,20 +184,29 @@ def fnum(s):
 
 
 def parse_duration(s):
-    """'1m 5.6s' / '12.2s' → 秒（float）；失败 None。"""
-    m = re.search(r"(?:(\d+)m\s*)?([\d.]+)s", s or "")
+    r"""'1m 5.6s' / '12.2s' / '531 ms' → 秒（float）；失败 None。
+
+    2026-10-12 修（交接复测实测）：引擎对亚秒级请求打的是 `total 531 ms`，旧正则
+    `(?:(\d+)m\s*)?([\d.]+)s` 只认秒 ⇒ 「最近请求」表的 Duration 列成空（厂商件 12/18、master 34/46 中招）。
+    """
+    m = re.search(r"(?:(\d+)m\s*)?([\d.]+)\s*(ms|s)\b", s or "")
     if not m:
         return None
-    return (int(m.group(1)) * 60 if m.group(1) else 0) + float(m.group(2))
+    base = float(m.group(2)) / 1000.0 if m.group(3) == "ms" else float(m.group(2))
+    return (int(m.group(1)) * 60 if m.group(1) else 0) + base
 
 
 def parse_ms(s):
-    """'910 ms' / '1.1s' → 毫秒（float）；失败 None。"""
-    m = re.search(r"([\d.]+)\s*(ms|s)\b", s or "")
+    """'910 ms' / '1.1s' / '2m 53.0s' → 毫秒（float）；失败 None。
+
+    2026-10-12 修：长 prefill 引擎打的是 `TTFT 2m 53.0s`，旧正则只取到 53.0s ⇒ 面板把 173 s
+    显示成 53.0 s（这是"数字错"，比留空更坏）。现在按 分+秒/毫秒 一起算。
+    """
+    m = re.search(r"(?:(\d+)m\s*)?([\d.]+)\s*(ms|s)\b", s or "")
     if not m:
         return None
-    v = float(m.group(1))
-    return v if m.group(2) == "ms" else v * 1000.0
+    base = float(m.group(2)) if m.group(3) == "ms" else float(m.group(2)) * 1000.0
+    return base + (int(m.group(1)) * 60000.0 if m.group(1) else 0.0)
 
 
 def epoch(ts):
@@ -301,14 +312,17 @@ def handle_line(ln):
     if rest.startswith("capacity |"):
         kv = re.search(r"KV ([\d,]+) tokens, (\w+), (\w+)", rest)
         rt = re.search(r"runtime ([\d.]+) GiB", rest)
-        fr = re.search(r"free ([\d.]+) GiB", rest)
+        # 2026-10-12 修：引擎实际打的是 `free 253.7 MiB`，旧正则只认 GiB ⇒ 面板这张卡的 free 永远是 None
+        fr = re.search(r"free ([\d.]+) (GiB|MiB)", rest)
         pg = re.search(r"pages ([\d,]+)/([\d,]+)", rest)
         with S.lock:
             S.capacity = {"kv_tokens": inum(kv.group(1)) if kv else None,
                           "kv_dtype": kv.group(2) if kv else None,
                           "kv_mode": kv.group(3) if kv else None,
                           "runtime_gib": fnum(rt.group(1)) if rt else None,
-                          "free_gib": fnum(fr.group(1)) if fr else None,
+                          # 字段名仍叫 free_gib（前端在用）；MiB 换算成 GiB，别改字段名免得连着前端一起改
+                          "free_gib": (fnum(fr.group(1)) / 1024.0 if fr.group(2) == "MiB" else fnum(fr.group(1))) if fr else None,
+                          "free_mib": fnum(fr.group(1)) if (fr and fr.group(2) == "MiB") else None,
                           "pages_used": inum(pg.group(1)) if pg else None,
                           "pages_total": inum(pg.group(2)) if pg else None}
         return
@@ -316,6 +330,8 @@ def handle_line(ln):
         w = re.search(r"weights ([\d.]+) GiB", rest)
         parts = [x.strip() for x in rest.split("|")]
         with S.lock:
+            # 引擎刚重启 ⇒ 上下文档位可能变了（KVMem 档 vs 速度档），把 n_ctx 缓存置空让下一拍重读
+            S.n_ctx = None
             S.engine_ready = {"model": parts[1] if len(parts) > 1 else None,
                               "weights_gib": fnum(w.group(1)) if w else None,
                               "total_s": (parts[2].replace("total", "").strip() if len(parts) > 2 else None)}
@@ -541,13 +557,16 @@ def sampler():
         if mets:
             S.counters = mets
         S.ninfer_ok = bool(mets)
-        if S.n_ctx is None:
+        # 逻辑上下文：引擎重启（换档）后必须重读 —— 只看「缓存为空」会永远停在启动那一刻的值。
+        # 策略：缓存为空、或距上次读取 > N_CTX_TTL 秒时重读；引擎重启时见 engine ready 分支会置空。
+        if S.n_ctx is None or (time.monotonic() - S.n_ctx_at) > N_CTX_TTL:
             try:
                 j = json.loads(http_text(f"http://{NINFER_HOST}:{NINFER_PORT}/v1/models", 3.0) or "{}")
                 for m in (j.get("data") or []):
                     v = m.get("n_ctx") or m.get("max_model_len")
                     if v:
                         S.n_ctx = int(v)
+                        S.n_ctx_at = time.monotonic()
                         break
             except Exception:
                 pass
@@ -628,6 +647,19 @@ def build_payload(show_all=False):
 
     reused_requests = sum(1 for r in reqs if (r.get("reused") or 0) > 0)
     last = next((r for r in reqs if r.get("prompt_tokens")), None)
+
+    # ── 「当前会话」的逻辑上下文占用（★2026-10-09 修正）─────────────────────────────
+    # 引擎侧的 llamacpp:kv_cache_tokens / kv_cache_usage_ratio 是 **设备 KV 池**占用
+    # （帮助原文：Occupied share of the device KV cache）——环档下池只有 158,720 token，
+    # 占满池就报 100%，而逻辑上下文（max_context 524,288）才用了三成 ⇒ 面板曾恒显 100%。
+    # 会话长度改用「最近一次请求的 prompt + output」（引擎没有直接的会话长度指标）。
+    # 池占用仍以 pool_* 字段返回（换档/环压力时有用），不再当作上下文百分比。
+    # 注意：本块必须在 last 之后（首次实现放在前面 ⇒ NameError ⇒ 接口 500，已修）。
+    last_prompt = int((last or {}).get("prompt_tokens") or 0)
+    last_out = int((last or {}).get("output_tokens") or 0)
+    session_tokens = (last_prompt + last_out) if last_prompt else None
+    ctx_used = session_tokens if session_tokens is not None else (kv_tokens or 0)
+    ctx_ratio = min(1.0, ctx_used / max_ctx) if max_ctx else None
     all_prompt = prompt_read + reused
     ds = cc.get("cached")
     cc_out = {
@@ -656,7 +688,10 @@ def build_payload(show_all=False):
         "hardware_static": S.hw_static,
         "history": {k: lh(k) for k in ("tok_s", "prefill_tok_s_mean", "gpu_util", "gpu_mem_used",
                                        "gpu_temp", "gpu_power", "gpu_pcie_rx_mb", "cpu", "disk_read_mb")},
-        "context": {"used_tokens": kv_tokens, "max_context": max_ctx, "ratio": kv_ratio},
+        "context": {"used_tokens": ctx_used, "max_context": max_ctx, "ratio": ctx_ratio,
+                    "session_tokens": session_tokens,          # 当前会话 = 最近一次请求 prompt+output
+                    "pool_tokens": kv_tokens, "pool_ratio": kv_ratio,   # 设备 KV 池占用（≠ 上下文占用）
+                    "pool_capacity": cap.get("kv_tokens")},
         "requests": reqs if show_all else reqs[:12],
         "requests_kept": len(reqs),
         "totals": totals,

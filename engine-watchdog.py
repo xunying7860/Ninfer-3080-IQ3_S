@@ -65,6 +65,8 @@ BOOT_GRACE_S = 360          # engine ready 后的宽限期
 COOLDOWN_S = 600            # 重启后的冷却期
 INTERVAL = 60               # 采样间隔
 HEARTBEAT_S = 600           # 一切正常时的心跳日志周期（避免日志刷屏）
+PROBE_TIMEOUT_S = 25        # 僵尸探针：单次最小请求超时（只在引擎空闲时打）
+CHAT = "http://127.0.0.1:%d/v1/chat/completions" % PORT
 
 
 def log(msg, force=True):
@@ -163,6 +165,40 @@ def loading_in_progress():
                           r"reading the model|preparing|server stopped", lines[-1]))
 
 
+def probe_model_id():
+    """从 /v1/models 取当前模型 id（引擎换模型/改 --model-id 后自动跟随）"""
+    out = sh(["curl", "-s", "-m", "5", "http://127.0.0.1:%d/v1/models" % PORT])
+    m = re.search(r'"id"\s*:\s*"([^"]+)"', out or "")
+    return m.group(1) if m else None
+
+
+def probe_chat(model):
+    """
+    僵尸探针：真发一条最小请求，返回 (http_code, body)。
+
+    为什么需要它（2026-10-11 实测）：僵尸形态是「worker 崩 → fail_all_locked → 引擎置 failed_，
+    HTTP 层照旧回 200/503」——此时 GPU 空闲、/health 仍 ok、没有在飞请求，
+    所以「空转指纹」与「/health 失败」两条老判定**都抓不到**。唯一可靠指纹就是真发一条请求看它回什么。
+
+    安全边界：只在引擎空闲（in_flight 为假）且不在宽限期时调用 ——
+    max-concurrency=1 下探针会排在长生成后面，空闲判定保证不干扰用户请求、也不会误判。
+    """
+    if not model:
+        return 0, ""
+    payload = ('{"model":"%s","messages":[{"role":"user","content":"ping"}],'
+               '"max_tokens":8,"reasoning_effort":"none"}' % model)
+    out = sh(["curl", "-s", "-m", str(PROBE_TIMEOUT_S), "-o", "-", "-w", "\n%{http_code}",
+              "-X", "POST", CHAT, "-H", "Content-Type: application/json", "-d", payload],
+             timeout=PROBE_TIMEOUT_S + 10)
+    if not out:
+        return 0, ""
+    body, _, code = out.rpartition("\n")
+    try:
+        return int(code.strip()), body
+    except ValueError:
+        return 0, out
+
+
 # ── 判定（纯函数，便于 selftest）──────────────────────────────────────────────
 def verdict(util, power, counters, prev_counters, in_flight_flag, health_ok_flag,
             spin_hold, health_fail, grace):
@@ -224,6 +260,7 @@ def main():
     dry = "--dry-run" in sys.argv
     once = "--once" in sys.argv
     log("看门狗启动 dry_run=%s service=%s 间隔=%ds 指纹=in-flight & util>=%d%% & power<%.0fW & 计数停滞 >=%ds"
+        " | 僵尸探针=空闲时真发请求（503/internal_error 即重启）"
         % (dry, SERVICE, INTERVAL, SPIN_UTIL_MIN, SPIN_POWER_MAX, SPIN_HOLD_S))
 
     prev_counters = None
@@ -255,7 +292,22 @@ def main():
                   % (util, power, fl, kv, counters, spin_hold, hok, loading,
                      "n/a" if age is None else int(age)))
 
-            if action == "restart-spin":
+            # ── 僵尸探针（2026-10-11 新增）：空闲时真发一条最小请求 ──
+            #   指纹：/v1/models 通、但请求回 503 service_unavailable 或 500 internal_error。
+            #   worker 崩后引擎置 failed_、HTTP 层照旧回 200/503，且 GPU 空闲、/health 仍 ok
+            #   ⇒ 老的两条判定（空转指纹 / health 失败）都抓不到，必须真发请求才知道。
+            zombie_ev = None
+            if not grace and not fl and not loading:
+                code, body = probe_chat(probe_model_id())
+                if code == 503 or "internal_error" in (body or ""):
+                    zombie_ev = "probe HTTP %s %s" % (code, (body or "")[:160])
+
+            if zombie_ev:
+                do_restart("僵尸指纹（models 通、请求 503/内部错误）", "%s | %s" % (ev, zombie_ev), dry)
+                last_restart = time.time()
+                spin_hold = 0
+                health_fail = 0
+            elif action == "restart-spin":
                 do_restart("活锁指纹（空转 + 计数停滞）", ev, dry)
                 last_restart = time.time()
             elif action == "restart-health":
