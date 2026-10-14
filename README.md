@@ -148,6 +148,18 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 ---
 
+## KV 量化：现状与本轮结论（2026-10-14）
+
+生产 KV 档仍是 **`rk4v4`**（`run.sh` 里那行），本轮**没换任何东西**；生产快照（引擎件副本 + 模型 md5 + 单元与标定件 + 回退步骤）在 x99
+`/data/kvarn/backup-prod01-20261014/`，往后称**旧生产01**。
+
+**KVarN（Hadamard 旋转 + 双向 Sinkhorn 方差归一）已完整移植进引擎并实测完毕，结论是"不投"**：与生产 `rk4v4` 质量打平
+（引擎 PPL −0.0325% / −0.0166%）、字节 **280 = 280 零收益**、且同窗口下 prefill 吞吐 **−28%**、32K TTFT **+39%**；
+论文/vLLM 分支宣称的"2bit 近无损"在这个模型上判死（K4V2 **+2.55%/+2.91%**，2bit V 一切改法最好 +1.68%）——
+它的"2.3 bit 近无损"用的是 **sink + 最近若干 token 保持 FP16 的三段式布局**、且评测口径是论文自提的 `pseudo-decode`。
+与 llama.cpp 原生 KV 档同数据对拍：K 侧 KVarN 略胜集合内最好的 `iq4_nl`（+0.00198 cos），V 侧反而输给不旋转的 `iq4_nl`（−0.00132）。
+数字、口径与出处全表见 **[`docs/KVarN-KV量化结论-20261014.md`](docs/KVarN-KV量化结论-20261014.md)**。
+
 ## 引擎补丁（2026-10-10 起）
 
 `scripts/` 与 `docs/` 记录我们对 **NInfer 引擎本体**的补丁与运维流程：**单会话直接重启也不再重算**
@@ -163,7 +175,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 ## 目录说明
 
-只留部署与运维必需的东西，一共 128 个文件：
+只留部署与运维必需的东西，一共 129 个文件：
 
 | 路径 | 说明 |
 |---|---|
@@ -174,7 +186,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | `monitor/` | Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
 | `test/` | 门禁套件 `gate_test.py`（9 套件 + compare）、`slot-sidecar.py` 与候选实例控制脚本（`launch-cand.sh` / `run-cand.sh` / `restart-cand.sh` / `detach.sh` / `stop-save-hook.sh`）、`probe-master/` 只读取证快照 |
 | `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`） |
-| `docs/` | 引擎补丁与运维流程（重启不丢上下文） |
+| `docs/` | 引擎补丁与运维流程（重启不丢上下文）、**KV 量化本轮结论（`KVarN-KV量化结论-20261014.md`）** |
 | `engine/` | **引擎本体**：`ninfer-serve` + `bundle/libs` 打成 zstd 分卷（10 卷、928,429,363 B）+ `install-engine.sh`（校验 / 安装 / 旧件改名留档）+ `checksums.txt`（整包、逐卷、解包后 148 个文件三层 md5）+ `README.md` |
 
 ## 许可与致谢
