@@ -86,16 +86,52 @@ LOADER=$ROOT/bundle/libs/lib64/ld-linux-x86-64.so.2
 LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/lib/x86_64-linux-gnu
 export CUDA_VISIBLE_DEVICES=0
 mkdir -p "$ROOT/logs"
+# ── 2026-10-14 20:2x 磁盘层 + 空闲落盘（本轮唯一新增参数；其余参数一字未动）───────────────
+#   --disk-kv-path /data/nvme/ninfer-disktier-prod01
+#       磁盘层根目录。挂载点 /data/nvme 属 root，已 sudo mkdir -p + chown xunying:xunying。
+#   --disk-kv-gib 16
+#       为什么是 16 GiB：该额度下 state 族（slot_size 78,458,880 B）max_slots=21 —— 即「最多 21 个
+#       恢复点」就是硬上限；槽满由 evict_one_lru_locked() 走 LRU 淘汰，不会无限堆。引擎私有续段
+#       上限 = private 2（= 2 × --max-concurrency，本机 --max-concurrency 1）⇒ 正好满足用户
+#       「只存当前会话与至多两个会话」。
+#   --disk-kv-restore
+#       重启后用磁盘层里的残留续段给匹配前缀播种（断电 / 重启不重算）。
+#   --disk-kv-idle-save-seconds 180
+#       连续 180 s 无完成请求 ⇒ 主动把驻留续段 KV+StateImage 写进磁盘层，并把 payload / 索引 temp /
+#       rename 后的目录项逐个 fsync（实测：请求结束后 +188.1 s 出现
+#       `disk tier idle save | … | 2,002 pages written (1.28 GiB) | … | fsync ok`）。
+#       代价：落盘进行中新到的请求最多排队约 4 s（实测 queue 4.1s / TTFT 4.2s；不触发时 TTFT 106 ms）。
+#   回退点：/data/ninfer/run.sh.bak-20261014-202155-pre-diskkv（改前原件，md5 5f0fb84544d9db736f43072befb295a5）
+#   ★ 插法坑（勿改）：注释块必须在 exec 行之前（不接续行）；参数行必须紧贴 `  "$@"`。
+# ──────────────────────────────────────────────────────────────────────────────────────────
+# 20261015 换模型（用户定案：x99 的 ninfer 换成 iq3_s 的版本，其他参数都不变）：
+#   模型 -> /data/nvme/ninfer-models/gsq_rco_iq3_s_dflash2_prop.ninfer（IQ3_S 混合量化 15.0 GB / 1249 张量，
+#     text+vision+mtp+dflash2 四组件）
+#   --model-id qwen3.8-27b-coder390-q2lynn -> qwen3.8-27b-gsq-rco-iq3s
+#     => Hermes providers.ninfer-x99 的 default_model / models 键须同步改，否则 404
+#   * 旧模型（Q2LynnStyle）的磁盘层存档已改名留档（留档不删）：
+#     artifact_da2f753ead154862b0449a7694d89965 -> 同名前缀.q2lynn-bak-20261015
+#     （磁盘层目录名只由执行档位哈希派生、不含模型身份 => 不改名会被 --disk-kv-restore 当同一份 KV 吃进去）
+#   其余参数一字未动。回退点：/data/ninfer/run.sh.bak-20261015-150303-pre-iq3s
+#
+# 20261015 15:0x-15:12 ctx 二分定稿（用户指令：把上下文调高直到服务起不来为止，二分法从大上下文开始试）：
+#   --max-context/--kv-capacity 317440 -> 378944（IQ3_S 制品 weights 11.3 GiB，比 Q2LynnStyle 的 12.3 GiB 少 1 GiB => 空间更多）
+#   实测硬顶：378,944 OK（pages 5,921/5,921 | runtime 8.11 GiB | free 241.7 MiB）
+#            379,008 FAIL（requires 8,712,029,440 > available 8,711,241,728；只差 64 token）
+#   二分记录（X=拒启 / V=成功）：393216 383744 379008 X；378944 378880 378816 378688 376640 374272 355328 V
+#   其余参数一字未动。回退点：/data/ninfer/run.sh.bak-20261015-1512-pre-ctxbisect
+
 exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
-  "/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer" \
-  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-coder390-q2lynn \
-  --max-context 317440 --kv-capacity 317440 --kv-dtype rk4v4 \
+  "/data/nvme/ninfer-models/gsq_rco_iq3_s_dflash2_prop.ninfer" \
+  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-gsq-rco-iq3s \
+  --max-context 378944 --kv-capacity 378944 --kv-dtype rk4v4 \
   --cuda-graph-allowance-mib 256 \
   --vision --vision-residency overlay --vision-max-merged 4096 --media-cache-mib 512 --media-live-mib 1024 \
   --max-concurrency 1 --max-pending-requests 16 --prefill-chunk 1024 \
   --device-state-slots 1 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
   --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
   --chat-template "$ROOT/chat_template.jinja" --default-reasoning-effort max --default-max-tokens 131072 \
+  --disk-kv-path /data/nvme/ninfer-disktier-prod01 --disk-kv-gib 16 --disk-kv-restore --disk-kv-idle-save-seconds 180 \
   "$@"
 
 # 2026-10-04 14:5x 定案 A（用户逐字「两个引擎都改A」）：输出上限 229376 → 131072。

@@ -187,7 +187,7 @@ function renderMonitor(live, hw, st, eng, h, last, requests, totals, kept, ctx) 
     body.innerHTML = requests.slice(0, reqShowAll ? requests.length : 12).map((r) => {
       const [cls, text] = badge[r.finish] || ["", r.finish || "–"];
       const t = new Date(r.time * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"});
-      const hit = r.hit_rate == null ? "–" : `${r.hit_rate.toFixed(1)}%` +
+      const hit = r.hit_rate == null ? "–" : `${r.hit_rate.toFixed(1)}%${(r.prompt_tokens || 0) <= 32 ? ` <span class="muted" title="watchdog zombie probe: 13 prompt tokens, max_tokens 8 — 不是一轮对话">probe</span>` : ""}` +
         (r.drafts ? ` <span class="muted" title="speculative drafts accepted for this request (MTP)">MTP ${(100 * r.accepted / r.drafts).toFixed(1)}%</span>` : "");
       return `<tr><td>${esc(t)}</td><td><span class="st-badge ${cls}" title="${esc(r.reason || text)}">${esc(text)}</span></td><td class="num">${fmt(r.prompt_tokens)}</td>
         <td class="num">${fmt(r.reused)}</td><td class="num">${fmt(r.output_tokens)}</td><td class="num">${fmt(r.decode_tok_s, 1)}</td>
@@ -206,11 +206,26 @@ function renderMonitor(live, hw, st, eng, h, last, requests, totals, kept, ctx) 
 function renderConvCache(c) {
   $("cc-card").hidden = !c;
   if (!c) return;
-  $("cc-bars").hidden = true;
-  $("cc-sum").textContent = c.requests ? `${fmt(c.requests_reused)} of ${fmt(c.requests)} requests reused part of their prompt` : "";
+  const tiers = (c.kv_tiers || {});                            // 热/温/冷 三层 KV 占用条（2026-10-15 新增）
+  $("cc-bars").hidden = !tiers.hot && !tiers.warm && !tiers.cold;
+  for (const [key, rowId, textId, unit] of [["hot", "cc-slots-bar", "cc-slots-text", "tokens"], ["warm", "cc-mem-bar", "cc-mem-text", "bytes"], ["cold", "cc-disk-bar", "cc-disk-text", "bytes"]]) {
+      const t = tiers[key] || {}; const bar = $(rowId), txt = $(textId); if (!bar || !txt) continue;
+      const r = (typeof t.ratio === "number" && isFinite(t.ratio)) ? t.ratio : null;
+      bar.style.width = r == null ? "0%" : Math.min(100, 100 * r).toFixed(1) + "%";
+      let s;
+      if (r == null) s = "无数据";
+      else if (unit === "tokens") s = `${fmt(t.used_tokens || 0)} / ${fmt(t.cap_tokens || 0)} token · ${(100 * r).toFixed(1)}%` + (t.gib ? `（池额度 ${t.gib} GiB，引擎 capacity 行）` : "");
+      else { s = `${gb(t.used_bytes || 0)} / ${gb(t.cap_bytes || 0)} GB · ${(100 * r).toFixed(1)}%`;
+        if (key === "warm" && t.slots_cap != null) s += ` · StateImage ${t.slots_used || 0}/${t.slots_cap} 份`;
+        if (key === "cold") { if (t.files != null) s += ` · ${t.files} 个文件`; if (t.newest) s += ` · 最近写入 ${new Date(t.newest * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"})}`; } }
+      txt.textContent = s;
+    }
+  $("cc-sum").textContent = c.requests ? `${fmt(c.requests_reused)} of ${fmt(c.requests)} requests reused part of their prompt${c.probes ? ` (${fmt(c.probes)} were watchdog probes)` : ""}` : "";
   const share = c.prompt_tokens ? ` (${fmt((100 * c.reused_tokens) / c.prompt_tokens)}% of all prompt tokens)` : "";
   facts($("cc-facts"), [
-    ["Last request", c.last_prompt != null ? `${fmt(c.last_reused || 0)} of ${fmt(c.last_prompt)} prompt tokens reused` : null],
+    // 2026-10-15：原先这行取「最近一条请求」，而引擎空闲时最近一条总是看门狗探针
+    //（13 token、复用 6 个 => 46.2%），会让人误判命中率很低。改用真会话(prompt>32)的最近一条。
+    ["Last conversation request", c.last_conv_prompt != null ? `${fmt(c.last_conv_reused || 0)} of ${fmt(c.last_conv_prompt)} prompt tokens reused` + (c.last_conv_hit_rate != null ? ` (${c.last_conv_hit_rate.toFixed(1)}%)` : "") : (c.last_prompt != null ? `${fmt(c.last_reused || 0)} of ${fmt(c.last_prompt)} tokens reused` : null)],
     ["Reused since start", c.reused_tokens ? `${fmt(c.reused_tokens)} tokens${share}` : null],
     ["Prefix cache hits", c.prefix_hits ? `${fmt(c.prefix_hits)} tokens` : null],
     ["Device states", c.device_states || null],

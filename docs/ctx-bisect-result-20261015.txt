@@ -1,0 +1,15 @@
+15:10:08 BISECT START known_ok=317440
+15:10:20 CTX=393216 FAIL | 2026-10-15 15:10:18.207  FATAL server failed during startup | requested Engine runtime reservation requires 8982551296 bytes, but only 8711241728 bytes are available for runtime capacity
+15:10:30 CTX=355328 OK | 2026-10-15 15:10:30.025  INFO  capacity | KV 355,328 tokens, rk4v4, explicit | pages 5,552/5,552 | runtime 7.69 GiB | free 669.7 MiB
+15:10:46 CTX=374272 OK | 2026-10-15 15:10:41.903  INFO  capacity | KV 374,272 tokens, rk4v4, explicit | pages 5,848/5,848 | runtime 8.03 GiB | free 325.7 MiB
+15:10:57 CTX=383744 FAIL | 2026-10-15 15:10:53.656  FATAL server failed during startup | requested Engine runtime reservation requires 8802203392 bytes, but only 8711241728 bytes are available for runtime capacity
+15:11:07 CTX=379008 FAIL | 2026-10-15 15:11:05.370  FATAL server failed during startup | requested Engine runtime reservation requires 8712029440 bytes, but only 8711241728 bytes are available for runtime capacity
+15:11:17 CTX=376640 OK | 2026-10-15 15:11:17.830  INFO  capacity | KV 376,640 tokens, rk4v4, explicit | pages 5,885/5,885 | runtime 8.07 GiB | free 283.7 MiB
+15:11:29 CTX=377792 OK | 2026-10-15 15:11:28.777  INFO  capacity | KV 377,792 tokens, rk4v4, explicit | pages 5,903/5,903 | runtime 8.09 GiB | free 261.7 MiB
+15:11:45 CTX=378368 OK | 2026-10-15 15:11:40.365  INFO  capacity | KV 378,368 tokens, rk4v4, explicit | pages 5,912/5,912 | runtime 8.10 GiB | free 251.7 MiB
+15:12:01 CTX=378688 OK | 2026-10-15 15:11:57.018  INFO  capacity | KV 378,688 tokens, rk4v4, explicit | pages 5,917/5,917 | runtime 8.11 GiB | free 245.7 MiB
+15:12:18 CTX=378816 OK | 2026-10-15 15:12:13.541  INFO  capacity | KV 378,816 tokens, rk4v4, explicit | pages 5,919/5,919 | runtime 8.11 GiB | free 243.7 MiB
+15:12:34 CTX=378880 OK | 2026-10-15 15:12:29.711  INFO  capacity | KV 378,880 tokens, rk4v4, explicit | pages 5,920/5,920 | runtime 8.11 GiB | free 241.7 MiB
+15:12:51 CTX=378944 OK | 2026-10-15 15:12:46.213  INFO  capacity | KV 378,944 tokens, rk4v4, explicit | pages 5,921/5,921 | runtime 8.11 GiB | free 241.7 MiB
+15:12:51 BISECT DONE max_ctx=378944 next_fail=379008
+15:12:51 FINAL ctx=378944 written+started

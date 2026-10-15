@@ -87,10 +87,12 @@
       <div class="st-card cc-card" id="cc-card">
         <div class="req-head"><span class="card-title">Context cache</span><span class="muted small" id="cc-sum"></span></div>
         <div class="cc-bars" id="cc-bars" hidden>
-          <div><div class="bar-row"><span>Cached device states</span><span class="muted" id="cc-slots-text">&ndash;</span></div>
+          <div><div class="bar-row"><span>Hot 热 · VRAM 显存 KV 池</span><span class="muted" id="cc-slots-text">&ndash;</span></div>
             <div class="st-progress"><div class="st-progress__bar" id="cc-slots-bar" style="width:0%"></div></div></div>
-          <div><div class="bar-row"><span>Host KV memory (RAM)</span><span class="muted" id="cc-mem-text">&ndash;</span></div>
+          <div><div class="bar-row"><span>Warm 温 · RAM 内存停放（host KV）</span><span class="muted" id="cc-mem-text">&ndash;</span></div>
             <div class="st-progress"><div class="st-progress__bar" id="cc-mem-bar" style="width:0%"></div></div></div>
+            <div><div class="bar-row"><span>Cold 冷 · NVMe 磁盘层（disk-kv）</span><span class="muted" id="cc-disk-text">&ndash;</span></div>
+              <div class="st-progress"><div class="st-progress__bar" id="cc-disk-bar" style="width:0%"></div></div></div>
         </div>
         <dl class="facts" id="cc-facts"></dl>
         <p class="muted small cc-note" id="cc-note"></p>

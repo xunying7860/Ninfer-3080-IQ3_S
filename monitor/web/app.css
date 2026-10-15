@@ -182,3 +182,7 @@ main { flex: 1; min-height: 0; display: flex; }
   .facts { grid-template-columns: 1fr; gap: 2px; }
   .facts dd { margin-bottom: var(--st-s-2); }
 }
+
+/* 2026-10-15：热/温/冷 三层 KV 条改成三根满宽堆叠（原来 .cc-bars 是 1fr 1fr 两列，
+   第三根冷层条会孤零零掉到左格）。用 #id 规则压过 .cc-bars，不动原类免得连带影响别处。 */
+#cc-bars{grid-template-columns:1fr}

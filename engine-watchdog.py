@@ -64,6 +64,8 @@ HEALTH_FAIL_S = 360         # /health 连续失败这么久也重启
 BOOT_GRACE_S = 360          # engine ready 后的宽限期
 COOLDOWN_S = 600            # 重启后的冷却期
 INTERVAL = 60               # 采样间隔
+ZOMBIE_PROBE_EVERY_S = 300  # 僵尸探针最小间隔（2026-10-15）：每 60s 一条探针会把引擎
+                              # --disk-kv-idle-save-seconds 180 的空闲计时器反复清零 ⇒ 空闲落盘从没触发过
 HEARTBEAT_S = 600           # 一切正常时的心跳日志周期（避免日志刷屏）
 PROBE_TIMEOUT_S = 25        # 僵尸探针：单次最小请求超时（只在引擎空闲时打）
 CHAT = "http://127.0.0.1:%d/v1/chat/completions" % PORT
@@ -268,6 +270,7 @@ def main():
     health_fail = 0
     last_restart = 0.0
     last_beat = 0.0
+    last_probe = 0.0        # 上次僵尸探针时刻（首轮立即探，保持原行为）
 
     while True:
         try:
@@ -297,7 +300,9 @@ def main():
             #   worker 崩后引擎置 failed_、HTTP 层照旧回 200/503，且 GPU 空闲、/health 仍 ok
             #   ⇒ 老的两条判定（空转指纹 / health 失败）都抓不到，必须真发请求才知道。
             zombie_ev = None
-            if not grace and not fl and not loading:
+            if (not grace and not fl and not loading
+                    and time.time() - last_probe >= ZOMBIE_PROBE_EVERY_S):
+                last_probe = time.time()
                 code, body = probe_chat(probe_model_id())
                 if code == 503 or "internal_error" in (body or ""):
                     zombie_ev = "probe HTTP %s %s" % (code, (body or "")[:160])

@@ -1,5 +1,5 @@
 [Unit]
-Description=NInfer 推理服务（Q2LynnStyle Coder390 MTP repack / GPU0 / 317440 ctx rk4v4 / 端口 18082 / vision overlay 4096 / MTP draft3 adaptive / 设备检查点 1 / 无磁盘层）
+Description=NInfer 推理服务（IQ3_S GSQ-RCO 制品 / GPU0 / 378944 ctx rk4v4 / 端口 18082 / vision overlay 4096 / MTP draft3 adaptive / 设备检查点 1 / 磁盘层 16G 空闲落盘）
 Documentation=file:/data/ninfer/logs/ninfer-serve.log
 After=network-online.target gpu-clocks.service
 Wants=network-online.target gpu-clocks.service

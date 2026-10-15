@@ -31,6 +31,7 @@ import json
 import mimetypes
 import os
 import re
+import subprocess   # 2026-10-15：冷层（磁盘层）占用要 du 一下目录
 import threading
 import time
 import urllib.request
@@ -53,6 +54,9 @@ REQ_KEEP = 200                             # 请求表保留的条数
 LOG_SCAN_TAIL = 8 * 1024 * 1024            # 启动时最多回读多少日志（用于填最近请求表）
 THRU_STALE = 7.0                           # throughput 行多久没来就认为引擎空闲
 N_CTX_TTL = 60.0                            # n_ctx 缓存存活秒数：到点重读 /v1/models（引擎换档/重启后不会卡旧值）
+LOAD_TTL = 2.0                            # /v1/load 缓存存活秒数（面板 1 s 一帧，不必 1 s 打一次引擎）
+DISK_TTL = 20.0                           # 磁盘层目录实测（du）缓存存活秒数：冷层变化以分钟计，20 s 足够新
+DISK_DU_TIMEOUT = 2.5                     # du 超时保护：探测失败就当冷层缺数，不拖累面板
 
 # ────────────────────────────────────────────────────────────────── NVML
 class Nvml:
@@ -150,6 +154,10 @@ class State:
         self.thru_at = 0.0                      # 上面那条的时间（单调钟）
         self.ninfer_ok = False                  # 上一轮 /metrics 是否拿到（引擎存活指示）
         self.n_ctx = None                       # 逻辑上下文（/v1/models 的 n_ctx/max_model_len）
+        self.load = {}                          # /v1/load 的 capacity/occupancy：热层 token、温层字节都是引擎真值
+        self.load_at = 0.0
+        self.disk = {}                          # 磁盘层（冷层）实测：引擎不报这个数，只能 du 目录
+        self.disk_at = 0.0
         self.n_ctx_at = 0.0                     # 上次读到 n_ctx 的时刻（单调钟）；见 sampler 的重读策略
         self.hw = {}
         self.hw_static = {}
@@ -389,6 +397,108 @@ def log_tailer():
 
 
 # ────────────────────────────────────────────────────────────────── 主机读数
+
+def kv_tiers_block(cap, load, disk):
+    """三层 KV 占用：热=显存 KV 池（引擎 token 真值）、温=内存停放区（引擎字节真值）、冷=磁盘层（只能实测目录）。
+
+    口径说明（重要，别改成估算值）：
+      · 引擎 /v1/load 只给显存 KV 的 pages/token，不给它的字节数 ⇒ 热层用 token 计量，
+        并在 note 里带出引擎 capacity 行自己的池额度 runtime_gib；不做「每层字节」的假精确折算。
+      · 温层 host_kv_bytes 的 used 与 capacity 都是引擎真值（occupancy / capacity 两处）。
+      · 冷层引擎完全不报 ⇒ 只能 du 目录实占（payload 稀疏预分配，表观 != 实占，取实占），
+        额度取引擎 argv 里的 --disk-kv-gib（此刻真值），拿不到才退回 run.sh。
+    缺哪层的数就留 None：前端会把那根条显示成「无数据」，不画假条。"""
+    c = (load or {}).get("capacity") or {}
+    o = (load or {}).get("occupancy") or {}
+    kt, kc = o.get("device_main_kv_tokens"), c.get("kv_capacity_tokens")
+    hb, hc = o.get("host_kv_bytes"), c.get("host_kv_bytes")
+    d = disk or {}
+    return {
+        "hot": {"used_tokens": kt, "cap_tokens": kc,
+                "ratio": (float(kt) / float(kc)) if (kt is not None and kc) else None,
+                "used_pages": o.get("device_main_kv_pages"), "cap_pages": c.get("kv_capacity_pages"),
+                "used_bytes": None, "cap_bytes": None, "gib": (cap or {}).get("runtime_gib")},
+        "warm": {"used_bytes": hb, "cap_bytes": hc,
+                 "ratio": (float(hb) / float(hc)) if (hb is not None and hc) else None,
+                 "used_tokens": None, "cap_tokens": None,
+                 "slots_used": o.get("host_state_slots"), "slots_cap": c.get("host_state_slots")},
+        "cold": {"used_bytes": d.get("used_bytes"), "cap_bytes": d.get("cap_bytes"),
+                 "ratio": (float(d["used_bytes"]) / float(d["cap_bytes"])) if (d.get("used_bytes") and d.get("cap_bytes")) else None,
+                 "used_tokens": None, "cap_tokens": None,
+                 "files": d.get("files"), "newest": d.get("newest"), "path": d.get("path"),
+                 "avail_bytes": d.get("avail_bytes")},
+    }
+
+
+def disk_kv_args():
+    """冷层配置：从引擎进程 argv 取 --disk-kv-path / --disk-kv-gib（argv 才是此刻真值），拿不到再读 run.sh。"""
+    path = gib = None
+    try:
+        for pid in os.listdir("/proc"):
+            if not pid.isdigit():
+                continue
+            try:
+                with open("/proc/%s/cmdline" % pid, "rb") as f:
+                    cl = f.read().split(b"\0")
+            except Exception:
+                continue
+            if not any(b"ninfer-serve" in c for c in cl):
+                continue
+            args = [c.decode("utf-8", "replace") for c in cl]
+            for n, a in enumerate(args):
+                if a == "--disk-kv-path" and n + 1 < len(args):
+                    path = args[n + 1]
+                elif a == "--disk-kv-gib" and n + 1 < len(args):
+                    try:
+                        gib = float(args[n + 1])
+                    except Exception:
+                        pass
+            break
+    except Exception:
+        pass
+    if path is None:
+        try:
+            t = open("/data/ninfer/run.sh", encoding="utf-8", errors="replace").read()
+            m = re.search(r"--disk-kv-path\s+(\S+)", t)
+            g2 = re.search(r"--disk-kv-gib\s+([0-9.]+)", t)
+            if m:
+                path = m.group(1)
+            if g2:
+                gib = float(g2.group(1))
+        except Exception:
+            pass
+    return path, gib
+
+
+def disk_tier_stats():
+    """冷层实测：目录真实块占用 + 额度 + 文件数 + 最近写入时刻 + 卷余量。"""
+    path, gib = disk_kv_args()
+    if not path or not os.path.isdir(path):
+        return {}
+    used = None
+    try:
+        out = subprocess.run(["du", "-s", "--block-size=1", path], capture_output=True,
+                             text=True, timeout=DISK_DU_TIMEOUT).stdout
+        used = int(out.split()[0]) if out.strip() else None
+    except Exception:
+        return {}
+    files, newest, avail = 0, 0.0, None
+    try:
+        stv = os.statvfs(path)
+        avail = stv.f_bsize * stv.f_bavail
+        for dp, dns, fns in os.walk(path):
+            for fn in fns:
+                files += 1
+                try:
+                    newest = max(newest, os.stat(os.path.join(dp, fn)).st_mtime)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+    return {"used_bytes": used, "cap_bytes": int(gib * 1024 ** 3) if gib else None, "gib": gib,
+            "files": files, "newest": newest, "path": path, "avail_bytes": avail}
+
+
 def http_text(url, timeout=2.0):
     try:
         with urllib.request.urlopen(url, timeout=timeout) as r:
@@ -556,6 +666,18 @@ def sampler():
         mets = parse_prometheus(http_text(f"http://{NINFER_HOST}:{NINFER_PORT}/metrics"))
         if mets:
             S.counters = mets
+            # 热/温两层真值来自 /v1/load（capacity + occupancy），2 s 一取；冷层 du 20 s 一取。
+            if time.monotonic() - S.load_at > LOAD_TTL:
+                S.load_at = time.monotonic()
+                try:
+                    S.load = json.loads(http_text(f"http://{NINFER_HOST}:{NINFER_PORT}/v1/load", 2.0) or "{}")
+                except Exception:
+                    pass
+            if time.monotonic() - S.disk_at > DISK_TTL:
+                S.disk_at = time.monotonic()
+                _dsk = disk_tier_stats()
+                if _dsk:
+                    S.disk = _dsk
         S.ninfer_ok = bool(mets)
         # 逻辑上下文：引擎重启（换档）后必须重读 —— 只看「缓存为空」会永远停在启动那一刻的值。
         # 策略：缓存为空、或距上次读取 > N_CTX_TTL 秒时重读；引擎重启时见 engine ready 分支会置空。
@@ -647,6 +769,21 @@ def build_payload(show_all=False):
 
     reused_requests = sum(1 for r in reqs if (r.get("reused") or 0) > 0)
     last = next((r for r in reqs if r.get("prompt_tokens")), None)
+    # ── 2026-10-15 口径修正：看门狗的僵尸探针（13 prompt token、max_tokens 8、单 message、
+    #    非流式）也算「一条请求」。它让面板「最近一轮命中率」显示成 46.2% 这种没意义的数，
+    #    还让「当前会话上下文」卡塌成 21 token（探针自己的 prompt+output）。这里单独计一笔：
+    #    会话与命中率类口径改看真会话（prompt>32），探针本身仍原样留在请求表里，不藏信息。
+    #    注意：真会话的第一轮若也 <=32 token 会被一并排除，只影响这一行的展示，不影响计数。
+    is_probe = lambda r: (r.get("prompt_tokens") or 0) <= 32
+    probes = sum(1 for r in reqs if is_probe(r))
+    conv = [r for r in reqs if not is_probe(r)]
+    conv_reused = sum(1 for r in conv if (r.get("reused") or 0) > 0)
+    # 2026-10-15 二次修正：被取消且一个 token 都没产出的请求（客户端 1.5 s 就断开）在引擎里报
+    # cache 0 (0.0%)，因为它根本没走到 prefill——那不是缓存失效（今天 13:17:04 req#82：prompt
+    # 128,389 / cancelled / output 0 / TTFT 181 ms 就是这样一条，却把面板显示成 0.0%）。
+    # 这种行不参与「最近一轮」口径；它们本来也不进 token 加权（引擎没评估过任何 token）。
+    _mean = lambda r: not ((r.get("finish") in ("cancel", "error")) and (r.get("output_tokens") or 0) == 0)
+    last_conv = next((r for r in conv if r.get("prompt_tokens") and _mean(r)), None)
 
     # ── 「当前会话」的逻辑上下文占用（★2026-10-09 修正）─────────────────────────────
     # 引擎侧的 llamacpp:kv_cache_tokens / kv_cache_usage_ratio 是 **设备 KV 池**占用
@@ -655,8 +792,9 @@ def build_payload(show_all=False):
     # 会话长度改用「最近一次请求的 prompt + output」（引擎没有直接的会话长度指标）。
     # 池占用仍以 pool_* 字段返回（换档/环压力时有用），不再当作上下文百分比。
     # 注意：本块必须在 last 之后（首次实现放在前面 ⇒ NameError ⇒ 接口 500，已修）。
-    last_prompt = int((last or {}).get("prompt_tokens") or 0)
-    last_out = int((last or {}).get("output_tokens") or 0)
+    _lc = last_conv or last      # 探针不代表会话长度
+    last_prompt = int((_lc or {}).get("prompt_tokens") or 0)
+    last_out = int((_lc or {}).get("output_tokens") or 0)
     session_tokens = (last_prompt + last_out) if last_prompt else None
     ctx_used = session_tokens if session_tokens is not None else (kv_tokens or 0)
     ctx_ratio = min(1.0, ctx_used / max_ctx) if max_ctx else None
@@ -665,6 +803,12 @@ def build_payload(show_all=False):
     cc_out = {
         "enabled": False,
         "requests": len(reqs), "requests_reused": reused_requests,
+        "probes": probes, "requests_conv": len(conv), "requests_conv_reused": conv_reused,
+        "last_conv_prompt": (last_conv or {}).get("prompt_tokens"),
+        "last_conv_reused": (last_conv or {}).get("reused"),
+        "last_conv_hit_rate": (last_conv or {}).get("hit_rate"),
+        # ── 热 / 温 / 冷 三层 KV 占用（用户 2026-10-15 要的进度条）────────────────────────────
+        "kv_tiers": kv_tiers_block(cap, S.load, S.disk),
         "reused_tokens": reused, "prompt_tokens": all_prompt,
         "prefix_hits": prefix_hits,
         "exhausted": counters.get("ninfer:context_cache_exhausted_requests_total"),

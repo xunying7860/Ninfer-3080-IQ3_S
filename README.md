@@ -8,7 +8,7 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 部署脚本与 Windows 整合包 **[NInfer-Qwen3.8-27B-IQ3S-sm86-win64](https://github.com/lurenakillgore9-web/NInfer-Qwen3.8-27B-IQ3S-sm86-win64)**（Release 里 10 个 7z 分卷，17.3 GiB）同源，本仓库是它的 Linux 常驻版。
 本仓库放**把服务跑起来所必需的全部东西**：启动脚本、systemd 单元、看门狗、监控面板，
 **以及引擎本体本身**（`engine/`，10 个分卷 928,429,363 B，普通 git 存放、不用 Git LFS）；
-**只有模型权重不分发**（13,568,617,472 B）。
+**只有模型权重不分发**（当前生产件 `gsq_rco_iq3_s_dflash2_prop.ninfer` 15,017,456,128 B；上一件 `Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer` 13,568,617,472 B 仍在盘上、未删）。
 
 ---
 
@@ -17,12 +17,12 @@ systemd 托管、固定用 GPU0、原生 glibc loader（不需要 Docker、不�
 | | |
 |---|---|
 | 引擎 | NInfer sm_86 Linux bundle（`bundle/bin/ninfer-serve`，1,249,869,248 B ≈ 1.16 GiB，md5 `2cbd88ab06318c81b695ec64c72b433d`；自带 loader + glibc，CUDA 用机器的 13.3）。**这个件就放在本仓库 `engine/` 里**，它与厂商原件 `ninfer-serve.vendor-original` 是同一个 md5，即线上跑的就是它 |
-| 模型 | `Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer`（13,568,617,472 B，自带 MTP 与 DFlash2 两套草稿头 + 视觉塔）；上一件 `gsq_rco_iq3_s_dflash2_prop.ninfer`（15,017,456,128 B）仍在盘上，未删 |
+| 模型 | `gsq_rco_iq3_s_dflash2_prop.ninfer`（15,017,456,128 B，IQ3_S 混合量化 1,249 张量，自带 MTP 与 DFlash2 两套草稿头 + 视觉塔）；上一件 `Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer`（13,568,617,472 B）仍在盘上，未删 |
 | 机器 | Ubuntu 22.04.5 / kernel 5.15.0-119 / Xeon E5-2680 v4（28 线程）/ 62 GiB RAM |
 | 显卡 | **单张 RTX 3080 20GB**（sm_86）；脚本里用 `CUDA_VISIBLE_DEVICES=0` 固定 GPU0 |
 | 驱动 | 615.71.09 |
 | 服务 | systemd `ninfer.service` → `/data/ninfer/run.sh`，端口 **18082** |
-| 接口 | `http://<host>:18082/v1`（OpenAI 与 Anthropic 双协议），`--model-id qwen3.8-27b-coder390-q2lynn` |
+| 接口 | `http://<host>:18082/v1`（OpenAI 与 Anthropic 双协议），`--model-id qwen3.8-27b-gsq-rco-iq3s` |
 | 聊天模板 | `qwen3.8-froggeric-v22.5` |
 | 监控 | `monitor/` 监控面板 → `http://<host>:18083/` |
 
@@ -40,36 +40,40 @@ LIBPATH=$ROOT/bundle/libs/lib/x86_64-linux-gnu:/usr/local/cuda-13.3/lib64:/usr/l
 export CUDA_VISIBLE_DEVICES=0
 mkdir -p "$ROOT/logs"
 exec "$LOADER" --library-path "$LIBPATH" "$ROOT/bundle/bin/ninfer-serve" \
-  "/data/nvme/ninfer-models/Qwen3.8-27B-Coder390-EfficientThink-Q2LynnStyle-MTP.ninfer" \
-  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-coder390-q2lynn \
-  --max-context 317440 --kv-capacity 317440 --kv-dtype rk4v4 \
+  "/data/nvme/ninfer-models/gsq_rco_iq3_s_dflash2_prop.ninfer" \
+  --host 0.0.0.0 --port 18082 --model-id qwen3.8-27b-gsq-rco-iq3s \
+  --max-context 378944 --kv-capacity 378944 --kv-dtype rk4v4 \
   --cuda-graph-allowance-mib 256 \
   --vision --vision-residency overlay --vision-max-merged 4096 --media-cache-mib 512 --media-live-mib 1024 \
   --max-concurrency 1 --max-pending-requests 16 --prefill-chunk 1024 \
   --device-state-slots 1 --host-state-slots 2 --host-kv-mib 512 --context-cache-policy rolling \
   --gdn-state-fp16 --spec mtp --draft-tokens 3 --adaptive-mtp \
-  --chat-template "$ROOT/chat_template.jinja" --default-reasoning-effort max --default-max-tokens 131072 \
+  --chat-template "$ROOT/chat_template.jinja" --default-reasoning-effort max --default-max-tokens 131072
+  --disk-kv-path /data/nvme/ninfer-disktier-prod01 --disk-kv-gib 16 --disk-kv-restore --disk-kv-idle-save-seconds 180 \
   "$@"
 ```
 
-关键取舍都写在 `run.sh` 的注释里（按日期倒序），包括每次改档的**理由与回退点**：
+关键取舍都写在 `run.sh` 的注释里（按日期倒序），包括每次改档的**理由与回退点**。最近一次换档（**2026-10-15：换 IQ3_S 制品 + ctx 二分到 378944**）的完整取证见 [`docs/换IQ3_S制品与ctx二分-20261015.md`](docs/换IQ3_S制品与ctx二分-20261015.md)：
 
 - **dflash2 → MTP**（`--spec mtp --draft-tokens 3 --adaptive-mtp`）：模型同时带 MTP 与 DFlash2 两套草稿头，
   引擎规定两者互斥、只能选一个；`--adaptive-mtp` 每轮在 3..7 之间按实测存活率自适应选宽度，
   避免「固定窗口在不可预测输出上反而更慢」。
 - **`--default-max-tokens 131072`**：引擎默认 8192（thinking xhigh 会把额度吃光、正文一个 token 都轮不到）；
   而 `0`（无上限）在这台引擎上是**坏的** —— 0 被解释成 `INT32_MAX`，远大于 KV 池，
-  输出租约拿不到页 ⇒ 活锁（见「已知问题」）。约束不等式：`prompt + max_tokens ≤ 池(317440)`。
+  输出租约拿不到页 ⇒ 活锁（见「已知问题」）。约束不等式：`prompt + max_tokens ≤ 池(378944)`。
 - **`--device-state-slots 1`**（引擎默认值 = `max-concurrency`）：它是**活跃会话之外**的额外检查点容量。
   曾经设 8，8 份检查点各占 ~210 页（每页 64 token），把 4096 页的分页 KV 池吃到 `allocated 3076`，
   再来一个带图请求要 1020 页 ⇒ `HTTP 429 server overloaded`（Hermes 侧显示
   `context cache exhausted: Paged KV pool cannot resize the page reservation`）。降到 1 后池里少占 ~1470 页。
   实测链式（每发延长上一发）命中率在 slots 1/2/4 下**逐项相同**（0/50.3/66.8/75.1/80.1/83.4/99.0）；
   只有 slots=0 才会退化成每发全量重算。
-- **`--max-context`/`--kv-capacity 317440`**（310K，逐档实测的硬顶）：320K 差 173 MiB、315K 差 84 MiB 起不来。
+- **`--max-context`/`--kv-capacity 378944`**（≈370K，**2026-10-15 二分实测的硬顶**）：379,008 只差 768 KiB（64 token）就拒启
+  （`requires 8,712,029,440 > available 8,711,241,728`），378,944 起得来。
+  二分脚本 `scripts/ctx-bisect.py`、逐档记录 `docs/ctx-bisect-result-20261015.txt`、完整取证 `docs/换IQ3_S制品与ctx二分-20261015.md`。
   两个数要分清：**reservation 随 ctx 与槽位变**（每槽 ≈32 MiB），而
-  **available runtime capacity 恒为 7,553,613,824 B**（slots 8/4/1 三次读数一字不差，任何旋钮都动不了）。
-  现状：`pages 4,960/4,960 | runtime 7.02 GiB | free 253.7 MiB`（贴顶，无余量；要留余量退 300K=307200）。
+  **available runtime capacity 不是常数、随制品权重体积变** —— Q2LynnStyle（权重 12.3 GiB）时恒为 7,553,613,824 B
+  （这正是「310K 是硬顶」的来源），换 IQ3_S（权重 **11.3 GiB**）后变成 **8,711,241,728 B**（+约 1 GiB，310K→370K 就是这笔）。
+  现状：`pages 5,921/5,921 | runtime 8.11 GiB | free 241.7 MiB`（贴顶，无余量）。
 - **`--host-kv-mib 512`**：主机停放区收小，显存侧留给会话。
 - **`--vision-max-merged 4096`**（原 12288）：单图合并 token 上限收小，省显存与池占用。
 - **`--max-concurrency 1`**：单槽独占，配合 `--context-cache-policy rolling` 保前缀命中率。
@@ -111,7 +115,7 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 | 组件 | 位置 | 作用 |
 |---|---|---|
 | `deploy/ninfer.service` | 装到 `/etc/systemd/system/` | 引擎常驻、自启（`enabled`），`Restart=on-failure` / `RestartSec=15` / `LimitMEMLOCK=infinity` |
-| `deploy/ninfer-watchdog.service` + `engine-watchdog.py` | 单元装到 `/etc/systemd/system/`，脚本放 `/data/ninfer/` | **活锁指纹**看门狗：`in_flight>0 且 util≥90% 且 功耗<130 W 且 计数不推进` 持续 ≥180 s ⇒ 自动 `systemctl restart ninfer`；另有 `/health` 连续 360 s 失联的兜底，与引擎空闲时才打一条最小请求的僵尸探针（25 s 超时，model-id 从 `/v1/models` 动态取） |
+| `deploy/ninfer-watchdog.service` + `engine-watchdog.py` | 单元装到 `/etc/systemd/system/`，脚本放 `/data/ninfer/` | **活锁指纹**看门狗：`in_flight>0 且 util≥90% 且 功耗<130 W 且 计数不推进` 持续 ≥180 s ⇒ 自动 `systemctl restart ninfer`；另有 `/health` 连续 360 s 失联的兜底，与引擎空闲时才打一条最小请求的僵尸探针（25 s 超时，model-id 从 `/v1/models` 动态取）；**2026-10-15 起探针最小间隔 300 s**（`ZOMBIE_PROBE_EVERY_S`）—— 每 60 s 一条探针会把 `--disk-kv-idle-save-seconds 180` 的空闲计时器反复清零，让空闲落盘永远不触发 |
 | `monitor/` | 本目录 | Web 监控面板（见其 README） |
 | 日志 | `/data/ninfer/logs/ninfer-serve.log` | 引擎 stdout/stderr；每 5 s 一行 `throughput`，每请求一行 `req#N started/done` |
 
@@ -124,7 +128,8 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 
 `http://<host>:18083/` —— **布局逐字节照抄 [Strata](https://github.com/Niko1221/Strata) 的 Monitor 视图**
 （`components.css` / `app.css` / `sprite.svg` 三件套与原站 md5 一致），只把配色换成黑金（纯黑底 + 金）。
-数据全部来自 NInfer 自己的只读来源：引擎日志增量 tail、`/metrics`、`/v1/models`、NVML（GPU0）、`/proc`。
+2026-10-15 起 Context cache 卡改成**热/温/冷三层 KV 占用条**（热=显存 KV 池 token 真值 / 温=内存停放区字节真值 / 冷=磁盘层 `du` 实占），并把看门狗探针从「最近请求 / 命中率」口径里剔除（探针 13 token 会假冒一轮对话）。
+数据全部来自 NInfer 自己的只读来源：引擎日志增量 tail、`/metrics`、`/v1/models`、`/v1/load`、NVML（GPU0）、`/proc`。
 **取不到的字段显示 `–`，不编数**；引擎 `/metrics` 拿不到时报 `Engine not reachable`，而不是假装 Idle。
 
 用法与部署见 `monitor/README.md`；面板的独立开发仓库在作者本地，本目录是随部署发布的快照。
@@ -136,15 +141,16 @@ req#567 done | openai-chat | tool calls 1 | prompt 113,741 | output 989 | cache 
 1. **活锁（引擎已知）**：`max_tokens` 远大于 KV 池时，输出租约拿不到页。表现是
    GPU 100% 占用但功耗只有 ~95 W、显存带宽 0%、一个主机线程烧满一个核、计数器不推进，
    而 `/health` 仍返回 ok（systemd 的 `Restart=on-failure` 抓不到）。**看门狗按指纹自动重启。**
-   约束：`prompt + max_tokens ≤ 池(317440)`。
+   约束：`prompt + max_tokens ≤ 池(378944)`。
 2. **`cudaErrorIllegalAddress`**：`./src/core/device.cu:402 CUDA_CHECK(cudaStreamSynchronize(endpoint.stream))`，
    2026-10-07 22:25、2026-10-08 12:54、2026-10-08 19:27 各一次，**三次都发生在大题面的 prefill 进行中**
    （host 侧 46–57% CPU，prefill 处于峰值速率）。`Restart=on-failure` 自动拉起，重启到就绪约 2 分钟；
    期间面板显示 `Engine not reachable`。
 3. 引擎**不提供**实时 prefill 进度百分比，也没有「专家缓存」类计数 ⇒ 面板对应位置留空，或用等价的真实量替代
    （例如用 `engine ready` 的权重体积画「模型占显存」）。
-4. `ninfer.service` 的 `Description=` 已于 2026-10-12 随换档改正为
-   `Q2LynnStyle Coder390 MTP repack / GPU0 / 317440 ctx rk4v4 / 端口 18082 / vision overlay 4096 / MTP draft3 adaptive / 设备检查点 1 / 无磁盘层`，与 `run.sh` 一致；改档时两处都要改。
+4. `ninfer.service` 的 `Description=` 随每次换档改正（2026-10-15：
+   `IQ3_S GSQ-RCO 制品 / GPU0 / 378944 ctx rk4v4 / 端口 18082 / vision overlay 4096 / MTP draft3 adaptive / 设备检查点 1 / 磁盘层 16G 空闲落盘`），与 `run.sh` 一致；改档时两处都要改。
+   另：`deploy/ninfer.service.d/10-slot-sidecar.conf`（`ExecStop` 停机前存盘钩子 + `TimeoutStopSec=300`）在机上已装，回退 = 删该文件 + `daemon-reload`。
 
 ---
 
@@ -185,7 +191,7 @@ KVarN 那几个新 TU 按引擎内相对路径原样放着）、`docs/kvarn-移�
 
 ## 目录说明
 
-只留部署与运维必需的东西 + 本轮 KVarN 移植的补丁与取证，一共 1,196 个文件：
+只留部署与运维必需的东西 + 本轮 KVarN 移植的补丁与取证，一共 **1,202 个文件**：
 
 | 路径 | 说明 |
 |---|---|
@@ -195,8 +201,8 @@ KVarN 那几个新 TU 按引擎内相对路径原样放着）、`docs/kvarn-移�
 | `deploy/` | systemd 单元：`ninfer.service`（引擎）/ `ninfer-watchdog.service`（看门狗）/ `ninfer-monitor.service`（面板）/ `gpu-clocks.service`（开机锁频降压）；`profiles/` 存当前标定件；`archive-20261012-132024-pre-kvarn/` 是 2026-10-12 停生产前的回退点（`RESTORE.txt` 等） |
 | `monitor/` | Web 监控面板：`server/`（Python 服务 + 自己的 unit）、`web/`（页面与样式）、`README.md` |
 | `test/` | 门禁套件 `gate_test.py`（9 套件 + compare）、`slot-sidecar.py` 与候选实例控制脚本（`launch-cand.sh` / `run-cand.sh` / `restart-cand.sh` / `detach.sh` / `stop-save-hook.sh`）、`probe-master/` 只读取证快照 |
-| `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`） |
-| `docs/` | 引擎补丁与运维流程（重启不丢上下文）、**KV 量化本轮结论（`KVarN-KV量化结论-20261014.md`）** |
+| `scripts/` | 运维与实验脚本（`deploy-to-x99.sh`、各档 `arm-*.sh` / `sweep-*.sh` / `verify-*.py`、崩溃复现 `crash_repro.py`、测速分析 `analyze-dmon.py` / `ab-test.py`、三针 `needle-test.py`）；**2026-10-15 新增** `ctx-bisect.py`（ctx 二分找最大可启值，改数字→停起→按 `engine ready`/`available for runtime capacity` 判定→写回）与 `needle-test3.py` / `needle-196k.py`（带 `reasoning_effort=none` 的大海捞针门，32K/64K/196K） |
+| `docs/` | 引擎补丁与运维流程（重启不丢上下文）、**KV 量化本轮结论（`KVarN-KV量化结论-20261014.md`）**、**换 IQ3_S 制品 + ctx 二分（`换IQ3_S制品与ctx二分-20261015.md` + 逐档记录 `ctx-bisect-result-20261015.txt`）** |
 | `kvarn-port/` | **KVarN 移植本体**：`BASELINE.md`（上游 `iamwavecut/ninfer-all@11327e96` + 取件 sha256 + `git am` 复原步骤 + 未经完整门禁的诚实登记）、`patches/` 7 份 patch（33 文件 +5,263 −2,155）、`engine/` KVarN 新 TU 原样（`kvarn_layout.h` 是几何单一真值） |
 | `kvarn-evidence/` | **移植取证**：1,026 个原始件（三级对拍、三语料 PPL、llama 原档对照、rk4v4 消融、kvarn128 验收），`README.md` 讲每个目录在证明什么 + 判据 + 方法学边界，`checksums.txt` 逐文件 md5 |
 | `docs/kvarn-移植/` | 本轮 24 份过程文档（含 `KVarN-收单-20261014.md` 冻结收单） |
