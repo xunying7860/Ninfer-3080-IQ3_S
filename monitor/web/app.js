@@ -91,9 +91,10 @@ function renderTotals(t) {
   if (!t || !t.requests) return "";
   const since = t.since ? new Date(t.since * 1000).toLocaleString([], {weekday: "short", hour: "2-digit", minute: "2-digit"}) : null;
   const read = (t.prompt_tokens || 0) - (t.reused || 0);
+  const pSpeed = t.prompt_ms > 0 && read > 0 ? ` at ${fmt(read / (t.prompt_ms / 1000))} tok/s` : "";
   const oSpeed = t.decode_ms > 0 && t.output_tokens > 0 ? ` at ${fmt(t.output_tokens / (t.decode_ms / 1000), 1)} tok/s` : "";
   const head = since ? `Since ${since}: ` : "";
-  return `${head}${fmt(t.requests)} requests · ${fmt(read)} prompt tokens read (${fmt(t.reused)} reused) · ` +
+  return `${head}${fmt(t.requests)} requests · ${fmt(read)} prompt tokens read${pSpeed} (${fmt(t.reused)} reused) · ` +
          `${fmt(t.output_tokens)} written${oSpeed}` +
          (t.accepted != null && t.drafted ? ` · MTP accepted ${fmt(100 * t.accepted / t.drafted, 1)}%` : "");
 }
@@ -102,11 +103,16 @@ function renderMonitor(live, hw, st, eng, h, last, requests, totals, kept, ctx) 
   // 表里最新的一条可能是「传输途中取消」（没有读数）⇒ 取最近一条有完整读数的请求做兜底
   const done = (requests || []).find((r) => r.output_tokens != null && r.decode_tok_s != null) || null;
   // ---- model state
-  const on = live.queued > 0 ? "queued" : live.state;
-  for (const b of document.querySelectorAll("#state-badges .st-badge")) b.classList.toggle("on", b.dataset.s === on || b.dataset.s === live.state);
+  const on = eng.up === false ? "unloaded" : (live.queued > 0 ? "queued" : live.state);
+  for (const b of document.querySelectorAll("#state-badges .st-badge"))
+    b.classList.toggle("on", eng.up === false ? b.dataset.s === "unloaded" : (b.dataset.s === on || b.dataset.s === live.state));
   const prog = $("state-progress");
   let label = "Waiting for a request", detail = "", pct = 0;
-  if (live.state === "reading") {
+  if (eng.up === false) {
+    label = "Unloaded";
+    delete prog.dataset.tone;
+    detail = "Engine not reachable";
+  } else if (live.state === "reading") {
     label = "Reading prompt";
     prog.dataset.tone = "info";
     detail = live.prefill_tok_s_mean != null ? `${fmt(live.prefill_tok_s_mean)} tok/s` : "prefill";
@@ -180,17 +186,18 @@ function renderMonitor(live, hw, st, eng, h, last, requests, totals, kept, ctx) 
   // ---- recent requests
   const body = $("req-body");
   if (!requests.length) {
-    body.innerHTML = `<tr><td colspan="8" class="muted">No requests yet</td></tr>`;
+    body.innerHTML = `<tr><td colspan="9" class="muted">No requests yet</td></tr>`;
   } else {
     const badge = {stop: ["", "Done"], length: ["", "Max tokens"], cancel: ["st-badge--queued", "Stopped"],
-                   error: ["st-badge--error", "Error"]};
+                   disconnect: ["st-badge--queued", "Closed"], error: ["st-badge--error", "Error"],
+                   timeout: ["st-badge--queued", "Timeout"]};
     body.innerHTML = requests.slice(0, reqShowAll ? requests.length : 12).map((r) => {
       const [cls, text] = badge[r.finish] || ["", r.finish || "–"];
       const t = new Date(r.time * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"});
       const hit = r.hit_rate == null ? "–" : `${r.hit_rate.toFixed(1)}%${(r.prompt_tokens || 0) <= 32 ? ` <span class="muted" title="watchdog zombie probe: 13 prompt tokens, max_tokens 8 — 不是一轮对话">probe</span>` : ""}` +
         (r.drafts ? ` <span class="muted" title="speculative drafts accepted for this request (MTP)">MTP ${(100 * r.accepted / r.drafts).toFixed(1)}%</span>` : "");
       return `<tr><td>${esc(t)}</td><td><span class="st-badge ${cls}" title="${esc(r.reason || text)}">${esc(text)}</span></td><td class="num">${fmt(r.prompt_tokens)}</td>
-        <td class="num">${fmt(r.reused)}</td><td class="num">${fmt(r.output_tokens)}</td><td class="num">${fmt(r.decode_tok_s, 1)}</td>
+        <td class="num">${fmt(r.reused)}</td><td class="num">${fmt(r.output_tokens)}</td><td class="num">${fmt(r.prefill_tok_s, 1)}</td><td class="num">${fmt(r.decode_tok_s, 1)}</td>
         <td class="num">${hit}</td><td class="num">${fmt(r.duration_s, 1)} s</td></tr>`;
     }).join("");
   }

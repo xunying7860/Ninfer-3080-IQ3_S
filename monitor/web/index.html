@@ -37,6 +37,7 @@
           <span class="card-title">Model state</span>
           <span class="badges" id="state-badges">
             <span class="st-badge" data-s="idle">Idle</span>
+            <span class="st-badge" data-s="unloaded">Unloaded</span>
             <span class="st-badge st-badge--reading" data-s="reading">Reading</span>
             <span class="st-badge st-badge--generating" data-s="generating">Generating</span>
             <span class="st-badge st-badge--queued" data-s="queued">Queued</span>
@@ -76,8 +77,8 @@
           <div class="table-wrap" id="req-wrap">
             <table class="st-table">
               <thead><tr><th>Time</th><th>Status</th><th class="num">Prompt</th><th class="num">Reused</th><th class="num">Output</th>
-                <th class="num">Tok/s</th><th class="num" title="While writing the answer: the share of the prompt NInfer restored from its prefix/context cache instead of reading it again; the speculative acceptance of that request follows it (MTP a/b)">Cache hit rate</th><th class="num">Duration</th></tr></thead>
-              <tbody id="req-body"><tr><td colspan="8" class="muted">No requests yet</td></tr></tbody>
+                <th class="num" title="New prompt tokens per second, excluding reused cache tokens (engine prompt time)">Prefill t/s</th><th class="num">Decode t/s</th><th class="num" title="While writing the answer: the share of the prompt NInfer restored from its prefix/context cache instead of reading it again; the speculative acceptance of that request follows it (MTP a/b)">Cache hit rate</th><th class="num">Duration</th></tr></thead>
+              <tbody id="req-body"><tr><td colspan="9" class="muted">No requests yet</td></tr></tbody>
             </table>
           </div>
           <p class="muted req-totals" id="req-totals"></p>
