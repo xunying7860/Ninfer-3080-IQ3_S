@@ -217,7 +217,12 @@ function renderConvCache(c) {
       else if (unit === "tokens") s = `${fmt(t.used_tokens || 0)} / ${fmt(t.cap_tokens || 0)} token · ${(100 * r).toFixed(1)}%` + (t.gib ? `（池额度 ${t.gib} GiB，引擎 capacity 行）` : "");
       else { s = `${gb(t.used_bytes || 0)} / ${gb(t.cap_bytes || 0)} GB · ${(100 * r).toFixed(1)}%`;
         if (key === "warm" && t.slots_cap != null) s += ` · StateImage ${t.slots_used || 0}/${t.slots_cap} 份`;
-        if (key === "cold") { if (t.files != null) s += ` · ${t.files} 个文件`; if (t.newest) s += ` · 最近写入 ${new Date(t.newest * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"})}`; } }
+        if (key === "cold") {
+          if (t.slots_cap) s += ` · ${(t.slots_used || 0).toFixed(2)}/${t.slots_cap} 槽（1 槽 ${fmt(t.slot_pages)} 页）`;
+          if (t.block_bytes != null) s += ` · 文件块 ${gb(t.block_bytes)} GB 高水位`;
+          if (t.files != null) s += ` · ${t.files} 个文件`;
+          if (t.newest) s += ` · 最近写入 ${new Date(t.newest * 1000).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"})}`;
+        } }
       txt.textContent = s;
     }
   $("cc-sum").textContent = c.requests ? `${fmt(c.requests_reused)} of ${fmt(c.requests)} requests reused part of their prompt${c.probes ? ` (${fmt(c.probes)} were watchdog probes)` : ""}` : "";
@@ -230,6 +235,7 @@ function renderConvCache(c) {
     ["Prefix cache hits", c.prefix_hits ? `${fmt(c.prefix_hits)} tokens` : null],
     ["Device states", c.device_states || null],
     ["Host KV", c.host_kv || null],
+    ["Disk tier", c.disk_tier || null],
     ["Policy", c.policy || null],
     ["Placement failures", c.exhausted ? `${fmt(c.exhausted)} requests (context cache full)` : null],
   ]);

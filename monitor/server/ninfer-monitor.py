@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import ctypes
 import json
+import struct
 import mimetypes
 import os
 import re
@@ -413,6 +414,13 @@ def kv_tiers_block(cap, load, disk):
     kt, kc = o.get("device_main_kv_tokens"), c.get("kv_capacity_tokens")
     hb, hc = o.get("host_kv_bytes"), c.get("host_kv_bytes")
     d = disk or {}
+    # [2026-10-29] 一槽 = 引擎 KV 池页数；盘上 main 族按 65% 切分（有 backend 时）⇒ 槽数 = 池页数能装几次
+    slot_pages = c.get("kv_capacity_pages")
+    strides = d.get("strides") or {}
+    slots_cap = None
+    if slot_pages and d.get("cap_bytes") and strides.get("main"):
+        main_cap_pages = int(d["cap_bytes"] * 0.65 / strides["main"])
+        slots_cap = main_cap_pages // slot_pages
     return {
         "hot": {"used_tokens": kt, "cap_tokens": kc,
                 "ratio": (float(kt) / float(kc)) if (kt is not None and kc) else None,
@@ -426,7 +434,14 @@ def kv_tiers_block(cap, load, disk):
                  "ratio": (float(d["used_bytes"]) / float(d["cap_bytes"])) if (d.get("used_bytes") and d.get("cap_bytes")) else None,
                  "used_tokens": None, "cap_tokens": None,
                  "files": d.get("files"), "newest": d.get("newest"), "path": d.get("path"),
-                 "avail_bytes": d.get("avail_bytes")},
+                 "avail_bytes": d.get("avail_bytes"),
+                 # ── 2026-10-29：活页真值 + 整槽语义（used_bytes 已改成活页，不再是文件块高水位）
+                 "live_bytes": d.get("live_bytes"), "block_bytes": d.get("block_bytes"),
+                 "live_pages": d.get("live_pages"), "slot_pages": slot_pages,
+                 "slots_used": (float(d["live_pages"]) / slot_pages) if (d.get("live_pages") and slot_pages) else None,
+                 "slots_cap": slots_cap,
+                 "evict_pages": d.get("evict_pages"), "evict_time": d.get("evict_time"),
+                 "restore_pages": d.get("restore_pages")},
     }
 
 
@@ -471,32 +486,85 @@ def disk_kv_args():
 
 
 def disk_tier_stats():
-    """冷层实测：目录真实块占用 + 额度 + 文件数 + 最近写入时刻 + 卷余量。"""
+    """冷层实测：活页真值（.idx 头的 count × slot 宽）+ 文件块高水位 + 额度 + 文件数 + 最近写入
+    + 卷余量 + 整槽淘汰/恢复（引擎日志的 diskkv 行）。
+
+    口径（2026-10-29 修订，别回退到旧口径）：
+      · 旧口径拿 `du` 目录实占当「已用」。整槽淘汰只清 48 B 页头、不 punch 空洞 ⇒ 文件块是
+        **高水位**：实测活页 6,923/12,127 页（9.13 GiB）时 du 仍报 14.8 GiB。
+      · 活页 = 三个 .idx 头里的 count（头 32 B，count 在偏移 8）× 目录名 kv6_main<M>_backend<B>_state<S> 里的三个 stride。
+      · 「一槽 = 引擎 KV 池页数」，由调用方用 /v1/load 的 kv_capacity_pages 换算，这里只给页数。"""
     path, gib = disk_kv_args()
     if not path or not os.path.isdir(path):
         return {}
-    used = None
+    block = None
     try:
         out = subprocess.run(["du", "-s", "--block-size=1", path], capture_output=True,
                              text=True, timeout=DISK_DU_TIMEOUT).stdout
-        used = int(out.split()[0]) if out.strip() else None
+        block = int(out.split()[0]) if out.strip() else None
     except Exception:
         return {}
     files, newest, avail = 0, 0.0, None
+    lives, strides = {}, None
     try:
         stv = os.statvfs(path)
         avail = stv.f_bsize * stv.f_bavail
         for dp, dns, fns in os.walk(path):
+            m = re.match(r"kv6_main(\d+)_backend(\d+)_state(\d+)", os.path.basename(dp))
+            if m:
+                strides = {"main": int(m.group(1)), "backend": int(m.group(2)),
+                           "state": int(m.group(3))}
             for fn in fns:
                 files += 1
+                full = os.path.join(dp, fn)
                 try:
-                    newest = max(newest, os.stat(os.path.join(dp, fn)).st_mtime)
+                    newest = max(newest, os.stat(full).st_mtime)
                 except Exception:
                     pass
+                if fn.endswith(".idx") and strides is not None:
+                    try:
+                        with open(full, "rb") as fh:
+                            head = fh.read(32)
+                        if len(head) >= 12:
+                            lives[fn[:-4]] = struct.unpack("<III", head[:12])[2]
+                    except Exception:
+                        pass
     except Exception:
         pass
-    return {"used_bytes": used, "cap_bytes": int(gib * 1024 ** 3) if gib else None, "gib": gib,
-            "files": files, "newest": newest, "path": path, "avail_bytes": avail}
+    live_bytes = None
+    if strides and lives:
+        live_bytes = (lives.get("diskkv_main", 0) * strides["main"] +
+                      lives.get("diskkv_backend", 0) * strides["backend"] +
+                      lives.get("diskkv_state", 0) * strides["state"])
+    evict_pages = evict_time = restore_pages = None
+    try:
+        with open(LOG_PATH, "rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            size = fh.tell()
+            fh.seek(max(0, size - 512 * 1024))
+            tail = fh.read().decode("utf-8", "replace")
+        stamp = None
+        for line in tail.splitlines():
+            # diskkv 行没有时间戳前缀 ⇒ 恢复/淘汰计数必须独立于时间戳解析
+            if "diskkv: commit-spill" in line:
+                mr = re.search(r"restores=(\d+)", line)
+                if mr:
+                    restore_pages = int(mr.group(1))
+            m = re.match(r"(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)", line)
+            if m:
+                stamp = m.group(1)
+            elif "diskkv: chain-evict" in line:
+                mv = re.search(r"pages=(\d+)", line)
+                if mv:
+                    evict_pages, evict_time = int(mv.group(1)), stamp
+    except Exception:
+        pass
+    return {"used_bytes": live_bytes if live_bytes is not None else block,
+            "live_bytes": live_bytes, "block_bytes": block,
+            "live_pages": lives.get("diskkv_main"), "live_by_family": lives, "strides": strides,
+            "cap_bytes": int(gib * 1024 ** 3) if gib else None, "gib": gib,
+            "files": files, "newest": newest, "path": path, "avail_bytes": avail,
+            "evict_pages": evict_pages, "evict_time": evict_time, "restore_pages": restore_pages}
 
 
 def http_text(url, timeout=2.0):
@@ -823,6 +891,19 @@ def build_payload(show_all=False):
         "note": ("NInfer keeps the state of the conversation it is in, so a follow-up reads only what is new; "
                  "device states held in VRAM are the ones it can resume without reading the prompt again."),
     }
+    # [2026-10-29] 冷层一句话：累计恢复 / 最近整槽淘汰 / 文件块高水位（淘汰不回收）
+    _cold = cc_out["kv_tiers"]["cold"]
+    _parts = []
+    if _cold.get("slots_cap"):
+        _parts.append("一槽 %s 页 = 最大 KV 池，共 %d 槽" % (f"{_cold['slot_pages']:,}", _cold["slots_cap"]))
+    if _cold.get("restore_pages"):
+        _parts.append("累计恢复 %s 页" % f"{_cold['restore_pages']:,}")
+    if _cold.get("evict_pages"):
+        _parts.append("最近整槽淘汰 %s 页%s" % (f"{_cold['evict_pages']:,}",
+                                              ("（%s）" % _cold["evict_time"][11:]) if _cold.get("evict_time") else ""))
+    if _cold.get("block_bytes") is not None:
+        _parts.append("文件块 %.1f GiB 属高水位（淘汰不回收空洞）" % (_cold["block_bytes"] / 2 ** 30))
+    cc_out["disk_tier"] = " · ".join(_parts) if _parts else None
 
     lh = lambda k: ([v for v in hist.get(k, [])] if hist.get(k) else None)
     return {
